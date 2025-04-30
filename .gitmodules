@@ -1,0 +1,3 @@
+[submodule "timeline"]
+	path = timeline
+	url = git@github.com:gravity-ui/timeline.git
