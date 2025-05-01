@@ -7,8 +7,8 @@ import { Events } from "./Events";
 
 export class AreaSelectionComponent extends TimelineComponent {
   public borderColor: string = yaTimelineConfig.SELECTION_OUTLINE_COLOR;
-
   public innerColor: string = yaTimelineConfig.SELECTION_BG_COLOR;
+  protected area: DOMRect | undefined;
 
   constructor(
     host: YaTimeline,
@@ -16,13 +16,16 @@ export class AreaSelectionComponent extends TimelineComponent {
       borderColor?: string;
       innerColor?: string;
       onSelected?: (rect: DOMRect) => void;
-    } = {}
+    } = {},
   ) {
     super(host);
 
     Object.assign(this, options);
 
-    this.canvasApi.canvas.addEventListener("mousedown", this.handleCanvasMousedown);
+    this.canvasApi.canvas.addEventListener(
+      "mousedown",
+      this.handleCanvasMousedown,
+    );
   }
 
   public render(api: TimelineCanvasApi): void {
@@ -82,8 +85,6 @@ export class AreaSelectionComponent extends TimelineComponent {
     document.addEventListener("mousemove", onMove);
     document.addEventListener("mouseup", onEnd);
   };
-
-  protected area: DOMRect | undefined;
 
   protected onSelected = (rect: DOMRect) => {
     const eventsComponent = this.canvasApi.getComponent(Events);

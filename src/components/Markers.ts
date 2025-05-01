@@ -1,8 +1,8 @@
-import {clamp, pointToRangeIntersect} from "../helpers/math";
-import {TimelineCanvasApi} from "../TimelineCanvasApi";
-import {YaTimeline} from "../YaTimeline";
-import {yaTimelineConfig} from "../config";
-import {TimelineComponent} from "./TimelineComponent";
+import { clamp, pointToRangeIntersect } from "../helpers/math";
+import { TimelineCanvasApi } from "../TimelineCanvasApi";
+import { YaTimeline } from "../YaTimeline";
+import { yaTimelineConfig } from "../config";
+import { TimelineComponent } from "./TimelineComponent";
 
 export type TimelineMarker = {
   time: number;
@@ -16,6 +16,11 @@ export type TimelineMarker = {
 };
 
 export class Markers extends TimelineComponent {
+  protected labelPadding = 3;
+  protected labelHeight = 14;
+  protected sortedMarkers: TimelineMarker[] = [];
+  protected lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
+
   public set markers(markers: TimelineMarker[]) {
     this.sortedMarkers = markers.slice().sort((a, b) => a.time - b.time);
   }
@@ -24,7 +29,7 @@ export class Markers extends TimelineComponent {
     return this.sortedMarkers;
   }
 
-  public constructor(host: YaTimeline, markers?: TimelineMarker[]) {
+  constructor(host: YaTimeline, markers?: TimelineMarker[]) {
     super(host);
 
     if (markers) {
@@ -42,22 +47,22 @@ export class Markers extends TimelineComponent {
       let overscan = 0;
 
       if (marker.label) {
-        overscan = api.widthToTime(api.ctx.measureText(marker.label).width + this.labelPadding);
+        overscan = api.widthToTime(
+          api.ctx.measureText(marker.label).width + this.labelPadding,
+        );
       }
 
-      if (pointToRangeIntersect(marker.time, api.start - overscan, api.end + overscan)) {
+      if (
+        pointToRangeIntersect(
+          marker.time,
+          api.start - overscan,
+          api.end + overscan,
+        )
+      ) {
         this.renderMarker(api, marker);
       }
     }
   }
-
-  protected labelPadding = 3;
-
-  protected labelHeight = 14;
-
-  protected sortedMarkers: TimelineMarker[] = [];
-
-  protected lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
 
   protected renderMarker(api: TimelineCanvasApi, marker: TimelineMarker) {
     const ctx = api.ctx;
@@ -73,8 +78,12 @@ export class Markers extends TimelineComponent {
       this.renderLabel(
         api,
         markerPosition,
-        { label: marker.label, backgroundColor: marker.color, textColor: marker.labelColor },
-        "top"
+        {
+          label: marker.label,
+          backgroundColor: marker.color,
+          textColor: marker.labelColor,
+        },
+        "top",
       );
     }
     if (marker.labelBottom) {
@@ -86,7 +95,7 @@ export class Markers extends TimelineComponent {
           backgroundColor: marker.labelBottomBackgroundColor ?? marker.color,
           textColor: marker.labelBottomColor,
         },
-        "bottom"
+        "bottom",
       );
     }
   }
@@ -94,8 +103,12 @@ export class Markers extends TimelineComponent {
   protected renderLabel(
     api: TimelineCanvasApi,
     markerPosition: number,
-    { label, backgroundColor, textColor }: { label: string; backgroundColor: string; textColor?: string },
-    position: "top" | "bottom"
+    {
+      label,
+      backgroundColor,
+      textColor,
+    }: { label: string; backgroundColor: string; textColor?: string },
+    position: "top" | "bottom",
   ) {
     const ctx = api.ctx;
     const labelSize = ctx.measureText(label);
@@ -103,16 +116,20 @@ export class Markers extends TimelineComponent {
     const labelPosition = clamp(
       markerPosition - labelWidth / 2,
       0,
-      Math.min(ctx.canvas.width, this.lastRenderedLabelPosition[position]) - labelWidth
+      Math.min(ctx.canvas.width, this.lastRenderedLabelPosition[position]) -
+        labelWidth,
     );
 
     if (markerPosition < this.lastRenderedLabelPosition[position]) {
       ctx.font = yaTimelineConfig.RULER_FONT;
       this.lastRenderedLabelPosition[position] = labelPosition;
       ctx.fillStyle = yaTimelineConfig.resolveCssValue(backgroundColor);
-      const y = position === "top" ? 0 : ctx.canvas.clientHeight - this.labelHeight;
+      const y =
+        position === "top" ? 0 : ctx.canvas.clientHeight - this.labelHeight;
       ctx.fillRect(labelPosition, y, labelWidth, this.labelHeight);
-      ctx.fillStyle = yaTimelineConfig.resolveCssValue(textColor || yaTimelineConfig.PRIMARY_BACKGROUND_COLOR);
+      ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+        textColor || yaTimelineConfig.PRIMARY_BACKGROUND_COLOR,
+      );
       ctx.fillText(label, labelPosition + this.labelPadding, y + 10);
     }
   }

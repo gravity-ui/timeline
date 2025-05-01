@@ -17,7 +17,11 @@ import { Markers, TimelineMarker } from "./components/Markers";
 import { Ruler } from "./components/Ruler";
 import { RealtimeFollow } from "./components/RealtimeFollow";
 import { TimelineComponent } from "./components/TimelineComponent";
-import { BoundsChangedEvent, ScrollTopChangedEvent, YaTimeline } from "./YaTimeline";
+import {
+  BoundsChangedEvent,
+  ScrollTopChangedEvent,
+  YaTimeline,
+} from "./YaTimeline";
 import { AUTO_TRACK, EventMapper } from "./lib/EventMapper";
 import { yaTimelineConfig } from "./config";
 import { EventStatus } from "./components/Events/common";

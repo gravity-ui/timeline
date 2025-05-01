@@ -1,5 +1,5 @@
 import { yaTimelineConfig } from "../../config";
-import { EventStatus, renderGroupCounter, TimelineEvent } from "./common";
+import { EventStatus, TimelineEvent, renderGroupCounter } from "./common";
 import { AbstractEventRenderer, Hitbox } from "./AbstractEventRenderer";
 
 export type ProcessGroup = TimelineEvent & {
@@ -19,7 +19,7 @@ export class ProcessGroupRenderer extends AbstractEventRenderer {
     isSelected: boolean,
     x0: number,
     x1: number,
-    y: number
+    y: number,
   ) {
     if (event.eventsCount === 1) {
       const y0 = y - SINGLE_EVENT_HEIGHT / 2;
@@ -27,12 +27,16 @@ export class ProcessGroupRenderer extends AbstractEventRenderer {
       const height = SINGLE_EVENT_HEIGHT;
 
       if (isSelected) {
-        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.SELECTION_OUTLINE_COLOR);
+        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.SELECTION_OUTLINE_COLOR,
+        );
         ctx.lineWidth = yaTimelineConfig.SELECTION_OUTLINE_THICKNESS;
         ctx.strokeRect(x0, y0, width, height);
       }
 
-      ctx.fillStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.eventStatusColors[event.status]);
+      ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+        yaTimelineConfig.eventStatusColors[event.status],
+      );
       ctx.fillRect(x0, y0, width, height);
     } else if (event.eventsCount > 1) {
       const y0 = y - GROUP_HEIGHT / 2;
@@ -40,15 +44,22 @@ export class ProcessGroupRenderer extends AbstractEventRenderer {
       const height = GROUP_HEIGHT;
 
       if (isSelected) {
-        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.SELECTION_OUTLINE_COLOR);
+        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.SELECTION_OUTLINE_COLOR,
+        );
         ctx.lineWidth = yaTimelineConfig.SELECTION_OUTLINE_THICKNESS;
         ctx.strokeRect(x0, y0, width, height);
       }
 
-      ctx.fillStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.groupStatusColors[event.status]);
+      ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+        yaTimelineConfig.groupStatusColors[event.status],
+      );
       ctx.fillRect(x0, y0, width, height);
 
-      const textX = Math.max(x0 + yaTimelineConfig.COUNTER_PADDING, yaTimelineConfig.COUNTER_PADDING);
+      const textX = Math.max(
+        x0 + yaTimelineConfig.COUNTER_PADDING,
+        yaTimelineConfig.COUNTER_PADDING,
+      );
       renderGroupCounter(ctx, event, textX, y, x1 - textX);
     }
   }

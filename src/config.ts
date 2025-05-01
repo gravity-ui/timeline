@@ -100,7 +100,7 @@ export const yaTimelineConfig = {
    * @param {string} value
    */
   resolveCssValue: (value: string): string => {
-    if (typeof value !== "string" || !value) return value; 
+    if (typeof value !== "string" || !value) return value;
 
     if (value.startsWith("var(") && value.endsWith(")")) {
       const name = value.substring("var(".length, value.length - ")".length);
@@ -108,15 +108,11 @@ export const yaTimelineConfig = {
       const root = globalThis.document?.documentElement;
 
       const valueAtDocument = root.style.getPropertyValue(name);
-      if (valueAtDocument !== "") 
-        return valueAtDocument;
-      
+      if (valueAtDocument !== "") return valueAtDocument;
 
       // Compatibility with nirvana css props (see src/common/theme/utils/computeCssVariable.ts)
       const valueAtBody = bodyComputedStyle.getPropertyValue(name);
-      if (valueAtBody !== "") 
-        return valueAtBody;
-      
+      if (valueAtBody !== "") return valueAtBody;
 
       return name;
     }

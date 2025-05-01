@@ -1,9 +1,9 @@
 import dayjs from "dayjs";
-import {clamp, convertDomain} from "../helpers/math";
-import {TimelineCanvasApi} from "../TimelineCanvasApi";
-import {yaTimelineConfig} from "../config";
-import {DAY, HOUR, MINUTE, MONTH, SECOND, YEAR} from "../definitions";
-import {TimelineComponent} from "./TimelineComponent";
+import { clamp, convertDomain } from "../helpers/math";
+import { TimelineCanvasApi } from "../TimelineCanvasApi";
+import { yaTimelineConfig } from "../config";
+import { DAY, HOUR, MINUTE, MONTH, SECOND, YEAR } from "../definitions";
+import { TimelineComponent } from "./TimelineComponent";
 
 export class Ruler extends TimelineComponent {
   public height = yaTimelineConfig.RULER_HEADER_HEIGHT;
@@ -13,10 +13,17 @@ export class Ruler extends TimelineComponent {
 
     const { ctx, start, end, canvas, pixelRatio } = api;
 
-    ctx.fillStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_BACKGROUND_COLOR);
+    ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+      yaTimelineConfig.PRIMARY_BACKGROUND_COLOR,
+    );
     ctx.fillRect(0, 0, canvas.width, this.height);
 
-    const [top, left, width, height] = [0, 0, ctx.canvas.width / pixelRatio, this.height];
+    const [top, left, width, height] = [
+      0,
+      0,
+      ctx.canvas.width / pixelRatio,
+      this.height,
+    ];
 
     ctx.font = yaTimelineConfig.RULER_FONT;
     ctx.lineJoin = "miter";
@@ -31,8 +38,16 @@ export class Ruler extends TimelineComponent {
       return convertDomain(x, left, left + width, start, end);
     }
 
-    function renderLevel(start: number, end: number, supLevel: RulerSupLevel, y: number, color: string) {
-      ctx.strokeStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.RULER_TEXT_OUTLINE_COLOR);
+    function renderLevel(
+      start: number,
+      end: number,
+      supLevel: RulerSupLevel,
+      y: number,
+      color: string,
+    ) {
+      ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
+        yaTimelineConfig.RULER_TEXT_OUTLINE_COLOR,
+      );
 
       const t0 = supLevel.start(start);
 
@@ -55,9 +70,12 @@ export class Ruler extends TimelineComponent {
       const firstMark = clamp(
         10,
         -Infinity,
-        timeToPosition(firstRendered || end) - ctx.measureText(firstLabel).width - 5
+        timeToPosition(firstRendered || end) -
+          ctx.measureText(firstLabel).width -
+          5,
       );
-      ctx.fillStyle = (supLevel.color && supLevel.color(firstLabelTimestamp)) || color;
+      ctx.fillStyle =
+        (supLevel.color && supLevel.color(firstLabelTimestamp)) || color;
       ctx.strokeText(firstLabel, firstMark, y);
       ctx.fillText(firstLabel, firstMark, y);
     }
@@ -94,7 +112,9 @@ export class Ruler extends TimelineComponent {
         end,
         level,
         top + yaTimelineConfig.RULER_LABEL_POS,
-        yaTimelineConfig.resolveCssValue(yaTimelineConfig.RULER_PRIMARY_TEXT_COLOR)
+        yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.RULER_PRIMARY_TEXT_COLOR,
+        ),
       );
     }
 
@@ -104,11 +124,15 @@ export class Ruler extends TimelineComponent {
         end,
         supLevel,
         top + yaTimelineConfig.RULER_SUP_LABEL_POS,
-        yaTimelineConfig.resolveCssValue(yaTimelineConfig.RULER_SECONDARY_TEXT_COLOR)
+        yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.RULER_SECONDARY_TEXT_COLOR,
+        ),
       );
     }
 
-    ctx.strokeStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.RULER_BORDER_COLOR);
+    ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
+      yaTimelineConfig.RULER_BORDER_COLOR,
+    );
     ctx.beginPath();
     ctx.moveTo(left, top + height + 0.5);
     ctx.lineTo(left + width, top + height + 0.5);

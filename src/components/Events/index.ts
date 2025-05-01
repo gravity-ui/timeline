@@ -1,20 +1,20 @@
-import {rangeToRangeIntersect} from "../../helpers/math";
+import { rangeToRangeIntersect } from "../../helpers/math";
 
-import RBush, {BBox} from "rbush";
-import {TimelineCanvasApi} from "../../TimelineCanvasApi";
-import {YaTimeline} from "../../YaTimeline";
-import {yaTimelineConfig} from "../../config";
-import {checkControlCommandKey} from "../../lib/utils";
-import {Axes} from "../Axes";
-import {Ruler} from "../Ruler";
-import {TimelineComponent} from "../TimelineComponent";
-import {AbstractEventRenderer} from "./AbstractEventRenderer";
-import {EventGroup, EventGroupRenderer} from "./EventGroupRenderer";
-import {ProcessGroup, ProcessGroupRenderer} from "./ProcessGroupRenderer";
-import {TimelineEvent} from "./common";
+import RBush, { BBox } from "rbush";
+import { TimelineCanvasApi } from "../../TimelineCanvasApi";
+import { YaTimeline } from "../../YaTimeline";
+import { yaTimelineConfig } from "../../config";
+import { checkControlCommandKey } from "../../lib/utils";
+import { Axes } from "../Axes";
+import { Ruler } from "../Ruler";
+import { TimelineComponent } from "../TimelineComponent";
+import { AbstractEventRenderer } from "./AbstractEventRenderer";
+import { EventGroup, EventGroupRenderer } from "./EventGroupRenderer";
+import { ProcessGroup, ProcessGroupRenderer } from "./ProcessGroupRenderer";
+import { TimelineEvent } from "./common";
 
-export {AbstractEventRenderer, EventGroupRenderer, ProcessGroupRenderer};
-export type {EventGroup, ProcessGroup, TimelineEvent};
+export { AbstractEventRenderer, EventGroupRenderer, ProcessGroupRenderer };
+export type { EventGroup, ProcessGroup, TimelineEvent };
 
 // Event identity helps to keep track of selected events
 // even when they regroup after zoom changes
@@ -31,26 +31,68 @@ export type ContextMenuEvent<T extends TimelineEvent> = CustomEvent<{
 }>;
 
 export type HoverEvent<T extends TimelineEvent> = CustomEvent<{
-    jobId: string;
-    events: T[];
-    time: number;
-    offset: {
-        x: number;
-        y: number;
-    }
+  jobId: string;
+  events: T[];
+  time: number;
+  offset: {
+    x: number;
+    y: number;
+  };
 }>;
 
 export type LeftEvent<T extends TimelineEvent> = CustomEvent<{
-    event: T;
-}>
+  event: T;
+}>;
 
-export class Events<Event extends TimelineEvent = TimelineEvent> extends TimelineComponent {
+export class Events<
+  Event extends TimelineEvent = TimelineEvent,
+> extends TimelineComponent {
   public eventHitboxPadding: number = yaTimelineConfig.EVENT_HITBOX_PADDING;
-
   public eventCounterFont: string = yaTimelineConfig.COUNTER_FONT;
-
   public allowMultipleSelection = true;
   public activeEvent: TimelineEvent | null = null;
+  protected renderers = new Map<string, AbstractEventRenderer>([
+    ["event", new EventGroupRenderer()],
+    ["process", new ProcessGroupRenderer()],
+  ]);
+  protected maxIndexTreeWidth = 16;
+  protected index = new RBush<BBox & { event: Event }>(this.maxIndexTreeWidth);
+  private _selectedEvents = new Set<EventIdentity>();
+  private _events: Event[] = [];
+
+  constructor(
+    host: YaTimeline,
+    options: {
+      eventCounterFont?: string;
+      eventHitboxPadding?: number;
+      allowMultipleSelection?: boolean;
+      getEventIdentity?: (event: Event) => EventIdentity;
+      renderers?: { [renderType: string]: AbstractEventRenderer };
+    } = {},
+  ) {
+    super(host);
+
+    const { renderers, ...otherOptions } = options;
+
+    Object.assign(this, otherOptions);
+
+    if (renderers) {
+      // eslint-disable-next-line guard-for-in
+      for (const renderType in renderers) {
+        this.registerRenderer(renderType, renderers[renderType]);
+      }
+    }
+
+    this.canvasApi.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
+    this.canvasApi.canvas.addEventListener(
+      "contextmenu",
+      this.handleCanvasContextmenu,
+    );
+    this.canvasApi.canvas.addEventListener(
+      "mousemove",
+      this.handleCanvasMousemove,
+    );
+  }
 
   public set events(newEvents: Event[]) {
     this._events = newEvents;
@@ -88,7 +130,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent> extends Timelin
   }
 
   public set selectedEvents(ids: EventIdentity[]) {
-      this._selectedEvents = new Set<EventIdentity>(ids);
+    this._selectedEvents = new Set<EventIdentity>(ids);
   }
 
   public get selectedEvents(): Event[] {
@@ -136,7 +178,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent> extends Timelin
     this.host.dispatchEvent(
       new CustomEvent("eventsSelected", {
         detail: { events: this.selectedEvents },
-      })
+      }),
     );
 
     this.host.scheduleTimelineRender();
@@ -144,33 +186,6 @@ export class Events<Event extends TimelineEvent = TimelineEvent> extends Timelin
 
   public selectEventsAt(rect: DOMRect, options: SelectOptions = {}): void {
     this.selectEvents(this.getEventsAt(rect), options);
-  }
-
-  constructor(
-    host: YaTimeline,
-    options: {
-      eventCounterFont?: string;
-      eventHitboxPadding?: number;
-      allowMultipleSelection?: boolean;
-      getEventIdentity?: (event: Event) => EventIdentity;
-      renderers?: { [renderType: string]: AbstractEventRenderer };
-    } = {}
-  ) {
-    super(host);
-
-    const { renderers, ...otherOptions } = options;
-
-    Object.assign(this, otherOptions);
-
-    if (renderers) {
-      for (const renderType in renderers) {
-        this.registerRenderer(renderType, renderers[renderType]);
-      }
-    }
-
-    this.canvasApi.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
-    this.canvasApi.canvas.addEventListener("contextmenu", this.handleCanvasContextmenu);
-    this.canvasApi.canvas.addEventListener('mousemove', this.handleCanvasMousemove);
   }
 
   public override render(api: TimelineCanvasApi) {
@@ -201,10 +216,22 @@ export class Events<Event extends TimelineEvent = TimelineEvent> extends Timelin
 
       const y = axesComponent.getAxisTrackPosition(axis, event.trackIndex);
 
-      if (axis && rangeToRangeIntersect(api.start, api.end, event.from, event.to!)) {
+      if (
+        axis &&
+        rangeToRangeIntersect(api.start, api.end, event.from, event.to!)
+      ) {
         const x0 = api.timeToPosition(event.from);
         const x1 = api.timeToPosition(event.to!);
-        this.runRenderer(ctx, event, this.isSelectedEvent(event), x0, x1, y, axis.height!, timeToPosition);
+        this.runRenderer(
+          ctx,
+          event,
+          this.isSelectedEvent(event),
+          x0,
+          x1,
+          y,
+          axis.height!,
+          timeToPosition,
+        );
       }
     }
   }
@@ -218,7 +245,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent> extends Timelin
     y: number,
     h: number,
     timeToPosition?: (n: number) => number,
-    color?: string
+    color?: string,
   ) {
     this.renderers
       ?.get(event.renderType)
@@ -229,8 +256,10 @@ export class Events<Event extends TimelineEvent = TimelineEvent> extends Timelin
     const candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
 
     if (candidates.length > 0) {
-        console.log('CAND', candidates);
-      this.selectEvents(candidates, { append: checkControlCommandKey(event), toggle: true });
+      this.selectEvents(candidates, {
+        append: checkControlCommandKey(event),
+        toggle: true,
+      });
     } else {
       this.selectEvents([]);
     }
@@ -249,80 +278,70 @@ export class Events<Event extends TimelineEvent = TimelineEvent> extends Timelin
           relativeX: event.clientX,
           relativeY: event.clientY,
         },
-      })
+      }),
     );
   };
 
   protected handleCanvasMousemove = (event: MouseEvent) => {
-      event.preventDefault();
-      const candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
-      const candidate = candidates.length > 0 ? candidates[0] : undefined;
+    event.preventDefault();
+    const candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
+    const candidate = candidates.length > 0 ? candidates[0] : undefined;
 
-      if (this.activeEvent && (this.activeEvent !== candidate || !candidate)) {
-          this.host.dispatchEvent(
-              new CustomEvent('leftEvent',{
-                  detail: {
-                      event: this.activeEvent
-                  }
-              })
-          );
-      }
-
-      if (!candidate) {
-          this.activeEvent = null;
-          return;
-      }
-
-      const api = this.canvasApi;
-      this.activeEvent = candidate;
-
+    if (this.activeEvent && (this.activeEvent !== candidate || !candidate)) {
       this.host.dispatchEvent(
-          new CustomEvent('hoverEvent',{
-              detail: {
-                  events: candidates,
-                  time: api.positionToTime(event.offsetX),
-                  offset: {
-                      x: event.offsetX,
-                      y: event.offsetY,
-                  }
-              }
-          })
+        new CustomEvent("leftEvent", {
+          detail: {
+            event: this.activeEvent,
+          },
+        }),
       );
-  }
+    }
+
+    if (!candidate) {
+      this.activeEvent = null;
+      return;
+    }
+
+    const api = this.canvasApi;
+    this.activeEvent = candidate;
+
+    this.host.dispatchEvent(
+      new CustomEvent("hoverEvent", {
+        detail: {
+          events: candidates,
+          time: api.positionToTime(event.offsetX),
+          offset: {
+            x: event.offsetX,
+            y: event.offsetY,
+          },
+        },
+      }),
+    );
+  };
 
   protected getEventIdentity: (event: Event) => EventIdentity = (event) => {
-      return `${event.renderType}:${event.axisId}:${event.from}-${event.to}`;
-  }
-
-  protected renderers = new Map<string, AbstractEventRenderer>([
-    ["event", new EventGroupRenderer()],
-    ["process", new ProcessGroupRenderer()],
-  ]);
-
-  protected maxIndexTreeWidth = 16;
-
-  protected index = new RBush<BBox & { event: Event }>(this.maxIndexTreeWidth);
+    return `${event.renderType}:${event.axisId}:${event.from}-${event.to}`;
+  };
 
   protected rebuildIndex(): void {
     const api = this.canvasApi;
     const axesComponent = api.getComponent(Axes)!;
     const boxes = this._events.map((event): BBox & { event: Event } => {
-        const axis = axesComponent.axesById[event.axisId];
-        const eventTrackY = axesComponent.getAxisTrackPosition(axis, event.trackIndex);
+      const axis = axesComponent.axesById[event.axisId];
+      const eventTrackY = axesComponent.getAxisTrackPosition(
+        axis,
+        event.trackIndex,
+      );
 
-        const minX = event.from;
-        const maxX = event.to ? event.to : minX + 1;
-        const minY = eventTrackY - axesComponent.lineHeight / 2;
-        const maxY = eventTrackY + axesComponent.lineHeight / 2;
-        return { minX, maxX, minY, maxY, event };
+      const minX = event.from;
+      const maxX = event.to ? event.to : minX + 1;
+      const minY = eventTrackY - axesComponent.lineHeight / 2;
+      const maxY = eventTrackY + axesComponent.lineHeight / 2;
+      return { minX, maxX, minY, maxY, event };
     });
     this.index.clear();
     this.index.load(boxes);
   }
-
-  private _selectedEvents = new Set<EventIdentity>();
-
-  private _events: Event[] = [];
 }
 
 export type SelectOptions = {

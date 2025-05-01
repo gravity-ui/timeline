@@ -4,6 +4,8 @@ import { TimelineComponent } from "./TimelineComponent";
 import { TimelineCanvasApi } from "../TimelineCanvasApi";
 
 export class LoaderRegions extends TimelineComponent {
+  public _regions: Region[] = [];
+
   public set regions(regions: Region[]) {
     this._regions = regions;
     this.host.scheduleTimelineRender();
@@ -20,10 +22,10 @@ export class LoaderRegions extends TimelineComponent {
     for (const region of this.regions) {
       const x0 = api.timeToPosition(region.time.from);
       const x1 = api.timeToPosition(region.time.to);
-      api.ctx.fillStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.regionStateColors[region.state]);
+      api.ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+        yaTimelineConfig.regionStateColors[region.state],
+      );
       api.ctx.fillRect(x0, y, x1 - x0, 2);
     }
   }
-
-  public _regions: Region[] = [];
 }

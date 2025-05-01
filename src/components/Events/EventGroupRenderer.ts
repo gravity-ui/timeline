@@ -1,4 +1,4 @@
-import { EventStatus, renderGroupCounter, TimelineEvent } from "./common";
+import { EventStatus, TimelineEvent, renderGroupCounter } from "./common";
 import { AbstractEventRenderer, Hitbox } from "./AbstractEventRenderer";
 import { yaTimelineConfig } from "../../config";
 
@@ -17,29 +17,37 @@ export class EventGroupRenderer extends AbstractEventRenderer {
     isSelected: boolean,
     x0: number,
     x1: number,
-    y: number
+    y: number,
   ) {
     if (event.eventsCount === 1) {
       ctx.beginPath();
-      ctx.fillStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.eventStatusColors[event.status]);
+      ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+        yaTimelineConfig.eventStatusColors[event.status],
+      );
       ctx.arc(x0, y, SINGLE_EVENT_RADIUS, 0, 2 * Math.PI);
 
       if (isSelected) {
-        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.SELECTION_OUTLINE_COLOR);
+        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.SELECTION_OUTLINE_COLOR,
+        );
         ctx.lineWidth = yaTimelineConfig.SELECTION_OUTLINE_THICKNESS;
         ctx.stroke();
       }
 
       ctx.fill();
     } else if (event.eventsCount > 1) {
-      ctx.fillStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.groupStatusColors[event.status]);
+      ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+        yaTimelineConfig.groupStatusColors[event.status],
+      );
       ctx.beginPath();
       ctx.arc(x0, y, GROUP_RADIUS, Math.PI / 2, (3 * Math.PI) / 2);
       ctx.arc(x1, y, GROUP_RADIUS, (3 * Math.PI) / 2, Math.PI / 2);
       ctx.closePath();
 
       if (isSelected) {
-        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.SELECTION_OUTLINE_COLOR);
+        ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.SELECTION_OUTLINE_COLOR,
+        );
         ctx.lineWidth = yaTimelineConfig.SELECTION_OUTLINE_THICKNESS;
         ctx.stroke();
       }

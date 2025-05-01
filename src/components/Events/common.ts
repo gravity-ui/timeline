@@ -7,13 +7,15 @@ export function renderGroupCounter(
   group: EventGroup,
   x: number,
   y: number,
-  maxWidth: number
+  maxWidth: number,
 ): void {
   const label = `${group.eventsCount}`;
   const textMetrics = ctx.measureText(label);
 
   if (textMetrics.width < maxWidth) {
-    ctx.fillStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.COUNTER_FONT_COLOR);
+    ctx.fillStyle = yaTimelineConfig.resolveCssValue(
+      yaTimelineConfig.COUNTER_FONT_COLOR,
+    );
     ctx.fillText(label, x, y + yaTimelineConfig.COUNTER_FONT_CENTER_OFFSET);
   }
 }
@@ -25,7 +27,7 @@ export function roundRect(
   y: number,
   width: number,
   height: number,
-  radius: number
+  radius: number,
 ) {
   ctx.beginPath();
   ctx.moveTo(x + radius, y);
@@ -59,4 +61,5 @@ export type TimelineEvent = {
   trackIndex: number;
   eventsCount: number;
 };
+
 export type RawTimelineEvent = any;

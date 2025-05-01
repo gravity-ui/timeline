@@ -2,6 +2,9 @@ import { TimelineComponent } from "./TimelineComponent";
 import { YaTimeline } from "../YaTimeline";
 
 export class RealtimeFollow extends TimelineComponent {
+  protected followTimerId: number | undefined;
+  protected _updateInterval = 0;
+
   public set updateInterval(ms: number) {
     this._updateInterval = ms;
   }
@@ -22,7 +25,10 @@ export class RealtimeFollow extends TimelineComponent {
   }
 
   public start() {
-    this.followTimerId = window.setInterval(this.updateBounds, this._updateInterval);
+    this.followTimerId = window.setInterval(
+      this.updateBounds,
+      this._updateInterval,
+    );
   }
 
   public hostDisconnected() {
@@ -30,10 +36,6 @@ export class RealtimeFollow extends TimelineComponent {
       window.clearInterval(this.followTimerId);
     }
   }
-
-  protected followTimerId: number | undefined;
-
-  protected _updateInterval = 0;
 
   protected updateBounds = () => {
     const api = this.canvasApi;

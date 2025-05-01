@@ -17,7 +17,7 @@ export abstract class AbstractEventRenderer {
     y: number,
     h: number,
     timeToPosition?: (n: number) => number,
-    color?: string
+    color?: string,
   ): void;
 
   // .getHitbox is supposed to **mutate** this object.
@@ -29,5 +29,9 @@ export abstract class AbstractEventRenderer {
     left: 0,
   };
 
-  public abstract getHitbox(event: TimelineEvent, x0: number, x1: number): Hitbox;
+  public abstract getHitbox(
+    event: TimelineEvent,
+    x0: number,
+    x1: number,
+  ): Hitbox;
 }

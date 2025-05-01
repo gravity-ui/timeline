@@ -1,4 +1,10 @@
-import { html, LitElement, PropertyDeclarations, PropertyValues, TemplateResult } from "lit";
+import {
+  LitElement,
+  PropertyDeclarations,
+  PropertyValues,
+  TemplateResult,
+  html,
+} from "lit";
 import { clamp } from "./helpers/math";
 import { TimelineComponent } from "./components/TimelineComponent";
 import { yaTimelineConfig } from "./config";
@@ -21,11 +27,19 @@ export abstract class YaTimeline extends LitElement {
 
   public canvasScrollTop: number;
 
+  public isZoomAllowed: boolean;
+
+  protected canvasApi: TimelineCanvasApi | undefined;
+
+  protected isTimelineRenderScheduled = false;
+
+  protected components: TimelineComponent[] = [];
+
   private canvasLastWidth: number;
 
   private canvasLastHeight: number;
 
-  public isZoomAllowed: boolean;
+  private sizeUpdateTimerId: number | undefined;
 
   constructor() {
     super();
@@ -46,6 +60,41 @@ export abstract class YaTimeline extends LitElement {
     };
   }
 
+  public connectedCallback() {
+    super.connectedCallback();
+    this.init();
+  }
+
+  public disconnectedCallback() {
+    this.destroy();
+    super.disconnectedCallback();
+  }
+
+  public getComponentUnsafe<T extends TimelineComponent>(
+    componentConstructor: Constructor<T>,
+  ): T | undefined {
+    return this.components.find((component) => {
+      return component instanceof componentConstructor;
+    }) as T | undefined;
+  }
+
+  public async getComponent<T extends TimelineComponent>(
+    componentConstructor: Constructor<T>,
+  ): Promise<T> {
+    await this.updateComplete;
+
+    // This will still fail at runtime if timeline is configured improperly
+    const component = this.getComponentUnsafe(componentConstructor);
+    if (!component) {
+      throw new Error(`Component ${componentConstructor.name} not found`);
+    }
+    return component;
+  }
+
+  public getCanvasApiUnsafe(): TimelineCanvasApi | undefined {
+    return this.canvasApi;
+  }
+
   public render(): TemplateResult {
     return html`
       <style>
@@ -63,46 +112,58 @@ export abstract class YaTimeline extends LitElement {
         }
       </style>
 
-      <canvas tabindex="0">${this.start} ${this.end} ${this.canvasScrollTop}</canvas>
+      <canvas tabindex="0"
+        >${this.start} ${this.end} ${this.canvasScrollTop}</canvas
+      >
     `;
   }
 
+  public reset() {
+    this.destroy();
+    requestAnimationFrame(() => this.init());
+  }
+
+  public scheduleTimelineRender() {
+    if (!this.isTimelineRenderScheduled) {
+      this.isTimelineRenderScheduled = true;
+
+      requestAnimationFrame(() => {
+        this.renderTimeline();
+        this.isTimelineRenderScheduled = false;
+      });
+    }
+  }
+
+  public updateCanvasSize(): void {
+    const api = this.canvasApi;
+    const canvas = api?.canvas;
+
+    if (!canvas) {
+      return;
+    }
+
+    canvas.width = Math.floor(this.offsetWidth * api.pixelRatio);
+    canvas.height = Math.floor(this.offsetHeight * api.pixelRatio);
+
+    this.canvasLastWidth = canvas.width;
+    this.canvasLastHeight = canvas.height;
+
+    this.scheduleTimelineRender();
+  }
+
   protected shouldUpdate(changes: PropertyValues<this>) {
-    if (changes.has("start") || changes.has("end") || changes.has("canvasScrollTop")) {
+    if (
+      changes.has("start") ||
+      changes.has("end") ||
+      changes.has("canvasScrollTop")
+    ) {
       this.scheduleTimelineRender();
     }
 
     return super.shouldUpdate(changes);
   }
 
-  public connectedCallback() {
-    super.connectedCallback();
-    this.init();
-  }
-
-  public disconnectedCallback() {
-    this.destroy();
-    super.disconnectedCallback();
-  }
-
   protected abstract createComponents(): TimelineComponent[];
-
-  public getComponentUnsafe<T extends TimelineComponent>(componentConstructor: Constructor<T>): T | undefined {
-    return this.components.find((component) => {
-      return component instanceof componentConstructor;
-    }) as T | undefined;
-  }
-
-  public async getComponent<T extends TimelineComponent>(componentConstructor: Constructor<T>): Promise<T> {
-    await this.updateComplete;
-
-    // This will still fail at runtime if timeline is configured improperly
-    return this.getComponentUnsafe(componentConstructor)!;
-  }
-
-  public getCanvasApiUnsafe(): TimelineCanvasApi | undefined {
-    return this.canvasApi;
-  }
 
   protected initComponents(): void {
     this.components = this.createComponents();
@@ -134,7 +195,9 @@ export abstract class YaTimeline extends LitElement {
       window.addEventListener("resize", this.handleWindowResize);
 
       this.sizeUpdateTimerId = window.setInterval(() => {
-        const isSizeChanged = this.offsetHeight !== this.canvasLastHeight || this.offsetWidth !== this.canvasLastWidth;
+        const isSizeChanged =
+          this.offsetHeight !== this.canvasLastHeight ||
+          this.offsetWidth !== this.canvasLastWidth;
 
         if (isSizeChanged) {
           this.updateCanvasSize();
@@ -153,47 +216,17 @@ export abstract class YaTimeline extends LitElement {
     clearInterval(this.sizeUpdateTimerId);
   }
 
-  public reset() {
-    this.destroy();
-    requestAnimationFrame(() => this.init());
-  }
-
-  public scheduleTimelineRender() {
-    if (!this.isTimelineRenderScheduled) {
-      this.isTimelineRenderScheduled = true;
-
-      requestAnimationFrame(() => {
-        this.renderTimeline();
-        this.isTimelineRenderScheduled = false;
-      });
-    }
-  }
-
   protected renderTimeline() {
-    const api = this.canvasApi!;
+    const api = this.canvasApi;
+    if (!api) {
+      return;
+    }
     api.useStaticTransform();
     api.clear();
 
     for (const layer of this.components) {
       layer.render(api);
     }
-  }
-
-  public updateCanvasSize(): void {
-    const api = this.canvasApi;
-    const canvas = api?.canvas;
-
-    if (!canvas) {
-      return;
-    }
-
-    canvas.width = Math.floor(this.offsetWidth * api.pixelRatio);
-    canvas.height = Math.floor(this.offsetHeight * api.pixelRatio);
-
-    this.canvasLastWidth = canvas.width;
-    this.canvasLastHeight = canvas.height;
-
-    this.scheduleTimelineRender();
   }
 
   protected handleWindowResize = () => {
@@ -210,7 +243,13 @@ export abstract class YaTimeline extends LitElement {
     const start = this.start;
     const initialScrollTop = this.canvasScrollTop;
     const domain = this.end - start;
-    const canvasWidth = this.canvasApi!.canvas.width / this.canvasApi!.pixelRatio;
+
+    const api = this.canvasApi;
+    if (!api) {
+      return;
+    }
+
+    const canvasWidth = api.canvas.width / api.pixelRatio;
     let travel = 0;
 
     const onMove = (moveEvent: MouseEvent) => {
@@ -248,7 +287,10 @@ export abstract class YaTimeline extends LitElement {
     event.stopPropagation();
     event.preventDefault();
 
-    const api = this.canvasApi!;
+    const api = this.canvasApi;
+    if (!api) {
+      return;
+    }
 
     if (!event.shiftKey && !this.isZoomAllowed) {
       return;
@@ -262,13 +304,18 @@ export abstract class YaTimeline extends LitElement {
     if (Math.abs(event.deltaY) > 2) {
       if (event.shiftKey) {
         isPanned = true;
-        const shift = oldDomain * event.deltaY * yaTimelineConfig.WHEEL_PAN_SPEED;
+        const shift =
+          oldDomain * event.deltaY * yaTimelineConfig.WHEEL_PAN_SPEED;
         newStart += shift;
         newEnd += shift;
       } else {
         const ratio = event.offsetX / api.canvas.width;
         const factor = event.deltaY > 0 ? 1.15 : 0.9;
-        const newDomain = clamp(oldDomain * factor, yaTimelineConfig.ZOOM_MIN, yaTimelineConfig.ZOOM_MAX);
+        const newDomain = clamp(
+          oldDomain * factor,
+          yaTimelineConfig.ZOOM_MIN,
+          yaTimelineConfig.ZOOM_MAX,
+        );
         newStart = Math.round(this.start - (newDomain - oldDomain) * ratio);
         newEnd = Math.round(this.end + (newDomain - oldDomain) * (1 - ratio));
       }
@@ -286,19 +333,11 @@ export abstract class YaTimeline extends LitElement {
     }
   };
 
-  protected canvasApi: TimelineCanvasApi | undefined;
-
-  protected isTimelineRenderScheduled = false;
-
-  protected components: TimelineComponent[] = [];
-
-  private sizeUpdateTimerId: number | undefined;
-
   protected notifyBoundsChanged = (start: number, end: number): void => {
     this.dispatchEvent(
       new CustomEvent("boundsChanged", {
         detail: { start, end },
-      })
+      }),
     );
   };
 
@@ -306,7 +345,7 @@ export abstract class YaTimeline extends LitElement {
     this.dispatchEvent(
       new CustomEvent("scrollTopChanged", {
         detail: { scrollTop },
-      })
+      }),
     );
   };
 }

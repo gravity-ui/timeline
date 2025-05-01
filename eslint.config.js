@@ -1,7 +1,9 @@
 import baseConfig from '@gravity-ui/eslint-config';
+import prettierConfig from '@gravity-ui/eslint-config/prettier';
 
 export default [
     ...baseConfig,
+    ...prettierConfig,
     {
         rules: {
             'curly': 'off',

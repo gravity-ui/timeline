@@ -1,11 +1,11 @@
 import dayjs from "dayjs";
-import {convertDomain} from "../helpers/math";
+import { convertDomain } from "../helpers/math";
 
-import {TimelineCanvasApi} from "../TimelineCanvasApi";
-import {yaTimelineConfig} from "../config";
-import {DAY, HOUR, MONTH, YEAR} from "../definitions";
-import {Ruler} from "./Ruler";
-import {TimelineComponent} from "./TimelineComponent";
+import { TimelineCanvasApi } from "../TimelineCanvasApi";
+import { yaTimelineConfig } from "../config";
+import { DAY, HOUR, MONTH, YEAR } from "../definitions";
+import { Ruler } from "./Ruler";
+import { TimelineComponent } from "./TimelineComponent";
 
 export class Grid extends TimelineComponent {
   public render(api: TimelineCanvasApi) {
@@ -58,7 +58,7 @@ export class Grid extends TimelineComponent {
     height: number,
     start: number,
     end: number,
-    level: TGridLevel
+    level: TGridLevel,
   ) {
     ctx.lineWidth = yaTimelineConfig.GRID_STROKE_WIDTH;
     for (let t = level.start(start); +t < end; t = level.step(t)) {
@@ -72,7 +72,10 @@ export class Grid extends TimelineComponent {
   }
 }
 
-function primaryForEvery(n: number, unit: "second" | "minute" | "month" | "year") {
+function primaryForEvery(
+  n: number,
+  unit: "second" | "minute" | "month" | "year",
+) {
   return (t: dayjs.Dayjs) => {
     return t[unit]() % n === 0
       ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
@@ -98,12 +101,16 @@ const gridLevels: TGridLevel[] = [
     domain: DAY,
     style(t) {
       if (t.hour() === 0 && t.minute() === 0) {
-        return yaTimelineConfig.resolveCssValue(yaTimelineConfig.BOUNDARY_MARK_COLOR);
+        return yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.BOUNDARY_MARK_COLOR,
+        );
       }
 
       return t.minute() % 4 === 0
         ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(yaTimelineConfig.SECONDARY_MARK_COLOR);
+        : yaTimelineConfig.resolveCssValue(
+            yaTimelineConfig.SECONDARY_MARK_COLOR,
+          );
     },
     start(t) {
       const time = dayjs(t).startOf("minute");
@@ -115,12 +122,16 @@ const gridLevels: TGridLevel[] = [
     domain: MONTH,
     style(t) {
       if (t.hour() === 0) {
-        return yaTimelineConfig.resolveCssValue(yaTimelineConfig.BOUNDARY_MARK_COLOR);
+        return yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.BOUNDARY_MARK_COLOR,
+        );
       }
 
       return t.hour() % 4 === 0
         ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(yaTimelineConfig.SECONDARY_MARK_COLOR);
+        : yaTimelineConfig.resolveCssValue(
+            yaTimelineConfig.SECONDARY_MARK_COLOR,
+          );
     },
     start: (t) => dayjs(t).startOf("hour"),
     step: (t) => t.add(1, "hour"),
@@ -129,12 +140,16 @@ const gridLevels: TGridLevel[] = [
     domain: YEAR,
     style(t) {
       if (t.date() === 1) {
-        return yaTimelineConfig.resolveCssValue(yaTimelineConfig.BOUNDARY_MARK_COLOR);
+        return yaTimelineConfig.resolveCssValue(
+          yaTimelineConfig.BOUNDARY_MARK_COLOR,
+        );
       }
 
       return t.day() === 1
         ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(yaTimelineConfig.SECONDARY_MARK_COLOR);
+        : yaTimelineConfig.resolveCssValue(
+            yaTimelineConfig.SECONDARY_MARK_COLOR,
+          );
     },
     start: (t) => dayjs(t).startOf("day"),
     step: (t) => t.add(1, "day"),
@@ -148,7 +163,9 @@ const gridLevels: TGridLevel[] = [
   {
     domain: Infinity,
     style() {
-      return yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR);
+      return yaTimelineConfig.resolveCssValue(
+        yaTimelineConfig.PRIMARY_MARK_COLOR,
+      );
     },
     start: (t) => dayjs(t).startOf("year"),
     step: (t) => t.add(1, "year"),

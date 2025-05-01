@@ -1,10 +1,10 @@
-import {clamp} from "../helpers/math";
-import {TimelineCanvasApi} from "../TimelineCanvasApi";
-import {YaTimeline} from "../YaTimeline";
-import {yaTimelineConfig} from "../config";
-import {AxesIndex} from "../lib/AxesIndex";
-import {Ruler} from "./Ruler";
-import {TimelineComponent} from "./TimelineComponent";
+import { clamp } from "../helpers/math";
+import { TimelineCanvasApi } from "../TimelineCanvasApi";
+import { YaTimeline } from "../YaTimeline";
+import { yaTimelineConfig } from "../config";
+import { AxesIndex } from "../lib/AxesIndex";
+import { Ruler } from "./Ruler";
+import { TimelineComponent } from "./TimelineComponent";
 
 export type TimelineAxis = {
   id: string;
@@ -14,26 +14,38 @@ export type TimelineAxis = {
 };
 
 export type AxesOptions = {
-    axisColor?: string;
-    strokeMode?: EStrokeMode;
-    trackHeight?: number;
-    eventOffset?: number;
-    topPadding?: number;
-    identityFunction?: <Axis>(axis: Axis) => string;
-}
+  axisColor?: string;
+  strokeMode?: EStrokeMode;
+  trackHeight?: number;
+  eventOffset?: number;
+  topPadding?: number;
+  identityFunction?: <Axis>(axis: Axis) => string;
+};
 
 export enum EStrokeMode {
   STRAIGHT,
   DASHED,
 }
 
-export class Axes<Axis extends TimelineAxis = TimelineAxis> extends TimelineComponent {
+export class Axes<
+  Axis extends TimelineAxis = TimelineAxis,
+> extends TimelineComponent {
   public trackHeight: number = yaTimelineConfig.TRACK_HEIGHT;
   public lineHeight: number = yaTimelineConfig.LINE_HEIGHT;
 
   public strokeMode = EStrokeMode.STRAIGHT;
 
   protected axesIndex!: AxesIndex<Axis>;
+
+  constructor(host: YaTimeline, options: AxesOptions = {}) {
+    super(host);
+
+    Object.assign(this, options);
+
+    this.axesIndex = new AxesIndex<Axis>([], {
+      identityFunction: options.identityFunction,
+    });
+  }
 
   public set axes(newAxes: Axis[]) {
     this.axesIndex.axes = newAxes;
@@ -52,17 +64,6 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis> extends TimelineComp
     return axis.top + this.trackHeight * index + this.trackHeight / 2;
   }
 
-  public constructor(
-    host: YaTimeline,
-    options: AxesOptions = {}
-  ) {
-    super(host);
-
-    Object.assign(this, options);
-
-    this.axesIndex = new AxesIndex<Axis>([], { identityFunction: options.identityFunction });
-  }
-
   public render(api: TimelineCanvasApi) {
     const rulerHeight = api.getComponent(Ruler)?.height || 0;
     const ctx = api.ctx;
@@ -74,7 +75,9 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis> extends TimelineComp
     ctx.translate(0, rulerHeight);
 
     const canvasWidth = api.canvas.width;
-    ctx.strokeStyle = yaTimelineConfig.resolveCssValue(yaTimelineConfig.SECONDARY_MARK_COLOR);
+    ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
+      yaTimelineConfig.SECONDARY_MARK_COLOR,
+    );
     ctx.beginPath();
     ctx.lineWidth = 1;
 

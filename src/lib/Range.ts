@@ -1,4 +1,8 @@
-import {alignNumber, inexactEqual, rangeToRangeIntersect} from "../helpers/math";
+import {
+  alignNumber,
+  inexactEqual,
+  rangeToRangeIntersect,
+} from "../helpers/math";
 
 export interface Range<T> {
   contain(range: T): T;
@@ -8,32 +12,43 @@ export interface Range<T> {
 }
 
 export class ContinuousRange implements Range<ContinuousRange> {
-  constructor(public from: number, public to: number) {}
+  public from: number;
+  public to: number;
 
-  set(from: number, to: number) {
+  constructor(from: number, to: number) {
+    this.from = from;
+    this.to = to;
+  }
+
+  public set(from: number, to: number) {
     this.from = from;
     this.to = to;
     return this;
   }
 
-  align(step: number) {
+  public align(step: number) {
     this.from = alignNumber(this.from, step);
     this.to = alignNumber(this.to, step);
     return this;
   }
 
-  contain(range: ContinuousRange): ContinuousRange {
-    return new ContinuousRange(Math.min(this.from, range.from), Math.max(this.to, range.to));
+  public contain(range: ContinuousRange): ContinuousRange {
+    return new ContinuousRange(
+      Math.min(this.from, range.from),
+      Math.max(this.to, range.to),
+    );
   }
 
-  subtract(...ranges: ContinuousRange[]): ContinuousRange[] {
+  public subtract(...ranges: ContinuousRange[]): ContinuousRange[] {
     let sources: ContinuousRange[] = [this];
 
     for (const range of ranges) {
       const tmp = [];
 
       for (const source of sources) {
-        if (rangeToRangeIntersect(source.from, source.to, range.from, range.to)) {
+        if (
+          rangeToRangeIntersect(source.from, source.to, range.from, range.to)
+        ) {
           if (source.from < range.from) {
             tmp.push(new ContinuousRange(source.from, range.from));
           }
@@ -52,43 +67,52 @@ export class ContinuousRange implements Range<ContinuousRange> {
     return sources.sort((a, b) => a.from - b.from);
   }
 
-  clone(): ContinuousRange {
+  public clone(): ContinuousRange {
     return new ContinuousRange(this.from, this.to);
   }
 
-  get length(): number {
+  public get length(): number {
     return this.to - this.from;
   }
 
-  equals(other: ContinuousRange): boolean {
-    return inexactEqual(this.from, other.from, 0.1) && inexactEqual(this.to, other.to, 0.1);
+  public equals(other: ContinuousRange): boolean {
+    return (
+      inexactEqual(this.from, other.from, 0.1) &&
+      inexactEqual(this.to, other.to, 0.1)
+    );
   }
 }
 
 export class DiscreteRange<T = unknown> implements Range<DiscreteRange<T>> {
-  constructor(public value: { [key: string]: T }) {}
+  public value: { [key: string]: T };
 
-  set(value: { [key: string]: T }) {
+  constructor(value: { [key: string]: T }) {
     this.value = value;
   }
 
-  contain(b: DiscreteRange<T>): DiscreteRange<T> {
+  public set(value: { [key: string]: T }) {
+    this.value = value;
+  }
+
+  public contain(b: DiscreteRange<T>): DiscreteRange<T> {
     return new DiscreteRange({ ...this.value, ...b.value });
   }
 
-  subtract(...ranges: DiscreteRange<T>[]): DiscreteRange<T>[] {
+  public subtract(...ranges: DiscreteRange<T>[]): DiscreteRange<T>[] {
     const source = this.clone();
 
     for (const range of ranges) {
       for (const key in range.value) {
-        delete source.value[key];
+        if (Object.prototype.hasOwnProperty.call(range.value, key)) {
+          delete source.value[key];
+        }
       }
     }
 
     return [source as DiscreteRange<T>];
   }
 
-  difference(range: DiscreteRange<T>): DiscreteRange<T>[] {
+  public difference(range: DiscreteRange<T>): DiscreteRange<T>[] {
     const result = [];
 
     const left = this.subtract(range)[0];
@@ -106,11 +130,11 @@ export class DiscreteRange<T = unknown> implements Range<DiscreteRange<T>> {
     return result;
   }
 
-  clone(): DiscreteRange<T> {
+  public clone(): DiscreteRange<T> {
     return new DiscreteRange({ ...this.value });
   }
 
-  equals(other: DiscreteRange<T>): boolean {
+  public equals(other: DiscreteRange<T>): boolean {
     // For the purposes ranges are used for
     // Shallow equality check is sufficient
     const ownKeys = new Set(Object.keys(this.value));
@@ -127,7 +151,7 @@ export class DiscreteRange<T = unknown> implements Range<DiscreteRange<T>> {
     return true;
   }
 
-  isEmpty(): boolean {
+  public isEmpty(): boolean {
     return Object.keys(this.value).length === 0;
   }
 }

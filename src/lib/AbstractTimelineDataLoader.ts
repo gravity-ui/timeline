@@ -1,6 +1,6 @@
-import {rangeToRangeIntersect} from "../helpers/math";
-import {ContinuousRange} from "./Range";
-import {noop} from "./utils";
+import { rangeToRangeIntersect } from "../helpers/math";
+import { ContinuousRange } from "./Range";
+import { noop } from "./utils";
 
 export enum RegionState {
   CREATED = "CREATED",
@@ -27,6 +27,29 @@ export type TimelineRegionsManagerOptions<R extends Region> = {
 };
 
 export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
+  protected regions: T[] = [];
+
+  protected _timeRange = new ContinuousRange(0, 0);
+
+  private processTimerId: number | undefined;
+
+  private parallelism = 0;
+
+  private readonly processInterval: number = 500;
+
+  private readonly maxParallelism: number = 2;
+
+  private readonly maxRetries: number = 3;
+
+  private readonly onRegionsChanged: (regions: T[]) => void = noop;
+
+  private readonly onRegionProcessed: (region: T) => void = noop;
+
+  private readonly onRegionProcessingFailed: (
+    region: T,
+    error: unknown,
+  ) => void = noop;
+
   constructor(options: TimelineRegionsManagerOptions<T> = {}) {
     Object.assign(this, options);
   }
@@ -38,7 +61,14 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
   public getVisibleRegions(): T[] {
     const visibleRegions: T[] = [];
     for (const region of this.regions) {
-      if (rangeToRangeIntersect(this.timeRange.from, this.timeRange.to, region.time.from, region.time.to)) {
+      if (
+        rangeToRangeIntersect(
+          this.timeRange.from,
+          this.timeRange.to,
+          region.time.from,
+          region.time.to,
+        )
+      ) {
         visibleRegions.push(region);
       }
     }
@@ -51,12 +81,16 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
     const visibleRegions = this.getVisibleRegions();
 
     const regionsToAdd: T[] = this.timeRange
-      .subtract(...visibleRegions.filter((r) => r.state !== RegionState.CREATED).map((r) => r.time))
+      .subtract(
+        ...visibleRegions
+          .filter((r) => r.state !== RegionState.CREATED)
+          .map((r) => r.time),
+      )
       .map((r) => this.createRegion(r) as T);
 
     this.updateRegions(
       regionsToAdd,
-      visibleRegions.filter((r) => r.state === RegionState.CREATED)
+      visibleRegions.filter((r) => r.state === RegionState.CREATED),
     );
   }
 
@@ -65,7 +99,7 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
   }
 
   public get isActive() {
-    return !!this.processTimerId;
+    return Boolean(this.processTimerId);
   }
 
   public startProcessing() {
@@ -83,6 +117,11 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
 
   public clear() {
     this.regions = [];
+  }
+
+  public setRegionState(region: T, state: RegionState) {
+    region.state = state;
+    this.onRegionsChanged(this.regions);
   }
 
   protected createRegion(time: ContinuousRange): Region {
@@ -104,12 +143,16 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
     let isSetChanged = false;
 
     if (regionsToRemove && regionsToRemove.length) {
-      this.regions = this.regions.filter((region) => !regionsToRemove.includes(region));
+      this.regions = this.regions.filter(
+        (region) => !regionsToRemove.includes(region),
+      );
       isSetChanged = true;
     }
 
     if (regionsToAdd && regionsToAdd.length) {
-      this.regions = this.regions.concat(regionsToAdd.filter((region) => this.isValidRegion(region)));
+      this.regions = this.regions.concat(
+        regionsToAdd.filter((region) => this.isValidRegion(region)),
+      );
       isSetChanged = true;
     }
 
@@ -117,11 +160,6 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
       this.regions.sort((a, b) => a.time.from - b.time.from);
       this.onRegionsChanged(this.regions);
     }
-  }
-
-  public setRegionState(region: T, state: RegionState) {
-    region.state = state;
-    this.onRegionsChanged(this.regions);
   }
 
   private async processRegions(): Promise<void> {
@@ -134,8 +172,18 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
 
     try {
       for (const region of regions) {
-        if (rangeToRangeIntersect(region.time.from, region.time.to, this.timeRange.from, this.timeRange.to)) {
-          if (region.state === RegionState.CREATED && region.time.from > maxTimestamp) {
+        if (
+          rangeToRangeIntersect(
+            region.time.from,
+            region.time.to,
+            this.timeRange.from,
+            this.timeRange.to,
+          )
+        ) {
+          if (
+            region.state === RegionState.CREATED &&
+            region.time.from > maxTimestamp
+          ) {
             maxTimestamp = region.time.from;
             regionToLoad = region;
           }
@@ -172,24 +220,4 @@ export abstract class AbstractTimelineDataLoader<T extends Region = Region> {
 
     this.parallelism -= 1;
   }
-
-  protected regions: T[] = [];
-
-  protected _timeRange = new ContinuousRange(0, 0);
-
-  private processTimerId: number | undefined;
-
-  private parallelism = 0;
-
-  private readonly processInterval: number = 500;
-
-  private readonly maxParallelism: number = 2;
-
-  private readonly maxRetries: number = 3;
-
-  private readonly onRegionsChanged: (regions: T[]) => void = noop;
-
-  private readonly onRegionProcessed: (region: T) => void = noop;
-
-  private readonly onRegionProcessingFailed: (region: T, error: unknown) => void = noop;
 }

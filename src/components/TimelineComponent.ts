@@ -1,7 +1,6 @@
 // This file describes a class with safe defaults methods
 // They do nothing, but have signature which should be visible
 // for all child classes
-/* eslint-disable @typescript-eslint/no-unused-vars */
 
 import { ReactiveController } from "lit";
 import { TimelineCanvasApi } from "../TimelineCanvasApi";
@@ -12,7 +11,7 @@ export class TimelineComponent implements ReactiveController {
 
   protected readonly canvasApi: TimelineCanvasApi;
 
-  public constructor(host: YaTimeline) {
+  constructor(host: YaTimeline) {
     this.host = host;
 
     // At the point when components are initialized, canvas API is ready

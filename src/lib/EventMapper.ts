@@ -1,18 +1,25 @@
-import {clamp, inexactEqual, rangeToRangeIntersect} from "../helpers/math";
-import {TimelineAxis} from "../components/Axes";
-import {TimelineEvent} from "../components/Events";
-import {yaTimelineConfig} from "../config";
-import {UnixTimestampMs} from "../definitions";
-import {AxesIndex} from "./AxesIndex";
-import {ContinuousRange} from "./Range";
-import {noop} from "./utils";
+import { clamp, inexactEqual, rangeToRangeIntersect } from "../helpers/math";
+import { TimelineAxis } from "../components/Axes";
+import { TimelineEvent } from "../components/Events";
+import { yaTimelineConfig } from "../config";
+import { UnixTimestampMs } from "../definitions";
+import { AxesIndex } from "./AxesIndex";
+import { ContinuousRange } from "./Range";
+import { noop } from "./utils";
 
 // All callbacks are assumed to mutate event given as 1st argument
-type MapFn<RawEvent, Event extends TimelineEvent> = (candidate: Partial<Event>, raw: RawEvent) => void;
+type MapFn<RawEvent, Event extends TimelineEvent> = (
+  candidate: Partial<Event>,
+  raw: RawEvent,
+) => void;
 type MergeFn<Event extends TimelineEvent> = (prev: Event, next: Event) => void;
 type PostProcessFn<Event extends TimelineEvent> = (event: Event) => void;
 
-export type EventMapperOptions<Event extends TimelineEvent, RawEvent, Axis extends TimelineAxis = TimelineAxis> = {
+export type EventMapperOptions<
+  Event extends TimelineEvent,
+  RawEvent,
+  Axis extends TimelineAxis = TimelineAxis,
+> = {
   mapEvent: MapFn<RawEvent, Event>;
   merge?: MergeFn<Event>;
   postProcess?: PostProcessFn<Event>;
@@ -31,8 +38,41 @@ export const AUTO_TRACK = -1;
 export class EventMapper<
   Event extends TimelineEvent = TimelineEvent,
   RawEvent = TimelineEvent,
-  Axis extends TimelineAxis = TimelineAxis
+  Axis extends TimelineAxis = TimelineAxis,
 > {
+  protected readonly mapEvent: MapFn<RawEvent, Event>;
+  protected readonly mergeEvents: MergeFn<Event> = noop;
+  protected readonly finalizeEvent: PostProcessFn<Event> = noop;
+  protected readonly overlapThreshold: number =
+    yaTimelineConfig.OVERLAPPING_THRESHOLD;
+  protected readonly skipOverlap: boolean = yaTimelineConfig.SKIP_OVERLAPPING;
+  protected readonly onVisibleEventsChanged: (events: Event[]) => void = noop;
+  protected visibleEvents: Event[] = [];
+  protected foldedEvents: Event[] = [];
+  protected _timeRange: ContinuousRange = new ContinuousRange(0, 0);
+  protected _viewportWidth = 0;
+  protected axesIndex: AxesIndex<Axis>;
+
+  constructor(options: EventMapperOptions<Event, RawEvent, Axis>) {
+    // Initialize axesIndex before assigning options
+    this.axesIndex = new AxesIndex([], {
+      identityFunction: (axis: Axis) => axis.id,
+    });
+
+    // Assign options
+    Object.assign(this, options);
+  }
+
+  protected _getRawEvents: () => Generator<RawEvent, void, void> =
+    function* empty() {
+      yield* [];
+    };
+
+  protected getAxisIdentity(axis: Axis): string {
+    return axis.id;
+  }
+
+  // Public getters and setters
   public set getRawEvents(getRawEvents: () => Generator<RawEvent, void, void>) {
     this._getRawEvents = getRawEvents;
     this.foldEvents();
@@ -74,33 +114,27 @@ export class EventMapper<
     this.onVisibleEventsChanged(this.visibleEvents);
   }
 
-  private getAxisIdentity = (axis: Axis) => {
-    return axis.id;
-  };
-
-  constructor(options: EventMapperOptions<Event, RawEvent, Axis>) {
-    Object.assign(this, options);
-
-    this.axesIndex = new AxesIndex([], { identityFunction: this.getAxisIdentity });
-  }
-
-  protected visibleEvents: Event[] = [];
-
+  // Protected methods
   protected recalcVisibility() {
     this.visibleEvents.length = 0;
     const events = this.foldedEvents;
 
     for (let i = 0, len = events.length; i < len; i += 1) {
       const event = events[i];
-      if (rangeToRangeIntersect(this._timeRange.from, this._timeRange.to, event.from, event.to || event.from)) {
+      if (
+        rangeToRangeIntersect(
+          this._timeRange.from,
+          this._timeRange.to,
+          event.from,
+          event.to || event.from,
+        )
+      ) {
         this.visibleEvents.push(event);
       }
     }
 
     return this.visibleEvents;
   }
-
-  protected foldedEvents: Event[] = [];
 
   protected clampEventTrackIndex(event: Event, axis: Axis): number {
     return clamp(event.trackIndex, -1, axis.tracksCount - 1);
@@ -111,10 +145,15 @@ export class EventMapper<
 
     const rawEvents = this._getRawEvents();
 
-    const memo = this.axesIndex.axes.reduce((acc, axis) => {
-      acc[this.getAxisIdentity(axis)] = [];
-      return acc;
-    }, {} as { [axisId: string]: Event[] });
+    const memo = this.axesIndex.axes.reduce(
+      (acc, axis) => {
+        const axisId = this.getAxisIdentity(axis);
+        const newAcc = { ...acc };
+        newAcc[axisId] = [];
+        return newAcc;
+      },
+      {} as { [axisId: string]: Event[] },
+    );
 
     let candidate: Event = Object.create(null) as Event;
 
@@ -123,9 +162,10 @@ export class EventMapper<
       this.mapEvent(candidate, rawEvent);
       candidate.eventsCount = 1;
 
-      const axisId = candidate.axisId!;
-      const axis = this.axesIndex.axesById[axisId];
+      const axisId = candidate.axisId;
+      if (!axisId) continue;
 
+      const axis = this.axesIndex.axesById[axisId];
       if (!axis) continue;
 
       let trackIndex = this.clampEventTrackIndex(candidate, axis);
@@ -135,7 +175,8 @@ export class EventMapper<
 
         while (trackIndex < axis.tracksCount) {
           const lastOnTrack = memo[axisId][trackIndex];
-          const isOverlapping = lastOnTrack && this.isOverlapping(lastOnTrack, candidate);
+          const isOverlapping =
+            lastOnTrack && this.isOverlapping(lastOnTrack, candidate);
           if (!isOverlapping) break;
           trackIndex += 1;
         }
@@ -149,10 +190,15 @@ export class EventMapper<
       if (!lastOnTrack) {
         memo[axisId][trackIndex] = candidate;
         candidate = Object.create(null);
-      } else if (this.isOverlapping(lastOnTrack, candidate) && !this.skipOverlap) {
+      } else if (
+        this.isOverlapping(lastOnTrack, candidate) &&
+        !this.skipOverlap
+      ) {
         lastOnTrack.eventsCount += candidate.eventsCount;
         lastOnTrack.from = Math.min(lastOnTrack.from, candidate.from);
-        lastOnTrack.to = Math.max(lastOnTrack.to!, candidate.to!);
+        const lastTo = lastOnTrack.to || lastOnTrack.from;
+        const candidateTo = candidate.to || candidate.from;
+        lastOnTrack.to = Math.max(lastTo, candidateTo);
         this.mergeEvents(lastOnTrack, candidate);
       } else {
         this.finalizeEvent(lastOnTrack);
@@ -174,35 +220,16 @@ export class EventMapper<
   }
 
   protected isOverlapping(left: Event, right: Event): boolean {
+    const leftTo = left.to || left.from;
+    const rightTo = right.to || right.from;
+
     return (
-      rangeToRangeIntersect(left.from, left.to!, right.from, right.to!) ||
-      this.timeToWidth(right.from - left.to!) <= this.overlapThreshold
+      rangeToRangeIntersect(left.from, leftTo, right.from, rightTo) ||
+      this.timeToWidth(right.from - leftTo) <= this.overlapThreshold
     );
   }
 
   protected timeToWidth(time: UnixTimestampMs): number {
     return (time * this._viewportWidth) / this._timeRange.length;
   }
-
-  protected _timeRange = new ContinuousRange(0, 0);
-
-  protected _viewportWidth = 0;
-
-  protected axesIndex!: AxesIndex<Axis>;
-
-  protected _getRawEvents: () => Generator<RawEvent, void, void> = function* empty() {
-    yield* [];
-  };
-
-  protected readonly mapEvent!: MapFn<RawEvent, Event>;
-
-  protected readonly mergeEvents: MergeFn<Event> = noop;
-
-  protected readonly finalizeEvent: PostProcessFn<Event> = noop;
-
-  protected readonly overlapThreshold: number = yaTimelineConfig.OVERLAPPING_THRESHOLD;
-
-  protected readonly skipOverlap: boolean = yaTimelineConfig.SKIP_OVERLAPPING;
-
-  protected readonly onVisibleEventsChanged: (events: Event[]) => void = noop;
 }
