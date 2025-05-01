@@ -1,0 +1,30 @@
+name: PR Lint
+
+on:
+    pull_request:
+        branches: [ "**" ]
+
+jobs:
+    verify_files:
+        name: Verify Files
+        runs-on: ubuntu-latest
+        steps:
+            -   name: Checkout
+                uses: actions/checkout@v4
+            -   name: Setup Node
+                uses: actions/setup-node@v4
+                with:
+                    node-version: 20
+                    cache: npm
+            -   name: Install dependencies
+                run: npm ci
+            -   name: Verify eslint is available
+                run: |
+                    npx eslint --version
+                    npm ls eslint
+            -   name: Add node_modules/.bin to PATH
+                run: echo "$(npm bin)" >> $GITHUB_PATH
+            -   name: Lint Files
+                run: npm run lint:all
+            -   name: Typecheck
+                run: npm run typecheck
