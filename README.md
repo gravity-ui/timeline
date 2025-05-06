@@ -1,4 +1,4 @@
-# Timeline Library
+# YaTimeline Library
 
 A web component library for building interactive timeline visualizations using Lit.
 
