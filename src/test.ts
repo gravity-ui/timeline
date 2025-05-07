@@ -1,11 +1,13 @@
-import { TimeLineOptions } from "./types";
+import { TimeLineOptions } from "./types/options";
 import { Ruler } from "./newComponents/Ruler";
+import { Grid } from "./newComponents/Grid";
 // import { BaseComponent } from "./newComponents/BaseComponent";
 
 export class Test {
   private options: TimeLineOptions;
   private canvas: HTMLCanvasElement;
   private ruler: Ruler;
+  private grid: Grid;
 
   constructor(options: TimeLineOptions) {
     this.options = options;
@@ -19,6 +21,7 @@ export class Test {
 
     this.updateCanvasSize();
     this.createRuler();
+    this.createGrid();
   }
 
   public destroy() {
@@ -35,14 +38,20 @@ export class Test {
     this.canvas.height = Math.floor(this.canvas.offsetHeight * pixelRatio);
 
     if (this.ruler) {
-      this.ruler.draw();
+      this.ruler.render();
+    }
+    if (this.grid) {
+      this.grid.render();
     }
   }
 
   private createRuler() {
-    if (!this.options.modules.ruler) return;
-
     this.ruler = new Ruler(this.canvas, this.options);
-    this.ruler.draw();
+    this.ruler.render();
+  }
+
+  private createGrid() {
+    this.grid = new Grid(this.canvas, this.options);
+    this.grid.render();
   }
 }

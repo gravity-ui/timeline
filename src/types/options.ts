@@ -1,5 +1,3 @@
-import dayjs from "dayjs";
-
 export type RulerOptions = {
   spacing?: number;
   position?: number;
@@ -15,6 +13,11 @@ export type RulerOptions = {
   };
 };
 
+export type GridOptions = {
+  spacing?: number;
+  lineWidth?: number;
+};
+
 export type TimeLineOptions = {
   start: number;
   end: number;
@@ -22,16 +25,5 @@ export type TimeLineOptions = {
     ruler?: boolean;
   };
   ruler?: RulerOptions;
-};
-
-export type RulerSupLevel = {
-  start: (t: number) => dayjs.Dayjs;
-  step: (t: dayjs.Dayjs) => dayjs.Dayjs;
-  format: string;
-  color?: (t: dayjs.Dayjs | number) => string | null;
-};
-
-export type RulerLevel = RulerSupLevel & {
-  domain: number;
-  sup?: RulerSupLevel;
+  grid?: GridOptions;
 };

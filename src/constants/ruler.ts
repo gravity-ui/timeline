@@ -1,7 +1,7 @@
 import dayjs from "dayjs";
 import { yaTimelineConfig } from "../config";
 import { DAY, HOUR, MINUTE, MONTH, SECOND, YEAR } from "../definitions";
-import { RulerLevel, RulerSupLevel } from "../types";
+import { RulerLevel, RulerSupLevel } from "../types/ruler";
 
 const minuteSupLabel: RulerSupLevel = {
   start(t) {

@@ -1,9 +1,5 @@
-import {
-  RulerLevel,
-  RulerOptions,
-  RulerSupLevel,
-  TimeLineOptions,
-} from "../types";
+import { RulerOptions, TimeLineOptions } from "../types/options";
+import { RulerLevel, RulerSupLevel } from "../types/ruler";
 import { labelLevels } from "../constants/ruler";
 import dayjs from "dayjs";
 import { clamp, convertDomain } from "../helpers/math";
