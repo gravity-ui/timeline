@@ -5,6 +5,7 @@ import dayjs from "dayjs";
 import { clamp, convertDomain } from "../helpers/math";
 import { BaseComponent } from "./BaseComponent";
 import { yaTimelineConfig } from "../config";
+import { BaseComponentInterface } from "../types/component";
 
 const defaultOptions: Required<RulerOptions> = {
   spacing: yaTimelineConfig.RULER_LABEL_SPACING,
@@ -21,7 +22,7 @@ const defaultOptions: Required<RulerOptions> = {
   },
 };
 
-export class Ruler extends BaseComponent {
+export class Ruler extends BaseComponent implements BaseComponentInterface {
   private options: TimeLineOptions;
 
   /**
@@ -58,7 +59,7 @@ export class Ruler extends BaseComponent {
     this.ctx.lineWidth = 1;
 
     this.renderBottomLine();
-    this.drawLevels();
+    this.renderLevels();
   }
 
   /**
@@ -79,7 +80,7 @@ export class Ruler extends BaseComponent {
   /**
    * Draws the time labels on the ruler at appropriate scale levels
    */
-  private drawLevels() {
+  private renderLevels() {
     const domain = this.options.end - this.options.start;
     let level: RulerLevel | undefined;
     let supLevel: RulerSupLevel | undefined;

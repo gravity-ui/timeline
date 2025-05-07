@@ -5,6 +5,7 @@ import { convertDomain } from "../helpers/math";
 import { TGridLevel } from "../types/grid";
 import dayjs from "dayjs";
 import { gridLevels } from "../constants/grid";
+import { BaseComponentInterface } from "../types/component";
 
 const defaultOptions: GridOptions = {
   spacing: yaTimelineConfig.RULER_LABEL_SPACING,
@@ -14,7 +15,7 @@ const defaultOptions: GridOptions = {
 /**
  * Grid component responsible for rendering vertical grid lines on the timeline
  */
-export class Grid extends BaseComponent {
+export class Grid extends BaseComponent implements BaseComponentInterface {
   private options: TimeLineOptions;
 
   /**

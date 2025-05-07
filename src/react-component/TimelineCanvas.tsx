@@ -1,5 +1,5 @@
 import React, { FC, useEffect, useMemo, useRef } from "react";
-import { Test } from "../test";
+import { Timeline } from "../Timeline";
 // import { yaTimelineConfig } from "../config";
 
 type Props = {
@@ -10,7 +10,7 @@ export const TimelineCanvas: FC<Props> = ({ className }) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   const timeline = useMemo(() => {
-    return new Test({
+    return new Timeline({
       start: 1739537126347,
       end: 1739537186347,
       modules: {

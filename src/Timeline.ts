@@ -1,9 +1,8 @@
 import { TimeLineOptions } from "./types/options";
 import { Ruler } from "./newComponents/Ruler";
 import { Grid } from "./newComponents/Grid";
-// import { BaseComponent } from "./newComponents/BaseComponent";
 
-export class Test {
+export class Timeline {
   private options: TimeLineOptions;
   private canvas: HTMLCanvasElement;
   private ruler: Ruler;
