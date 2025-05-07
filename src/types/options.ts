@@ -21,9 +21,13 @@ export type GridOptions = {
 export type TimeLineOptions = {
   start: number;
   end: number;
-  modules: {
-    ruler?: boolean;
-  };
   ruler?: RulerOptions;
   grid?: GridOptions;
+};
+
+export type DefaultTimeLineOptions = Required<TimeLineOptions> & {
+  ruler: Required<RulerOptions> & {
+    color: Required<Required<RulerOptions>["color"]>;
+  };
+  grid: Required<GridOptions>;
 };

@@ -1,36 +1,20 @@
-import { RulerOptions, TimeLineOptions } from "../types/options";
+import { DefaultTimeLineOptions } from "../types/options";
 import { RulerLevel, RulerSupLevel } from "../types/ruler";
 import { labelLevels } from "../constants/ruler";
 import dayjs from "dayjs";
 import { clamp, convertDomain } from "../helpers/math";
 import { BaseComponent } from "./BaseComponent";
-import { yaTimelineConfig } from "../config";
 import { BaseComponentInterface } from "../types/component";
 
-const defaultOptions: Required<RulerOptions> = {
-  spacing: yaTimelineConfig.RULER_LABEL_SPACING,
-  position: yaTimelineConfig.RULER_LABEL_POS,
-  subPosition: yaTimelineConfig.RULER_SUP_LABEL_POS,
-  height: yaTimelineConfig.RULER_HEADER_HEIGHT,
-  font: yaTimelineConfig.RULER_FONT,
-  color: {
-    background: yaTimelineConfig.PRIMARY_BACKGROUND_COLOR,
-    primaryLevel: yaTimelineConfig.RULER_PRIMARY_TEXT_COLOR,
-    secondaryLevel: yaTimelineConfig.RULER_SECONDARY_TEXT_COLOR,
-    textOutlineColor: yaTimelineConfig.RULER_TEXT_OUTLINE_COLOR,
-    borderColor: yaTimelineConfig.RULER_BORDER_COLOR,
-  },
-};
-
 export class Ruler extends BaseComponent implements BaseComponentInterface {
-  private options: TimeLineOptions;
+  private options: DefaultTimeLineOptions;
 
   /**
    * Creates a new Ruler component
    * @param canvas The canvas element to render on
    * @param options Timeline options including ruler configuration
    */
-  constructor(canvas: HTMLCanvasElement, options: TimeLineOptions) {
+  constructor(canvas: HTMLCanvasElement, options: DefaultTimeLineOptions) {
     super(canvas);
 
     this.ctx = canvas.getContext("2d");
@@ -38,10 +22,7 @@ export class Ruler extends BaseComponent implements BaseComponentInterface {
       throw new Error("Could not get 2D context from canvas");
     }
 
-    this.options = {
-      ...options,
-      ruler: { ...defaultOptions, ...options.ruler },
-    };
+    this.options = options;
 
     this.updateWidth();
   }

@@ -1,35 +1,29 @@
 import { BaseComponent } from "./BaseComponent";
-import { GridOptions, TimeLineOptions } from "../types/options";
-import { yaTimelineConfig } from "../config";
+import { DefaultTimeLineOptions } from "../types/options";
 import { convertDomain } from "../helpers/math";
 import { TGridLevel } from "../types/grid";
 import dayjs from "dayjs";
 import { gridLevels } from "../constants/grid";
 import { BaseComponentInterface } from "../types/component";
 
-const defaultOptions: GridOptions = {
-  spacing: yaTimelineConfig.RULER_LABEL_SPACING,
-  lineWidth: yaTimelineConfig.GRID_STROKE_WIDTH,
-};
-
 /**
  * Grid component responsible for rendering vertical grid lines on the timeline
  */
 export class Grid extends BaseComponent implements BaseComponentInterface {
-  private options: TimeLineOptions;
+  private options: DefaultTimeLineOptions;
 
   /**
    * Creates a new Grid component
    * @param canvas The canvas element to render on
    * @param options Timeline options including grid configuration
    */
-  constructor(canvas: HTMLCanvasElement, options: TimeLineOptions) {
+  constructor(canvas: HTMLCanvasElement, options: DefaultTimeLineOptions) {
     super(canvas);
     this.ctx = canvas.getContext("2d");
     if (!this.ctx) {
       throw new Error("Could not get 2D context from canvas");
     }
-    this.options = { ...options, grid: { ...defaultOptions, ...options.grid } };
+    this.options = options;
   }
 
   /**
@@ -39,7 +33,7 @@ export class Grid extends BaseComponent implements BaseComponentInterface {
     this.updateWidth();
     this.useStaticTransform();
 
-    const rulerHeight = this.options?.ruler?.height || 0;
+    const rulerHeight = this.options.ruler.height || 0;
     const left = 0;
     const top = rulerHeight;
     const height = this.ctx.canvas.height - rulerHeight;

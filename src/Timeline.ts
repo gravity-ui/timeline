@@ -1,15 +1,16 @@
-import { TimeLineOptions } from "./types/options";
+import { DefaultTimeLineOptions, TimeLineOptions } from "./types/options";
 import { Ruler } from "./newComponents/Ruler";
 import { Grid } from "./newComponents/Grid";
+import { defaultOptions } from "./constants/options";
 
 export class Timeline {
-  private options: TimeLineOptions;
+  private options: DefaultTimeLineOptions;
   private canvas: HTMLCanvasElement;
   private ruler: Ruler;
   private grid: Grid;
 
   constructor(options: TimeLineOptions) {
-    this.options = options;
+    this.options = { ...defaultOptions, ...options } as DefaultTimeLineOptions;
 
     this.updateCanvasSize = this.updateCanvasSize.bind(this);
   }
