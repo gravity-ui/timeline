@@ -1,43 +1,34 @@
-import { BaseComponent } from "./BaseComponent";
-import { DefaultTimeLineOptions } from "../types/options";
 import { convertDomain } from "../helpers/math";
 import { TGridLevel } from "../types/grid";
 import dayjs from "dayjs";
 import { gridLevels } from "../constants/grid";
 import { BaseComponentInterface } from "../types/component";
+import { CanvasApi } from "../CanvasApi";
 
 /**
  * Grid component responsible for rendering vertical grid lines on the timeline
  */
-export class Grid extends BaseComponent implements BaseComponentInterface {
-  private options: DefaultTimeLineOptions;
+export class Grid implements BaseComponentInterface {
+  private api: CanvasApi;
 
-  /**
-   * Creates a new Grid component
-   * @param canvas The canvas element to render on
-   * @param options Timeline options including grid configuration
-   */
-  constructor(canvas: HTMLCanvasElement, options: DefaultTimeLineOptions) {
-    super(canvas);
-    this.ctx = canvas.getContext("2d");
-    if (!this.ctx) {
-      throw new Error("Could not get 2D context from canvas");
-    }
-    this.options = options;
+  constructor(api: CanvasApi) {
+    this.api = api;
   }
 
   /**
    * Renders the grid on the canvas
    */
   public render() {
-    this.updateWidth();
-    this.useStaticTransform();
+    this.api.useStaticTransform();
+    const options = this.api.getVisualConfiguration();
+    const { start, end } = this.api.getInterval();
+    const { ctx, width } = this.api;
 
-    const rulerHeight = this.options.ruler.height || 0;
+    const rulerHeight = options.ruler.height || 0;
     const left = 0;
     const top = rulerHeight;
-    const height = this.ctx.canvas.height - rulerHeight;
-    const domain = this.options.end - this.options.start;
+    const height = ctx.canvas.height - rulerHeight;
+    const domain = end - start;
 
     // Find the appropriate grid level based on domain size
     let level: TGridLevel | undefined;
@@ -61,18 +52,12 @@ export class Grid extends BaseComponent implements BaseComponentInterface {
 
         // Use reduce to calculate total width
         return timePoints.reduce((width, time) => {
-          const x = convertDomain(
-            Number(time),
-            0,
-            domain,
-            left,
-            left + this.width,
-          );
-          return x > 0 ? width + this.options.grid.spacing : width;
+          const x = convertDomain(Number(time), 0, domain, left, left + width);
+          return x > 0 ? width + options.grid.spacing : width;
         }, 0);
       })();
 
-      if (marksWidth > this.width + 40) {
+      if (marksWidth > width + 40) {
         continue;
       }
 
@@ -81,9 +66,9 @@ export class Grid extends BaseComponent implements BaseComponentInterface {
     }
 
     // Set up canvas drawing properties
-    this.ctx.lineJoin = "miter";
-    this.ctx.miterLimit = 2;
-    this.ctx.lineWidth = 1;
+    ctx.lineJoin = "miter";
+    ctx.miterLimit = 2;
+    ctx.lineWidth = 1;
 
     // If no suitable level was found, use the last level as fallback
     if (!level && gridLevels.length > 0) {
@@ -92,17 +77,12 @@ export class Grid extends BaseComponent implements BaseComponentInterface {
 
     // Only render if we have a valid level
     if (level) {
-      this.renderLevel(top, left, this.width, height, level);
+      this.renderLevel(top, left, width, height, level);
     }
   }
 
   /**
    * Renders a specific grid level with vertical lines
-   * @param top The top position of the grid
-   * @param left The left position of the grid
-   * @param width The width of the grid
-   * @param height The height of the grid
-   * @param level The grid level to render
    */
   private renderLevel(
     top: number,
@@ -111,28 +91,21 @@ export class Grid extends BaseComponent implements BaseComponentInterface {
     height: number,
     level: TGridLevel,
   ) {
-    this.ctx.lineWidth = this.options.grid.lineWidth;
+    const { grid } = this.api.getVisualConfiguration();
+    const { start, end } = this.api.getInterval();
+    const { ctx } = this.api;
+    ctx.lineWidth = grid.lineWidth;
 
     // Draw vertical grid lines for each time point in the visible range
-    for (
-      let t = level.start(this.options.start);
-      Number(t) < this.options.end;
-      t = level.step(t)
-    ) {
+    for (let t = level.start(start); Number(t) < end; t = level.step(t)) {
       const x = Math.floor(
-        convertDomain(
-          Number(t),
-          this.options.start,
-          this.options.end,
-          left,
-          left + width,
-        ),
+        convertDomain(Number(t), start, end, left, left + width),
       );
-      this.ctx.beginPath();
-      this.ctx.strokeStyle = level.style(t);
-      this.ctx.moveTo(x, top);
-      this.ctx.lineTo(x, top + height);
-      this.ctx.stroke();
+      ctx.beginPath();
+      ctx.strokeStyle = level.style(t);
+      ctx.moveTo(x, top);
+      ctx.lineTo(x, top + height);
+      ctx.stroke();
     }
   }
 }

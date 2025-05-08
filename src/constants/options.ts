@@ -1,9 +1,8 @@
-import { DefaultTimeLineOptions } from "../types/options";
+import { ViewConfigurationDefault } from "../types/configuration";
 import { yaTimelineConfig } from "../config";
 
-export const defaultOptions: DefaultTimeLineOptions = {
-  start: 0,
-  end: 0,
+export const defaultViewConfig: ViewConfigurationDefault = {
+  hideRuler: false,
   ruler: {
     spacing: yaTimelineConfig.RULER_LABEL_SPACING,
     position: yaTimelineConfig.RULER_LABEL_POS,
@@ -21,5 +20,15 @@ export const defaultOptions: DefaultTimeLineOptions = {
   grid: {
     spacing: yaTimelineConfig.RULER_LABEL_SPACING,
     lineWidth: yaTimelineConfig.GRID_STROKE_WIDTH,
+  },
+  axes: {
+    trackHeight: yaTimelineConfig.TRACK_HEIGHT,
+    lineHeight: yaTimelineConfig.LINE_HEIGHT,
+    color: {
+      line: yaTimelineConfig.SECONDARY_MARK_COLOR,
+    },
+    lineWidth: 1,
+    dashedLinePattern: [5, 3],
+    solidLinePattern: [0, 0],
   },
 };

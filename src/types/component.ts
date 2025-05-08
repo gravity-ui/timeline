@@ -6,4 +6,6 @@ export interface BaseComponentInterface {
    * Renders the component on the canvas
    */
   render(): void;
+
+  destroy?(): void;
 }

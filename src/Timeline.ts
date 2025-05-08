@@ -1,57 +1,58 @@
-import { DefaultTimeLineOptions, TimeLineOptions } from "./types/options";
+import {
+  TimeLineConfig,
+  TimelineSettings,
+  ViewConfigurationDefault,
+} from "./types/configuration";
+import { Axes } from "./newComponents/Axes";
 import { Ruler } from "./newComponents/Ruler";
 import { Grid } from "./newComponents/Grid";
-import { defaultOptions } from "./constants/options";
+import { Events } from "./newComponents/Events";
+import { defaultViewConfig } from "./constants/options";
+import { CanvasApi } from "./CanvasApi";
+import { TimelineController } from "./TimelineController";
+import { ComponentType } from "./enums";
 
 export class Timeline {
-  private options: DefaultTimeLineOptions;
-  private canvas: HTMLCanvasElement;
-  private ruler: Ruler;
-  private grid: Grid;
+  public canvasScrollTop: number;
+  public settings: TimelineSettings;
+  public viewConfiguration: ViewConfigurationDefault;
+  public api: CanvasApi;
+  public canvas: HTMLCanvasElement;
 
-  constructor(options: TimeLineOptions) {
-    this.options = { ...defaultOptions, ...options } as DefaultTimeLineOptions;
+  private controller: TimelineController;
 
-    this.updateCanvasSize = this.updateCanvasSize.bind(this);
+  constructor(config: TimeLineConfig) {
+    this.viewConfiguration = config.viewConfiguration
+      ? ({
+          ...defaultViewConfig,
+          ...config.viewConfiguration,
+        } as ViewConfigurationDefault)
+      : defaultViewConfig;
+
+    this.settings = config.settings;
   }
 
   public init(canvas: HTMLCanvasElement) {
     this.canvas = canvas;
-    this.addEvents();
+    this.canvasScrollTop = 0;
 
-    this.updateCanvasSize();
-    this.createRuler();
-    this.createGrid();
+    this.api = new CanvasApi(this);
+    // init components
+    this.api.addComponent(ComponentType.Grid, new Grid(this.api));
+    this.api.addComponent(ComponentType.Axes, new Axes(this.api));
+    this.api.addComponent(ComponentType.Events, new Events(this.api));
+    if (!this.viewConfiguration.hideRuler) {
+      this.api.addComponent(ComponentType.Ruler, new Ruler(this));
+    }
+
+    this.api.setAxes(this.settings.axes);
+    this.api.setEvents(this.settings.events);
+
+    this.controller = new TimelineController(this.api);
   }
 
   public destroy() {
-    window.removeEventListener("resize", this.updateCanvasSize);
-  }
-
-  private addEvents() {
-    window.addEventListener("resize", this.updateCanvasSize);
-  }
-
-  private updateCanvasSize() {
-    const pixelRatio = window.devicePixelRatio || 1;
-    this.canvas.width = Math.floor(this.canvas.offsetWidth * pixelRatio);
-    this.canvas.height = Math.floor(this.canvas.offsetHeight * pixelRatio);
-
-    if (this.ruler) {
-      this.ruler.render();
-    }
-    if (this.grid) {
-      this.grid.render();
-    }
-  }
-
-  private createRuler() {
-    this.ruler = new Ruler(this.canvas, this.options);
-    this.ruler.render();
-  }
-
-  private createGrid() {
-    this.grid = new Grid(this.canvas, this.options);
-    this.grid.render();
+    this.controller.destroy();
+    this.api.destroy();
   }
 }

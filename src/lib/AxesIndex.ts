@@ -1,4 +1,4 @@
-import { TimelineAxis } from "../components/Axes";
+import { TimelineAxis } from "../newComponents/Axes";
 
 export class AxesIndex<Axis extends TimelineAxis = TimelineAxis> {
   private _axes: Axis[] = [];

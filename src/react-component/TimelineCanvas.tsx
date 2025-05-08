@@ -1,6 +1,6 @@
 import React, { FC, useEffect, useMemo, useRef } from "react";
 import { Timeline } from "../Timeline";
-// import { yaTimelineConfig } from "../config";
+// import { UnixTimestampMs } from "../definitions";
 
 type Props = {
   className?: string;
@@ -11,16 +11,56 @@ export const TimelineCanvas: FC<Props> = ({ className }) => {
 
   const timeline = useMemo(() => {
     return new Timeline({
-      start: 1739537126347,
-      end: 1739537186347,
-      modules: {
-        ruler: true,
+      settings: {
+        start: 1739537126347,
+        end: 1739537186347,
+        axes: [
+          {
+            id: "1",
+            tracksCount: 10,
+            top: 0,
+            height: 40,
+          },
+        ],
+        events: [
+          {
+            id: "test1",
+            from: 1739537146347,
+            axisId: "1",
+            trackIndex: 1,
+            color: "#60c2e3",
+            selectedColor: "#77dc59",
+          },
+          {
+            id: "test2",
+            from: 1739537146347,
+            to: 1739537166347,
+            axisId: "1",
+            trackIndex: 3,
+          },
+        ],
+        onClick: (events) => {
+          console.info("events:", events);
+        },
+        onSelectChange: (events) => {
+          console.info("selected events:", events);
+        },
+        onContextMenu: (events) => {
+          console.info("context event:", events);
+        },
+        onHover: (data) => {
+          console.info("hover:", data);
+        },
+        onLeave: (data) => {
+          console.info("leave", data);
+        },
       },
     });
   }, []);
 
   useEffect(() => {
     timeline.init(canvasRef.current);
+    timeline.api.setSelectedEvents(["test2"]);
   }, [timeline]);
 
   return (
@@ -32,7 +72,6 @@ export const TimelineCanvas: FC<Props> = ({ className }) => {
         height: "100%",
       }}
     >
-      1
       <canvas
         ref={canvasRef}
         className={className}
@@ -43,7 +82,6 @@ export const TimelineCanvas: FC<Props> = ({ className }) => {
           width: "100%",
         }}
       />
-      2
     </div>
   );
 };

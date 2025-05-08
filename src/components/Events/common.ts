@@ -59,7 +59,7 @@ export type TimelineEvent = {
   renderType: string;
   axisId: string;
   trackIndex: number;
-  eventsCount: number;
+  color?: string;
 };
 
 export type RawTimelineEvent = any;
