@@ -42,7 +42,7 @@ export class Timeline {
     this.api.addComponent(ComponentType.Axes, new Axes(this.api));
     this.api.addComponent(ComponentType.Events, new Events(this.api));
     if (!this.viewConfiguration.hideRuler) {
-      this.api.addComponent(ComponentType.Ruler, new Ruler(this));
+      this.api.addComponent(ComponentType.Ruler, new Ruler(this.api));
     }
 
     this.api.setAxes(this.settings.axes);

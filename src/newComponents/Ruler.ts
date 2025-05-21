@@ -3,27 +3,27 @@ import { labelLevels } from "../constants/ruler";
 import dayjs from "dayjs";
 import { clamp, convertDomain } from "../helpers/math";
 import { BaseComponentInterface } from "../types/component";
-import { Timeline } from "../Timeline";
 import { CanvasApi } from "../CanvasApi";
 
 export class Ruler implements BaseComponentInterface {
-  private timeline: Timeline;
   private api: CanvasApi;
+  private levelCache = new Map<RulerLevel, number>();
 
-  constructor(timeline: Timeline) {
-    this.timeline = timeline;
-    this.api = timeline.api;
+  constructor(api: CanvasApi) {
+    this.api = api;
   }
 
   public render() {
-    const options = this.timeline.viewConfiguration.ruler;
+    const { ruler } = this.api.getVisualConfiguration();
     const { ctx, width } = this.api;
     this.api.useStaticTransform();
 
-    ctx.fillStyle = options.color.background;
-    ctx.fillRect(0, 0, width, options.height);
+    // Draw background
+    ctx.fillStyle = ruler.color.background;
+    ctx.fillRect(0, 0, width, ruler.height);
 
-    ctx.font = options.font;
+    // Set common text properties
+    ctx.font = ruler.font;
     ctx.lineJoin = "miter";
     ctx.miterLimit = 2;
     ctx.lineWidth = 1;
@@ -32,66 +32,108 @@ export class Ruler implements BaseComponentInterface {
     this.renderLevels();
   }
 
+  /**
+   * Renders the bottom border line of the ruler
+   */
   private renderBottomLine() {
-    const options = this.timeline.viewConfiguration.ruler;
+    const { ruler } = this.api.getVisualConfiguration();
     const { ctx, width } = this.api;
 
-    ctx.strokeStyle = options.color.borderColor;
+    ctx.strokeStyle = ruler.color.borderColor;
     ctx.beginPath();
-    ctx.moveTo(0, options.height + ctx.lineWidth / 2);
-    ctx.lineTo(width, options.height + ctx.lineWidth / 2);
+    ctx.moveTo(0, ruler.height + ctx.lineWidth / 2);
+    ctx.lineTo(width, ruler.height + ctx.lineWidth / 2);
     ctx.stroke();
   }
 
+  /**
+   * Selects and renders appropriate time marking levels
+   */
   private renderLevels() {
     const { start, end } = this.api.getInterval();
     const { ruler } = this.api.getVisualConfiguration();
-    const { width } = this.api;
+    if (!ruler) return;
 
     const domain = end - start;
+    const { width } = this.api;
 
-    let level: RulerLevel | undefined;
-    let supLevel: RulerSupLevel | undefined;
-
-    for (let i = 0; i < labelLevels.length; i += 1) {
-      if (domain > labelLevels[i].domain) continue;
-
-      let marksWidth = 0;
-      for (let t = dayjs(0); Number(t) < domain; t = labelLevels[i].step(t)) {
-        const x = convertDomain(Number(t), 0, domain, 0, width);
-        if (x > 0) marksWidth += ruler.spacing;
-      }
-
-      if (marksWidth > width) continue;
-
-      level = labelLevels[i];
-      supLevel = level.sup || labelLevels[i + 1];
-      break;
-    }
+    const { level, supLevel } = this.findAppropriateLevels(domain, width);
 
     if (level) {
       this.renderLevel(level, ruler.position, ruler.color.primaryLevel);
     }
-
     if (supLevel) {
       this.renderLevel(supLevel, ruler.subPosition, ruler.color.secondaryLevel);
     }
   }
 
+  /**
+   * Finds appropriate primary and secondary levels for current zoom level
+   */
+  private findAppropriateLevels(domain: number, width: number) {
+    let level: RulerLevel | undefined;
+    let supLevel: RulerSupLevel | undefined;
+
+    for (const currentLevel of labelLevels) {
+      if (domain > currentLevel.domain) continue;
+
+      // Calculate or get cached marks width
+      let marksWidth = this.levelCache.get(currentLevel);
+      if (marksWidth === undefined) {
+        marksWidth = this.calculateMarksWidth(currentLevel, domain, width);
+        this.levelCache.set(currentLevel, marksWidth);
+      }
+
+      if (marksWidth > width) continue;
+
+      level = currentLevel;
+      supLevel =
+        level.sup || labelLevels[labelLevels.indexOf(currentLevel) + 1];
+      break;
+    }
+
+    return { level, supLevel };
+  }
+
+  /**
+   * Calculates total width required for level's marks
+   */
+  private calculateMarksWidth(
+    level: RulerLevel,
+    domain: number,
+    width: number,
+  ): number {
+    const { ruler } = this.api.getVisualConfiguration();
+    let marksWidth = 0;
+
+    for (let t = dayjs(0); Number(t) < domain; t = level.step(t)) {
+      const x = convertDomain(Number(t), 0, domain, 0, width);
+      if (x > 0) marksWidth += ruler.spacing;
+    }
+
+    return marksWidth;
+  }
+
+  /**
+   * Renders a single level of time markings
+   * @param level - Level configuration
+   * @param y - Vertical position
+   * @param color - Default text color
+   */
   private renderLevel(
     level: RulerLevel | RulerSupLevel,
     y: number,
     color: string,
   ) {
-    const options = this.timeline.viewConfiguration.ruler;
+    const { ruler } = this.api.getVisualConfiguration();
     const { start, end } = this.api.getInterval();
     const { ctx, width } = this.api;
 
-    ctx.strokeStyle = options.color.textOutlineColor;
+    ctx.strokeStyle = ruler.color.textOutlineColor;
     const t0 = level.start(start);
     let firstRendered = null;
 
-    // Render labels that fall within the visible area
+    // Render fully visible labels
     for (let t = t0; Number(t) < end; t = level.step(t)) {
       const label = dayjs(t).format(level.format);
       const x = this.timeToPosition(t);
@@ -104,27 +146,48 @@ export class Ruler implements BaseComponentInterface {
       }
     }
 
-    // Render the first label that might be partially visible
+    // Render edge label if partially visible
+    this.renderEdgeLabel(level, y, color, firstRendered);
+  }
+
+  /**
+   * Renders partially visible label at the edge of visible area
+   */
+  private renderEdgeLabel(
+    level: RulerLevel | RulerSupLevel,
+    y: number,
+    color: string,
+    firstRendered: dayjs.Dayjs | null,
+  ) {
+    const { ctx } = this.api;
     const firstLabelTimestamp = this.positionToTime(10);
     const firstLabel = dayjs(firstLabelTimestamp).format(level.format);
+
     const firstMark = clamp(
       10,
       -Infinity,
-      this.timeToPosition(firstRendered || end) -
+      this.timeToPosition(firstRendered || this.api.getInterval().end) -
         ctx.measureText(firstLabel).width -
         5,
     );
+
     ctx.fillStyle = (level.color && level.color(firstLabelTimestamp)) || color;
     ctx.strokeText(firstLabel, firstMark, y);
     ctx.fillText(firstLabel, firstMark, y);
   }
 
-  private timeToPosition(t: number | dayjs.Dayjs) {
+  /**
+   * Converts time value to horizontal position
+   */
+  private timeToPosition(t: number | dayjs.Dayjs): number {
     const { start, end } = this.api.getInterval();
     return convertDomain(Number(t), start, end, 0, this.api.width);
   }
 
-  private positionToTime(x: number) {
+  /**
+   * Converts horizontal position to time value
+   */
+  private positionToTime(x: number): number {
     const { start, end } = this.api.getInterval();
     return convertDomain(x, 0, this.api.width, start, end);
   }
