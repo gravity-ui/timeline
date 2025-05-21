@@ -20,65 +20,66 @@ export class Grid implements BaseComponentInterface {
    */
   public render() {
     this.api.useStaticTransform();
-    const options = this.api.getVisualConfiguration();
+    const { ruler } = this.api.getVisualConfiguration();
     const { start, end } = this.api.getInterval();
     const { ctx, width } = this.api;
+    const domainSize = end - start;
 
-    const rulerHeight = options.ruler.height || 0;
-    const left = 0;
+    // Get the appropriate grid level
+    const level = this.selectGridLevel(domainSize, width);
+    if (!level) return;
+
+    // Set up the drawing area
+    this.api.useStaticTransform();
+    const rulerHeight = ruler.height || 0;
     const top = rulerHeight;
     const height = ctx.canvas.height - rulerHeight;
-    const domain = end - start;
 
-    // Find the appropriate grid level based on domain size
-    let level: TGridLevel | undefined;
+    // Render the selected level
+    this.renderLevel(top, 0, width, height, level);
+  }
 
-    for (let i = 0, len = gridLevels.length; i < len; i += 1) {
-      if (domain > gridLevels[i].domain) {
+  /**
+   * Selects the appropriate grid level based on domain size and canvas width
+   */
+  private selectGridLevel(
+    domainSize: number,
+    canvasWidth: number,
+  ): TGridLevel | null {
+    if (!gridLevels.length) return null;
+
+    for (const level of gridLevels) {
+      if (domainSize > level.domain) continue;
+
+      // Check if the marks fit within the visible area
+      if (
+        this.calculateMarksWidth(level, domainSize) >
+        canvasWidth + this.api.getVisualConfiguration().grid.widthBuffer
+      ) {
         continue;
       }
 
-      // Calculate total width of marks to ensure they fit in the visible area
-      // using reduce to accumulate the width
-      const marksWidth = (() => {
-        let t = dayjs(0);
-        const timePoints = [];
-
-        // Create array of time points
-        while (Number(t) < domain) {
-          timePoints.push(t);
-          t = gridLevels[i].step(t);
-        }
-
-        // Use reduce to calculate total width
-        return timePoints.reduce((width, time) => {
-          const x = convertDomain(Number(time), 0, domain, left, left + width);
-          return x > 0 ? width + options.grid.spacing : width;
-        }, 0);
-      })();
-
-      if (marksWidth > width + 40) {
-        continue;
-      }
-
-      level = gridLevels[i];
-      break;
+      return level;
     }
 
-    // Set up canvas drawing properties
-    ctx.lineJoin = "miter";
-    ctx.miterLimit = 2;
-    ctx.lineWidth = 1;
+    // Return the coarsest level as fallback
+    return gridLevels[gridLevels.length - 1];
+  }
 
-    // If no suitable level was found, use the last level as fallback
-    if (!level && gridLevels.length > 0) {
-      level = gridLevels[gridLevels.length - 1];
+  /**
+   * Calculates the total width that the level's marks will occupy
+   */
+  private calculateMarksWidth(level: TGridLevel, domainSize: number): number {
+    let time = dayjs(0);
+    let totalWidth = 0;
+
+    while (Number(time) < domainSize) {
+      const x = convertDomain(Number(time), 0, domainSize, 0, totalWidth);
+      totalWidth += x > 0 ? this.api.getVisualConfiguration().grid.spacing : 0;
+      time = level.step(time);
     }
 
-    // Only render if we have a valid level
-    if (level) {
-      this.renderLevel(top, left, width, height, level);
-    }
+    return totalWidth;
   }
 
   /**

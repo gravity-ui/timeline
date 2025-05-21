@@ -19,6 +19,7 @@ export type RulerViewOptions = {
 export type GridViewOptions = {
   spacing?: number;
   lineWidth?: number;
+  widthBuffer?: number;
 };
 
 export type AxesViewOptions = {

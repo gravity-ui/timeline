@@ -20,6 +20,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
   grid: {
     spacing: yaTimelineConfig.RULER_LABEL_SPACING,
     lineWidth: yaTimelineConfig.GRID_STROKE_WIDTH,
+    widthBuffer: 40,
   },
   axes: {
     trackHeight: yaTimelineConfig.TRACK_HEIGHT,
