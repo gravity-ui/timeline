@@ -56,11 +56,22 @@ export class TimelineController {
         newStart += shift;
         newEnd += shift;
       } else {
-        const ratio = event.offsetX / this.api.canvas.width;
         const factor = event.deltaY > 0 ? 1.15 : 0.9;
         const newDomain = clamp(oldDomain * factor, ZOOM_MIN, ZOOM_MAX);
-        newStart = Math.round(start - (newDomain - oldDomain) * ratio);
-        newEnd = Math.round(end + (newDomain - oldDomain) * (1 - ratio));
+
+        // Check if cursor is inside the canvas
+        if (
+          event.offsetX >= 0 &&
+          event.offsetX <= this.api.canvas.width &&
+          event.offsetY >= 0 &&
+          event.offsetY <= this.api.canvas.height
+        ) {
+          // Center zoom around cursor position
+          const cursorTime = this.api.positionToTime(event.offsetX);
+          const ratio = (cursorTime - start) / oldDomain;
+          newStart = Math.round(cursorTime - ratio * newDomain);
+          newEnd = Math.round(cursorTime + (1 - ratio) * newDomain);
+        }
       }
     }
 
