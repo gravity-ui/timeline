@@ -1,4 +1,3 @@
-import { yaTimelineConfig } from "../../config";
 import RBush, { BBox } from "rbush";
 import { Axes } from "../Axes";
 import { rangeToRangeIntersect } from "../../helpers/math";
@@ -7,17 +6,16 @@ import { DefaultEventRenderer } from "./DefaultEventRenderer";
 import { CanvasApi } from "../../CanvasApi";
 import { ComponentType } from "../../enums";
 import { BaseComponentInterface } from "../../types/component";
-import { TimelineEvent } from "../../types/event";
+import { TimelineEvent } from "../../types/events";
+
+const MAX_INDEX_TREE_WIDTH = 16;
 
 export class Events<Event extends TimelineEvent = TimelineEvent>
   implements BaseComponentInterface
 {
-  public eventHitboxPadding: number = yaTimelineConfig.EVENT_HITBOX_PADDING;
-  public eventCounterFont: string = yaTimelineConfig.COUNTER_FONT;
   public allowMultipleSelection = true;
   public activeEvent: TimelineEvent | null = null;
-  protected maxIndexTreeWidth = 16;
-  protected index = new RBush<BBox & { event: Event }>(this.maxIndexTreeWidth);
+  protected index = new RBush<BBox & { event: Event }>(MAX_INDEX_TREE_WIDTH);
 
   private api: CanvasApi;
   private _selectedEvents = new Set<string>();
@@ -36,14 +34,14 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   }
 
   public getEventsAt(rect: DOMRect): Event[] {
-    const { ruler } = this.api.getVisualConfiguration();
-    const rulerHeight = ruler.height || 0;
+    const vConfig = this.api.getVisualConfiguration();
+    const rulerHeight = vConfig.ruler.height || 0;
     const topOffset = -rulerHeight + this.api.canvasScrollTop;
     const events = this.index.search({
-      minX: this.api.positionToTime(rect.left - this.eventHitboxPadding),
-      maxX: this.api.positionToTime(rect.right + this.eventHitboxPadding),
-      minY: rect.top + topOffset - this.eventHitboxPadding,
-      maxY: rect.bottom + topOffset + this.eventHitboxPadding,
+      minX: this.api.positionToTime(rect.left - vConfig.events.hitboxPadding),
+      maxX: this.api.positionToTime(rect.right + vConfig.events.hitboxPadding),
+      minY: rect.top + topOffset - vConfig.events.hitboxPadding,
+      maxY: rect.bottom + topOffset + vConfig.events.hitboxPadding,
     });
     return events.map((box) => box.event);
   }
@@ -94,9 +92,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
         selection.clear();
       }
 
-      if (events.length > 0) {
-        select(events[0].id);
-      }
+      select(events[0].id);
     }
 
     this.api.getTimelineSettings()?.onSelectChange(this.getSelectedEvents());
@@ -104,7 +100,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   }
 
   public render() {
-    const { ruler } = this.api.getVisualConfiguration();
+    const { ruler, events } = this.api.getVisualConfiguration();
     const { start, end } = this.api.getInterval();
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
     const rulerHeight = ruler.height || 0;
@@ -120,7 +116,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
 
     ctx.translate(0, rulerHeight);
 
-    ctx.font = this.eventCounterFont;
+    ctx.font = events.font;
     ctx.lineWidth = 2;
 
     for (let i = 0, len = this._events.length; i < len; i += 1) {
@@ -142,7 +138,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
           x0,
           x1,
           y,
-          axis.height!,
+          axis.height,
           timeToPosition,
         );
       }
@@ -262,8 +258,10 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     const { axes } = this.api.getVisualConfiguration();
 
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
+    const axesById = axesComponent.getAxesById();
+
     const boxes = this._events.map((event): BBox & { event: Event } => {
-      const axis = axesComponent.getAxesById()[event.axisId];
+      const axis = axesById[event.axisId];
       const eventTrackY = axesComponent.getAxisTrackPosition(
         axis,
         event.trackIndex,

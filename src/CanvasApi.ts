@@ -6,7 +6,7 @@ import { ComponentType } from "./enums";
 import { Events } from "./newComponents/Events";
 import { Axes } from "./newComponents/Axes";
 import { TimelineAxis } from "./types/axis";
-import { TimelineEvent } from "./types/event";
+import { TimelineEvent } from "./types/events";
 
 export class CanvasApi {
   public readonly canvas: HTMLCanvasElement;

@@ -1,5 +1,5 @@
 import { TimelineAxis } from "./axis";
-import { TimelineEvent } from "./event";
+import { TimelineEvent } from "./events";
 
 export type RulerViewOptions = {
   spacing?: number;
@@ -33,10 +33,17 @@ export type AxesViewOptions = {
   solidLinePattern?: [number, number];
 };
 
+export type EnetsViewOptions = {
+  hitboxPadding?: number;
+  font?: string;
+  maxIndexTreeWidth?: number;
+};
+
 export type ViewConfiguration = {
   ruler?: RulerViewOptions;
   grid?: GridViewOptions;
   axes?: AxesViewOptions;
+  events?: EnetsViewOptions;
   hideRuler?: boolean;
 };
 

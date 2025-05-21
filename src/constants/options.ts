@@ -1,5 +1,7 @@
 import { ViewConfigurationDefault } from "../types/configuration";
 
+const DEFAULT_FONT = "10px sans-serif";
+
 export const defaultViewConfig: ViewConfigurationDefault = {
   hideRuler: false,
   ruler: {
@@ -7,7 +9,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     position: 33,
     subPosition: 16,
     height: 41,
-    font: "10px sans-serif",
+    font: DEFAULT_FONT,
     color: {
       background: "#FFF",
       primaryLevel: "#111",
@@ -30,5 +32,10 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     lineWidth: 1,
     dashedLinePattern: [5, 3],
     solidLinePattern: [0, 0],
+  },
+  events: {
+    font: DEFAULT_FONT,
+    hitboxPadding: 2,
+    maxIndexTreeWidth: 16,
   },
 };
