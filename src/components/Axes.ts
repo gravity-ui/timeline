@@ -1,85 +1,75 @@
 import { clamp } from "../helpers/math";
-import { TimelineCanvasApi } from "../TimelineCanvasApi";
-import { YaTimeline } from "../YaTimeline";
-import { yaTimelineConfig } from "../config";
 import { AxesIndex } from "../lib/AxesIndex";
-import { Ruler } from "./Ruler";
-import { TimelineComponent } from "./TimelineComponent";
+import { BaseComponentInterface } from "../types/component";
+import { CanvasApi } from "../CanvasApi";
+import { TimelineAxis } from "../types/axis";
+import { StrokeMode } from "../enums";
 
-export type TimelineAxis = {
-  id: string;
-  tracksCount: number;
-  top: number;
-  height: number;
-};
+export class Axes<Axis extends TimelineAxis = TimelineAxis>
+  implements BaseComponentInterface
+{
+  public strokeMode = StrokeMode.STRAIGHT;
+  private api: CanvasApi;
+  private axesIndex!: AxesIndex<Axis>;
 
-export type AxesOptions = {
-  axisColor?: string;
-  strokeMode?: EStrokeMode;
-  trackHeight?: number;
-  eventOffset?: number;
-  topPadding?: number;
-  identityFunction?: <Axis>(axis: Axis) => string;
-};
-
-export enum EStrokeMode {
-  STRAIGHT,
-  DASHED,
-}
-
-export class Axes<
-  Axis extends TimelineAxis = TimelineAxis,
-> extends TimelineComponent {
-  public trackHeight: number = yaTimelineConfig.TRACK_HEIGHT;
-  public lineHeight: number = yaTimelineConfig.LINE_HEIGHT;
-
-  public strokeMode = EStrokeMode.STRAIGHT;
-
-  protected axesIndex!: AxesIndex<Axis>;
-
-  constructor(host: YaTimeline, options: AxesOptions = {}) {
-    super(host);
-
-    Object.assign(this, options);
+  constructor(api: CanvasApi) {
+    this.api = api;
 
     this.axesIndex = new AxesIndex<Axis>([], {
-      identityFunction: options.identityFunction,
+      identityFunction: (axis: Axis) => axis.id,
     });
   }
 
-  public set axes(newAxes: Axis[]) {
+  /**
+   * Replaces all axes with new set
+   */
+  public setAxes(newAxes: Axis[]) {
+    if (!newAxes || !Array.isArray(newAxes)) {
+      throw new Error("Axes must be an array");
+    }
+
     this.axesIndex.axes = newAxes;
+    this.render();
   }
 
-  public get axes(): Axis[] {
-    return this.axesIndex.axes;
-  }
-
-  public get axesById(): Record<string, Axis> {
+  /**
+   * Gets all axes indexed by their ID
+   */
+  public getAxesById(): Record<string, Axis> {
     return this.axesIndex.axesById;
   }
 
+  /**
+   * Calculates vertical position for a track within an axis
+   */
   public getAxisTrackPosition(axis: Axis, trackIndex: number): number {
-    const index = clamp(trackIndex, 0, axis.tracksCount - 1);
-    return axis.top + this.trackHeight * index + this.trackHeight / 2;
-  }
-
-  public render(api: TimelineCanvasApi) {
-    const rulerHeight = api.getComponent(Ruler)?.height || 0;
-    const ctx = api.ctx;
-    if (this.strokeMode === EStrokeMode.DASHED) {
-      ctx.setLineDash([5, 3]);
+    if (!axis || axis.tracksCount < 0) {
+      throw new Error("Invalid axis configuration");
     }
 
-    api.useScrollTransform();
-    ctx.translate(0, rulerHeight);
+    const { axes } = this.api.getVisualConfiguration();
+    const index = clamp(trackIndex, 0, axis.tracksCount - 1);
+    return axis.top + axes.trackHeight * index + axes.trackHeight / 2;
+  }
 
-    const canvasWidth = api.canvas.width;
-    ctx.strokeStyle = yaTimelineConfig.resolveCssValue(
-      yaTimelineConfig.SECONDARY_MARK_COLOR,
-    );
+  /**
+   * Renders all axes to the canvas
+   */
+  public render() {
+    const { ruler, axes } = this.api.getVisualConfiguration();
+    const { ctx } = this.api;
+
+    if (this.strokeMode === StrokeMode.DASHED) {
+      ctx.setLineDash(axes.dashedLinePattern);
+    }
+
+    this.api.useScrollTransform();
+    ctx.translate(0, ruler.height);
+
+    const canvasWidth = ctx.canvas.width;
+    ctx.strokeStyle = axes.color.line;
     ctx.beginPath();
-    ctx.lineWidth = 1;
+    ctx.lineWidth = axes.lineWidth;
 
     for (const axis of this.axesIndex.sortedAxes) {
       for (let i = 0; i < axis.tracksCount; i += 1) {
@@ -90,6 +80,6 @@ export class Axes<
     }
 
     ctx.stroke();
-    ctx.setLineDash([0, 0]);
+    ctx.setLineDash(axes.solidLinePattern);
   }
 }

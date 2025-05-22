@@ -1,4 +1,4 @@
-import { TimelineEvent } from "./common";
+import { TimelineEvent } from "../../types/events";
 
 export type Hitbox = {
   top: number;
@@ -20,8 +20,6 @@ export abstract class AbstractEventRenderer {
     color?: string,
   ): void;
 
-  // .getHitbox is supposed to **mutate** this object.
-  // This is done to avoid allocating new objects on every call
   protected hitboxResult: Hitbox = {
     top: 0,
     right: 0,

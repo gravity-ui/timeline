@@ -1,68 +1,109 @@
-import dayjs from "dayjs";
 import { convertDomain } from "../helpers/math";
+import { TGridLevel } from "../types/grid";
+import dayjs from "dayjs";
+import { getGridLevels } from "../constants/grid";
+import { BaseComponentInterface } from "../types/component";
+import { CanvasApi } from "../CanvasApi";
 
-import { TimelineCanvasApi } from "../TimelineCanvasApi";
-import { yaTimelineConfig } from "../config";
-import { DAY, HOUR, MONTH, YEAR } from "../definitions";
-import { Ruler } from "./Ruler";
-import { TimelineComponent } from "./TimelineComponent";
+/**
+ * Grid component responsible for rendering vertical grid lines on the timeline
+ */
+export class Grid implements BaseComponentInterface {
+  private api: CanvasApi;
+  private levels: TGridLevel[];
 
-export class Grid extends TimelineComponent {
-  public render(api: TimelineCanvasApi) {
-    const rulerHeight = api.getComponent(Ruler)?.height || 0;
-    const { canvas, start, end, pixelRatio } = api;
-    const left = 0;
-    const top = rulerHeight;
-    const width = canvas.width / pixelRatio;
-    const height = canvas.height - rulerHeight;
-    const domain = end - start;
-
-    let level: TGridLevel;
-
-    for (let i = 0, len = gridLevels.length; i < len; i += 1) {
-      if (domain > gridLevels[i].domain) {
-        continue;
-      }
-
-      let marksWidth = 0;
-
-      for (let t = dayjs(0); +t < domain; t = gridLevels[i].step(t)) {
-        const x = convertDomain(+t, 0, domain, left, left + width);
-        if (x > 0) {
-          marksWidth += yaTimelineConfig.RULER_GRID_SPACING;
-        }
-      }
-
-      if (marksWidth > width + 40) {
-        continue;
-      }
-
-      level = gridLevels[i];
-      break;
-    }
-
-    api.useStaticTransform();
-
-    api.ctx.lineJoin = "miter";
-    api.ctx.miterLimit = 2;
-    api.ctx.lineWidth = 1;
-
-    this.renderLevel(api.ctx, top, left, width, height, start, end, level!);
+  constructor(api: CanvasApi) {
+    this.api = api;
+    this.levels = getGridLevels(this.api.getVisualConfiguration().grid);
   }
 
+  /**
+   * Renders the grid on the canvas
+   */
+  public render() {
+    this.api.useStaticTransform();
+    const { ruler } = this.api.getVisualConfiguration();
+    const { start, end } = this.api.getInterval();
+    const { ctx, width } = this.api;
+    const domainSize = end - start;
+
+    // Get the appropriate grid level
+    const level = this.selectGridLevel(domainSize, width);
+    if (!level) return;
+
+    // Set up the drawing area
+    this.api.useStaticTransform();
+    const rulerHeight = ruler.height || 0;
+    const top = rulerHeight;
+    const height = ctx.canvas.height - rulerHeight;
+
+    // Render the selected level
+    this.renderLevel(top, 0, width, height, level);
+  }
+
+  /**
+   * Selects the appropriate grid level based on domain size and canvas width
+   */
+  private selectGridLevel(
+    domainSize: number,
+    canvasWidth: number,
+  ): TGridLevel | null {
+    if (!this.levels.length) return null;
+
+    for (const level of this.levels) {
+      if (domainSize > level.domain) continue;
+
+      // Check if the marks fit within the visible area
+      if (
+        this.calculateMarksWidth(level, domainSize) >
+        canvasWidth + this.api.getVisualConfiguration().grid.widthBuffer
+      ) {
+        continue;
+      }
+
+      return level;
+    }
+
+    // Return the coarsest level as fallback
+    return this.levels[this.levels.length - 1];
+  }
+
+  /**
+   * Calculates the total width that the level's marks will occupy
+   */
+  private calculateMarksWidth(level: TGridLevel, domainSize: number): number {
+    let time = dayjs(0);
+    let totalWidth = 0;
+
+    while (Number(time) < domainSize) {
+      const x = convertDomain(Number(time), 0, domainSize, 0, totalWidth);
+      totalWidth += x > 0 ? this.api.getVisualConfiguration().grid.spacing : 0;
+      time = level.step(time);
+    }
+
+    return totalWidth;
+  }
+
+  /**
+   * Renders a specific grid level with vertical lines
+   */
   private renderLevel(
-    ctx: CanvasRenderingContext2D,
     top: number,
     left: number,
     width: number,
     height: number,
-    start: number,
-    end: number,
     level: TGridLevel,
   ) {
-    ctx.lineWidth = yaTimelineConfig.GRID_STROKE_WIDTH;
-    for (let t = level.start(start); +t < end; t = level.step(t)) {
-      const x = Math.floor(convertDomain(+t, start, end, left, left + width));
+    const { grid } = this.api.getVisualConfiguration();
+    const { start, end } = this.api.getInterval();
+    const { ctx } = this.api;
+    ctx.lineWidth = grid.lineWidth;
+
+    // Draw vertical grid lines for each time point in the visible range
+    for (let t = level.start(start); Number(t) < end; t = level.step(t)) {
+      const x = Math.floor(
+        convertDomain(Number(t), start, end, left, left + width),
+      );
       ctx.beginPath();
       ctx.strokeStyle = level.style(t);
       ctx.moveTo(x, top);
@@ -71,103 +112,3 @@ export class Grid extends TimelineComponent {
     }
   }
 }
-
-function primaryForEvery(
-  n: number,
-  unit: "second" | "minute" | "month" | "year",
-) {
-  return (t: dayjs.Dayjs) => {
-    return t[unit]() % n === 0
-      ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-      : yaTimelineConfig.resolveCssValue(yaTimelineConfig.SECONDARY_MARK_COLOR);
-  };
-}
-
-type TGridLevel = {
-  domain: number;
-  style: (t: dayjs.Dayjs) => string;
-  start: (t: dayjs.Dayjs | number) => dayjs.Dayjs;
-  step: (t: dayjs.Dayjs) => dayjs.Dayjs;
-};
-
-const gridLevels: TGridLevel[] = [
-  {
-    domain: HOUR,
-    style: primaryForEvery(5, "minute"),
-    start: (t) => dayjs(t).startOf("minute"),
-    step: (t) => t.add(1, "minute"),
-  },
-  {
-    domain: DAY,
-    style(t) {
-      if (t.hour() === 0 && t.minute() === 0) {
-        return yaTimelineConfig.resolveCssValue(
-          yaTimelineConfig.BOUNDARY_MARK_COLOR,
-        );
-      }
-
-      return t.minute() % 4 === 0
-        ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(
-            yaTimelineConfig.SECONDARY_MARK_COLOR,
-          );
-    },
-    start(t) {
-      const time = dayjs(t).startOf("minute");
-      return time.subtract(time.minute() % 15, "minute");
-    },
-    step: (t) => t.add(15, "minute"),
-  },
-  {
-    domain: MONTH,
-    style(t) {
-      if (t.hour() === 0) {
-        return yaTimelineConfig.resolveCssValue(
-          yaTimelineConfig.BOUNDARY_MARK_COLOR,
-        );
-      }
-
-      return t.hour() % 4 === 0
-        ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(
-            yaTimelineConfig.SECONDARY_MARK_COLOR,
-          );
-    },
-    start: (t) => dayjs(t).startOf("hour"),
-    step: (t) => t.add(1, "hour"),
-  },
-  {
-    domain: YEAR,
-    style(t) {
-      if (t.date() === 1) {
-        return yaTimelineConfig.resolveCssValue(
-          yaTimelineConfig.BOUNDARY_MARK_COLOR,
-        );
-      }
-
-      return t.day() === 1
-        ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(
-            yaTimelineConfig.SECONDARY_MARK_COLOR,
-          );
-    },
-    start: (t) => dayjs(t).startOf("day"),
-    step: (t) => t.add(1, "day"),
-  },
-  {
-    domain: YEAR * 5,
-    style: primaryForEvery(3, "month"),
-    start: (t) => dayjs(t).startOf("month"),
-    step: (t) => dayjs(t).add(1, "month"),
-  },
-  {
-    domain: Infinity,
-    style() {
-      return yaTimelineConfig.resolveCssValue(
-        yaTimelineConfig.PRIMARY_MARK_COLOR,
-      );
-    },
-    start: (t) => dayjs(t).startOf("year"),
-    step: (t) => t.add(1, "year"),
-  },
-];
