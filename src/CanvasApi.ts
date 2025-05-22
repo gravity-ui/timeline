@@ -3,11 +3,11 @@ import { SECOND } from "./constants/timeConstants";
 import { Timeline } from "./Timeline";
 import { BaseComponentInterface } from "./types/component";
 import { ComponentType } from "./enums";
-import { Events } from "./newComponents/Events";
-import { Axes } from "./newComponents/Axes";
+import { Events } from "./components/Events";
+import { Axes } from "./components/Axes";
 import { TimelineAxis } from "./types/axis";
 import { TimelineEvent } from "./types/events";
-import { Markers } from "./newComponents/Markers";
+import { Markers } from "./components/Markers";
 import { TimelineMarker } from "./types/markers";
 
 export class CanvasApi {

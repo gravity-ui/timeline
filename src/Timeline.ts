@@ -3,15 +3,15 @@ import {
   TimelineSettings,
   ViewConfigurationDefault,
 } from "./types/configuration";
-import { Axes } from "./newComponents/Axes";
-import { Ruler } from "./newComponents/Ruler";
-import { Grid } from "./newComponents/Grid";
-import { Events } from "./newComponents/Events";
+import { Axes } from "./components/Axes";
+import { Ruler } from "./components/Ruler";
+import { Grid } from "./components/Grid";
+import { Events } from "./components/Events";
 import { defaultViewConfig } from "./constants/options";
 import { CanvasApi } from "./CanvasApi";
 import { TimelineController } from "./TimelineController";
 import { ComponentType } from "./enums";
-import { Markers } from "./newComponents/Markers";
+import { Markers } from "./components/Markers";
 
 export class Timeline {
   public canvasScrollTop: number;

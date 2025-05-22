@@ -1,4 +1,4 @@
-import { AbstractEventRenderer } from "../newComponents/Events";
+import { AbstractEventRenderer } from "../components/Events";
 
 export type TimelineEvent = {
   id: string;
