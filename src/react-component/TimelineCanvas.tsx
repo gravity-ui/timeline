@@ -60,6 +60,18 @@ export const TimelineCanvas: FC<Props> = ({ className }) => {
   useEffect(() => {
     timeline.init(canvasRef.current);
     timeline.api.setSelectedEvents(["test2"]);
+    timeline.api.setMarkers([
+      {
+        time: 1739537146337,
+        color: "#ea0000",
+        label: "privet",
+        labelTextColor: "#14edc6",
+        labelBackgroundColor: "#26489e",
+        labelBottom: "poka",
+        labelBottomTextColor: "#f45e02",
+        labelBottomBackgroundColor: "#00ff00",
+      },
+    ]);
   }, [timeline]);
 
   return (

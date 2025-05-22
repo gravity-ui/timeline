@@ -45,11 +45,23 @@ export type EnetsViewOptions = {
   maxIndexTreeWidth?: number;
 };
 
+export type MarkerViewOptions = {
+  labelPadding?: number;
+  labelHeight?: number;
+  labelFont?: string;
+  textPadding?: number;
+  markerWidth?: number;
+  color?: {
+    textColor?: string;
+  };
+};
+
 export type ViewConfiguration = {
   ruler?: RulerViewOptions;
   grid?: GridViewOptions;
   axes?: AxesViewOptions;
   events?: EnetsViewOptions;
+  markers?: MarkerViewOptions;
   hideRuler?: boolean;
 };
 
@@ -81,11 +93,3 @@ type DeepRequired<T> = {
 };
 
 export type ViewConfigurationDefault = DeepRequired<ViewConfiguration>;
-
-// export type DefaultTimeLineOptions = Required<TimeLineConfig> & {
-//   ruler: Required<RulerOptions> & {
-//     color: Required<Required<RulerOptions>["color"]>;
-//   };
-//   grid: Required<GridOptions>;
-//   axes?: AxesOptions;
-// };

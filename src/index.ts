@@ -1,5 +1,5 @@
-import { yaTimelineConfig } from "./config";
+import {} from "./config";
 
-export { yaTimelineConfig };
+export {};
 
 export type {};

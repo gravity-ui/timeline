@@ -7,6 +7,8 @@ import { Events } from "./newComponents/Events";
 import { Axes } from "./newComponents/Axes";
 import { TimelineAxis } from "./types/axis";
 import { TimelineEvent } from "./types/events";
+import { Markers } from "./newComponents/Markers";
+import { TimelineMarker } from "./types/markers";
 
 export class CanvasApi {
   public readonly canvas: HTMLCanvasElement;
@@ -81,6 +83,11 @@ export class CanvasApi {
     events.setSelectedEvents(ids);
   }
 
+  public setMarkers(newMarkers: TimelineMarker[]) {
+    const markers = this.getComponent<Markers>(ComponentType.Markers);
+    markers.setMarkers(newMarkers);
+  }
+
   public get pixelRatio(): number {
     return window.devicePixelRatio || 1;
   }
@@ -108,6 +115,10 @@ export class CanvasApi {
 
   public get currentTime(): number {
     return alignNumber(Date.now(), SECOND);
+  }
+
+  public widthToTime(px: number): number {
+    return this.positionToTime(px) - this.getInterval().start;
   }
 
   public timeToPosition(t: number): number {

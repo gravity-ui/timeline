@@ -11,6 +11,7 @@ import { defaultViewConfig } from "./constants/options";
 import { CanvasApi } from "./CanvasApi";
 import { TimelineController } from "./TimelineController";
 import { ComponentType } from "./enums";
+import { Markers } from "./newComponents/Markers";
 
 export class Timeline {
   public canvasScrollTop: number;
@@ -44,6 +45,7 @@ export class Timeline {
     if (!this.viewConfiguration.hideRuler) {
       this.api.addComponent(ComponentType.Ruler, new Ruler(this.api));
     }
+    this.api.addComponent(ComponentType.Markers, new Markers(this.api));
 
     this.api.setAxes(this.settings.axes);
     this.api.setEvents(this.settings.events);

@@ -3,6 +3,7 @@ export enum ComponentType {
   Grid = "grid",
   Ruler = "ruler",
   Events = "events",
+  Markers = "markers",
 }
 
 export enum StrokeMode {
