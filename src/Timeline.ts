@@ -23,29 +23,20 @@ export class Timeline {
   private controller: TimelineController;
 
   constructor(config: TimeLineConfig) {
-    this.viewConfiguration = config.viewConfiguration
-      ? ({
-          ...defaultViewConfig,
-          ...config.viewConfiguration,
-        } as ViewConfigurationDefault)
-      : defaultViewConfig;
-
+    this.viewConfiguration = this.getViewConfig(config.viewConfiguration);
     this.settings = config.settings;
   }
 
   public init(canvas: HTMLCanvasElement) {
+    if (!canvas || !(canvas instanceof HTMLCanvasElement)) {
+      throw new Error("Invalid canvas element provided to Timeline.init()");
+    }
+
     this.canvas = canvas;
     this.canvasScrollTop = 0;
 
     this.api = new CanvasApi(this);
-    // init components
-    this.api.addComponent(ComponentType.Grid, new Grid(this.api));
-    this.api.addComponent(ComponentType.Axes, new Axes(this.api));
-    this.api.addComponent(ComponentType.Events, new Events(this.api));
-    if (!this.viewConfiguration.hideRuler) {
-      this.api.addComponent(ComponentType.Ruler, new Ruler(this.api));
-    }
-    this.api.addComponent(ComponentType.Markers, new Markers(this.api));
+    this.initComponents();
 
     this.api.setAxes(this.settings.axes);
     this.api.setEvents(this.settings.events);
@@ -56,5 +47,23 @@ export class Timeline {
   public destroy() {
     this.controller.destroy();
     this.api.destroy();
+  }
+
+  private getViewConfig(
+    config?: TimeLineConfig["viewConfiguration"],
+  ): ViewConfigurationDefault {
+    return config
+      ? ({ ...defaultViewConfig, ...config } as ViewConfigurationDefault)
+      : defaultViewConfig;
+  }
+
+  private initComponents() {
+    this.api.addComponent(ComponentType.Grid, new Grid(this.api));
+    this.api.addComponent(ComponentType.Axes, new Axes(this.api));
+    this.api.addComponent(ComponentType.Events, new Events(this.api));
+    if (!this.viewConfiguration.hideRuler) {
+      this.api.addComponent(ComponentType.Ruler, new Ruler(this.api));
+    }
+    this.api.addComponent(ComponentType.Markers, new Markers(this.api));
   }
 }
