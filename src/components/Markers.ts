@@ -105,10 +105,14 @@ export class Markers implements BaseComponentInterface {
   }
 
   /**
-   * Renders a marker label with collision avoidance
-   * @param markerPosition - X position of the marker
-   * @param labelData - Label content and styling
-   * @param position - Vertical position ('top' or 'bottom')
+   * Renders a marker label with collision avoidance using a right-to-left rendering strategy.
+   * Positions labels to prevent overlap with previously rendered labels and canvas boundaries.
+   * @param {number} markerPosition - X position of the marker on the canvas
+   * @param {object} labelData - Label content and styling information
+   * @param {string} labelData.label - Text content of the label
+   * @param {string} labelData.backgroundColor - Background color for the label
+   * @param {string} [labelData.textColor] - Text color for the label (falls back to default if not provided)
+   * @param {'top' | 'bottom'} position - Vertical position of the label on the canvas
    */
   protected renderLabel(
     markerPosition: number,

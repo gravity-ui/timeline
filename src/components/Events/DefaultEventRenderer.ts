@@ -17,6 +17,7 @@ export class DefaultEventRenderer extends AbstractEventRenderer {
     if (isSelected) color = event.selectedColor || DEFAULT_SELECTED_COLOR;
 
     ctx.beginPath();
+    // eslint-disable-next-line no-param-reassign
     ctx.fillStyle = color;
     ctx.rect(x0, y0 - 10, x1 - x0, 20);
     ctx.fill();
