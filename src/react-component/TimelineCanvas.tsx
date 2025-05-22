@@ -1,6 +1,5 @@
 import React, { FC, useEffect, useMemo, useRef } from "react";
 import { Timeline } from "../Timeline";
-// import { UnixTimestampMs } from "../definitions";
 
 type Props = {
   className?: string;

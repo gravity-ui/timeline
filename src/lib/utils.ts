@@ -12,5 +12,3 @@ export function checkControlCommandKey(
 ): boolean {
   return isMac() ? event.metaKey : event.ctrlKey;
 }
-
-export const noop = () => {};

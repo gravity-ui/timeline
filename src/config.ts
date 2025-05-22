@@ -1,6 +1,6 @@
-import { MONTH, SECOND } from "./definitions";
-import { RegionState } from "./lib/AbstractTimelineDataLoader";
-import { EventStatus } from "./components/Events/common";
+import { MONTH, SECOND } from "./constants/timeConstants";
+// import { RegionState } from "./lib/AbstractTimelineDataLoader";
+// import { EventStatus } from "./components/Events/common";
 
 const defaultPalette = {
   gray1: "#111",
@@ -67,32 +67,32 @@ export const yaTimelineConfig = {
   GRID_STROKE_WIDTH: 1,
 
   eventStatusColors: {
-    [EventStatus.INFO]: defaultPalette.blue,
-    [EventStatus.QUEUED]: defaultPalette.purple,
-    [EventStatus.DEPRECATED]: defaultPalette.gold,
-    [EventStatus.OK]: defaultPalette.green,
-    [EventStatus.WARNING]: defaultPalette.gold,
-    [EventStatus.DANGER]: defaultPalette.red,
-    [EventStatus.MUTED]: defaultPalette.gray7,
-    [EventStatus.DELETED]: defaultPalette.red,
+    // [EventStatus.INFO]: defaultPalette.blue,
+    // [EventStatus.QUEUED]: defaultPalette.purple,
+    // [EventStatus.DEPRECATED]: defaultPalette.gold,
+    // [EventStatus.OK]: defaultPalette.green,
+    // [EventStatus.WARNING]: defaultPalette.gold,
+    // [EventStatus.DANGER]: defaultPalette.red,
+    // [EventStatus.MUTED]: defaultPalette.gray7,
+    // [EventStatus.DELETED]: defaultPalette.red,
   },
 
   groupStatusColors: {
-    [EventStatus.INFO]: defaultPalette.blue,
-    [EventStatus.QUEUED]: defaultPalette.purple,
-    [EventStatus.DEPRECATED]: defaultPalette.gold,
-    [EventStatus.OK]: defaultPalette.green,
-    [EventStatus.WARNING]: defaultPalette.gold,
-    [EventStatus.DANGER]: defaultPalette.red,
-    [EventStatus.MUTED]: defaultPalette.gray7,
-    [EventStatus.DELETED]: defaultPalette.red,
+    // [EventStatus.INFO]: defaultPalette.blue,
+    // [EventStatus.QUEUED]: defaultPalette.purple,
+    // [EventStatus.DEPRECATED]: defaultPalette.gold,
+    // [EventStatus.OK]: defaultPalette.green,
+    // [EventStatus.WARNING]: defaultPalette.gold,
+    // [EventStatus.DANGER]: defaultPalette.red,
+    // [EventStatus.MUTED]: defaultPalette.gray7,
+    // [EventStatus.DELETED]: defaultPalette.red,
   },
 
   regionStateColors: {
-    [RegionState.CREATED]: defaultPalette.blue,
-    [RegionState.PROCESSING]: defaultPalette.yellow,
-    [RegionState.PROCESSED]: defaultPalette.green,
-    [RegionState.FAILED]: defaultPalette.red,
+    // [RegionState.CREATED]: defaultPalette.blue,
+    // [RegionState.PROCESSING]: defaultPalette.yellow,
+    // [RegionState.PROCESSED]: defaultPalette.green,
+    // [RegionState.FAILED]: defaultPalette.red,
   },
 
   /**
