@@ -1,7 +1,7 @@
 import { convertDomain } from "../helpers/math";
 import { TGridLevel } from "../types/grid";
 import dayjs from "dayjs";
-import { gridLevels } from "../constants/grid";
+import { getGridLevels } from "../constants/grid";
 import { BaseComponentInterface } from "../types/component";
 import { CanvasApi } from "../CanvasApi";
 
@@ -10,9 +10,11 @@ import { CanvasApi } from "../CanvasApi";
  */
 export class Grid implements BaseComponentInterface {
   private api: CanvasApi;
+  private levels: TGridLevel[];
 
   constructor(api: CanvasApi) {
     this.api = api;
+    this.levels = getGridLevels(this.api.getVisualConfiguration().grid);
   }
 
   /**
@@ -46,9 +48,9 @@ export class Grid implements BaseComponentInterface {
     domainSize: number,
     canvasWidth: number,
   ): TGridLevel | null {
-    if (!gridLevels.length) return null;
+    if (!this.levels.length) return null;
 
-    for (const level of gridLevels) {
+    for (const level of this.levels) {
       if (domainSize > level.domain) continue;
 
       // Check if the marks fit within the visible area
@@ -63,7 +65,7 @@ export class Grid implements BaseComponentInterface {
     }
 
     // Return the coarsest level as fallback
-    return gridLevels[gridLevels.length - 1];
+    return this.levels[this.levels.length - 1];
   }
 
   /**

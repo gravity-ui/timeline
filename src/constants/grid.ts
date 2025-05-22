@@ -1,13 +1,30 @@
-import { DAY, HOUR, MONTH, YEAR } from "../definitions";
+import { DAY, HOUR, MONTH, YEAR } from "./timeConstants";
 import dayjs from "dayjs";
-import { yaTimelineConfig } from "../config";
 import { TGridLevel } from "../types/grid";
-import { getGridColorForTimeUnitMultiple } from "../helpers/getGridColorForTimeUnitMultiple";
+import { ViewConfigurationDefault } from "../types/configuration";
 
-export const gridLevels: TGridLevel[] = [
+const getGridColorForTimeUnitMultiple = (
+  n: number,
+  unit: "second" | "minute" | "month" | "year",
+  primaryColor: string,
+  secondaryColor: string,
+) => {
+  return (t: dayjs.Dayjs) => {
+    return t[unit]() % n === 0 ? primaryColor : secondaryColor;
+  };
+};
+
+export const getGridLevels = ({
+  color,
+}: ViewConfigurationDefault["grid"]): TGridLevel[] => [
   {
     domain: HOUR,
-    style: getGridColorForTimeUnitMultiple(5, "minute"),
+    style: getGridColorForTimeUnitMultiple(
+      5,
+      "minute",
+      color.primaryMarkColor,
+      color.secondaryMarkColor,
+    ),
     start: (t) => dayjs(t).startOf("minute"),
     step: (t) => t.add(1, "minute"),
   },
@@ -15,16 +32,12 @@ export const gridLevels: TGridLevel[] = [
     domain: DAY,
     style(t) {
       if (t.hour() === 0 && t.minute() === 0) {
-        return yaTimelineConfig.resolveCssValue(
-          yaTimelineConfig.BOUNDARY_MARK_COLOR,
-        );
+        return color.boundaryMarkColor;
       }
 
       return t.minute() % 4 === 0
-        ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(
-            yaTimelineConfig.SECONDARY_MARK_COLOR,
-          );
+        ? color.primaryMarkColor
+        : color.secondaryMarkColor;
     },
     start(t) {
       const time = dayjs(t).startOf("minute");
@@ -36,16 +49,12 @@ export const gridLevels: TGridLevel[] = [
     domain: MONTH,
     style(t) {
       if (t.hour() === 0) {
-        return yaTimelineConfig.resolveCssValue(
-          yaTimelineConfig.BOUNDARY_MARK_COLOR,
-        );
+        return color.boundaryMarkColor;
       }
 
       return t.hour() % 4 === 0
-        ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(
-            yaTimelineConfig.SECONDARY_MARK_COLOR,
-          );
+        ? color.primaryMarkColor
+        : color.secondaryMarkColor;
     },
     start: (t) => dayjs(t).startOf("hour"),
     step: (t) => t.add(1, "hour"),
@@ -54,32 +63,29 @@ export const gridLevels: TGridLevel[] = [
     domain: YEAR,
     style(t) {
       if (t.date() === 1) {
-        return yaTimelineConfig.resolveCssValue(
-          yaTimelineConfig.BOUNDARY_MARK_COLOR,
-        );
+        return color.boundaryMarkColor;
       }
 
-      return t.day() === 1
-        ? yaTimelineConfig.resolveCssValue(yaTimelineConfig.PRIMARY_MARK_COLOR)
-        : yaTimelineConfig.resolveCssValue(
-            yaTimelineConfig.SECONDARY_MARK_COLOR,
-          );
+      return t.day() === 1 ? color.primaryMarkColor : color.secondaryMarkColor;
     },
     start: (t) => dayjs(t).startOf("day"),
     step: (t) => t.add(1, "day"),
   },
   {
     domain: YEAR * 5,
-    style: getGridColorForTimeUnitMultiple(3, "month"),
+    style: getGridColorForTimeUnitMultiple(
+      3,
+      "month",
+      color.primaryMarkColor,
+      color.secondaryMarkColor,
+    ),
     start: (t) => dayjs(t).startOf("month"),
     step: (t) => dayjs(t).add(1, "month"),
   },
   {
     domain: Infinity,
     style() {
-      return yaTimelineConfig.resolveCssValue(
-        yaTimelineConfig.PRIMARY_MARK_COLOR,
-      );
+      return color.primaryMarkColor;
     },
     start: (t) => dayjs(t).startOf("year"),
     step: (t) => t.add(1, "year"),

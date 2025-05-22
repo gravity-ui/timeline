@@ -1,5 +1,5 @@
 import { RulerLevel, RulerSupLevel } from "../types/ruler";
-import { labelLevels } from "../constants/ruler";
+import { getLabelLevels } from "../constants/ruler";
 import dayjs from "dayjs";
 import { clamp, convertDomain } from "../helpers/math";
 import { BaseComponentInterface } from "../types/component";
@@ -8,9 +8,11 @@ import { CanvasApi } from "../CanvasApi";
 export class Ruler implements BaseComponentInterface {
   private api: CanvasApi;
   private levelCache = new Map<RulerLevel, number>();
+  private labelLevels: RulerLevel[];
 
   constructor(api: CanvasApi) {
     this.api = api;
+    this.labelLevels = getLabelLevels(this.api.getVisualConfiguration().ruler);
   }
 
   public render() {
@@ -74,7 +76,7 @@ export class Ruler implements BaseComponentInterface {
     let level: RulerLevel | undefined;
     let supLevel: RulerSupLevel | undefined;
 
-    for (const currentLevel of labelLevels) {
+    for (const currentLevel of this.labelLevels) {
       if (domain > currentLevel.domain) continue;
 
       // Calculate or get cached marks width
@@ -88,7 +90,8 @@ export class Ruler implements BaseComponentInterface {
 
       level = currentLevel;
       supLevel =
-        level.sup || labelLevels[labelLevels.indexOf(currentLevel) + 1];
+        level.sup ||
+        this.labelLevels[this.labelLevels.indexOf(currentLevel) + 1];
       break;
     }
 

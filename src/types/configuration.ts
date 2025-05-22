@@ -13,6 +13,7 @@ export type RulerViewOptions = {
     secondaryLevel?: string;
     textOutlineColor?: string;
     borderColor?: string;
+    rulerWeekendColor?: string;
   };
 };
 
@@ -20,6 +21,11 @@ export type GridViewOptions = {
   spacing?: number;
   lineWidth?: number;
   widthBuffer?: number;
+  color?: {
+    primaryMarkColor?: string;
+    secondaryMarkColor?: string;
+    boundaryMarkColor?: string;
+  };
 };
 
 export type AxesViewOptions = {

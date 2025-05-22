@@ -1,5 +1,5 @@
 import { alignNumber, convertDomain } from "./helpers/math";
-import { SECOND } from "./definitions";
+import { SECOND } from "./constants/timeConstants";
 import { Timeline } from "./Timeline";
 import { BaseComponentInterface } from "./types/component";
 import { ComponentType } from "./enums";

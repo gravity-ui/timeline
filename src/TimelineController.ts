@@ -1,5 +1,5 @@
 import { clamp } from "./helpers/math";
-import { MONTH, SECOND } from "./definitions";
+import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
 
 const WHEEL_PAN_SPEED = 0.00025;
