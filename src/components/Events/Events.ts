@@ -95,7 +95,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
       select(events[0].id);
     }
 
-    this.api.getTimelineSettings()?.onSelectChange(this.getSelectedEvents());
+    this.api.emit("on-select-change", { events: this.getSelectedEvents() });
     this.api.rerender();
   }
 
@@ -198,7 +198,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
 
   protected handleCanvasMouseup = (event: MouseEvent) => {
     const candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
-    this.api.getTimelineSettings()?.onClick({
+    this.api.emit("on-click", {
       events: candidates,
       time: this.api.positionToTime(event.offsetX),
       relativeX: event.clientX,
@@ -220,7 +220,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     const candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
     const candidate = candidates.length > 0 ? candidates[0] : undefined;
 
-    this.api.getTimelineSettings().onContextMenu({
+    this.api.emit("on-context-click", {
       event: candidate,
       time: this.api.positionToTime(event.offsetX),
       relativeX: event.clientX,
@@ -234,7 +234,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     const candidate = candidates.length > 0 ? candidates[0] : undefined;
 
     if (this.activeEvent && (this.activeEvent !== candidate || !candidate)) {
-      this.api.getTimelineSettings()?.onLeave(this.activeEvent);
+      this.api.emit("on-leave", { event: this.activeEvent });
     }
 
     if (!candidate) {
@@ -245,7 +245,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     const api = this.api;
     this.activeEvent = candidate;
 
-    this.api.getTimelineSettings()?.onHover({
+    this.api.emit("on-hover", {
       event: candidate,
       time: api.positionToTime(event.offsetX),
       relativeX: event.clientX,

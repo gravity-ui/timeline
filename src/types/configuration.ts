@@ -76,11 +76,6 @@ export type TimelineSettings = {
   end: number;
   axes: TimelineAxis[];
   events: TimelineEvent[];
-  onClick?: (data: { events: TimelineEvent[] } & BaseEventData) => void;
-  onContextMenu?: (data: { event?: TimelineEvent } & BaseEventData) => void;
-  onSelectChange?: (events: TimelineEvent[]) => void;
-  onHover?: (data: { event: TimelineEvent } & BaseEventData) => void;
-  onLeave?: (event: TimelineEvent) => void;
 };
 
 export type TimeLineConfig = {

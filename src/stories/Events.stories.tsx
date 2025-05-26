@@ -2,6 +2,7 @@ import React from "react";
 import { TimelineCanvas } from "../react-component/TimelineCanvas";
 import { TimeLineConfig } from "../types";
 import { useTimeline } from "../react-component/hooks/useTimeline";
+import { useTimelineEvent } from "../react-component/hooks/useTimelineEvent";
 
 const timelineConfig: TimeLineConfig = {
   settings: {
@@ -82,6 +83,10 @@ export default {
 // Basic story with events
 export const Basic = () => {
   const { timeline } = useTimeline(timelineConfig);
+
+  useTimelineEvent(timeline, "on-click", (data) => {
+    console.info(data);
+  });
 
   return (
     <div
