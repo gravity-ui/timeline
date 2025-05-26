@@ -117,6 +117,10 @@ export class CanvasApi {
     return alignNumber(Date.now(), SECOND);
   }
 
+  public get emit() {
+    return this.timeline.emit.bind(this.timeline);
+  }
+
   public widthToTime(px: number): number {
     return this.positionToTime(px) - this.getInterval().start;
   }

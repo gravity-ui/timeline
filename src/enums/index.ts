@@ -10,3 +10,8 @@ export enum StrokeMode {
   STRAIGHT,
   DASHED,
 }
+
+export enum TimelineState {
+  INIT,
+  READY,
+}
