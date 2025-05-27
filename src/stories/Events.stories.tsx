@@ -3,6 +3,7 @@ import { TimelineCanvas } from "../react-component/TimelineCanvas";
 import { TimeLineConfig } from "../types";
 import { useTimeline } from "../react-component/hooks/useTimeline";
 import { useTimelineEvent } from "../react-component/hooks/useTimelineEvent";
+import { action } from "@storybook/addon-actions";
 
 const timelineConfig: TimeLineConfig = {
   settings: {
@@ -23,7 +24,7 @@ const timelineConfig: TimeLineConfig = {
         axisId: "1",
         trackIndex: 0,
         color: "rgb(252, 202, 70)",
-        // selectedColor: "rgb(252, 202, 70)",
+        selectedColor: "rgb(193,0,255)",
       },
       {
         id: "test2",
@@ -62,7 +63,7 @@ const timelineConfig: TimeLineConfig = {
 };
 
 export default {
-  title: "YaTimeline/Events",
+  title: "Timeline/Events",
   component: TimelineCanvas,
   argTypes: {
     start: { control: "number" },
@@ -85,7 +86,23 @@ export const Basic = () => {
   const { timeline } = useTimeline(timelineConfig);
 
   useTimelineEvent(timeline, "on-click", (data) => {
-    console.info(data);
+    action("on-click")(data);
+  });
+
+  useTimelineEvent(timeline, "on-context-click", (data) => {
+    action("on-context-click")(data);
+  });
+
+  useTimelineEvent(timeline, "on-select-change", (data) => {
+    action("on-select-change")(data);
+  });
+
+  useTimelineEvent(timeline, "on-hover", (data) => {
+    action("on-leave")(data);
+  });
+
+  useTimelineEvent(timeline, "on-leave", (data) => {
+    action("on-leave")(data);
   });
 
   return (
