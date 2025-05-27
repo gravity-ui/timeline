@@ -7,7 +7,7 @@
   "scripts": {
     "build": "tsc",
     "lint": "eslint",
-    "lint:all": "npm run lint \"./src/**/*.{js,jsx,ts,tsx}\"",
+    "lint:all": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build"
   },

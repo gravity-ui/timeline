@@ -65,12 +65,6 @@ export type ViewConfiguration = {
   hideRuler?: boolean;
 };
 
-export type BaseEventData = {
-  time: number;
-  relativeX: number;
-  relativeY: number;
-};
-
 export type TimelineSettings = {
   start: number;
   end: number;
