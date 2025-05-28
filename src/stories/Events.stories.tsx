@@ -5,34 +5,135 @@ import { defaultViewConfig } from "../constants/options";
 import { StoryWrapper } from "./StoryWrapper";
 import { TimelineSettings, ViewConfiguration } from "../types";
 
-const meta: Meta<{
-  settings: TimelineSettings;
-  viewConfiguration: ViewConfiguration;
-}> = {
+type ViewConfigurationControls = {
+  [K in keyof ViewConfiguration as `viewConfiguration.${K}`]: ViewConfiguration[K];
+};
+
+type SettingsControls = {
+  [K in keyof TimelineSettings as `settings.${K}`]: TimelineSettings[K];
+};
+
+type StoryProps = SettingsControls & ViewConfigurationControls;
+
+const meta = {
   title: "Timeline/Events",
-  component: StoryWrapper,
+  component: StoryWrapper as React.ComponentType<StoryProps>,
   argTypes: {
-    settings: {
+    "settings.start": {
+      control: {
+        type: "number",
+      },
+      description: "Start timestamp of the timeline",
+      table: {
+        category: "settings",
+      },
+    },
+    "settings.end": {
+      control: {
+        type: "number",
+      },
+      description: "End timestamp of the timeline",
+      table: {
+        category: "settings",
+      },
+    },
+    "settings.axes": {
       control: {
         type: "object",
       },
-      description: "Timeline settings object",
+      description: "Timeline axes configuration",
       table: {
+        category: "settings",
         type: {
-          summary: "Settings",
-          detail: JSON.stringify(baseTimelineConfig, null, 2),
+          summary: "TimelineAxis[]",
+          detail: JSON.stringify(baseTimelineConfig.settings.axes, null, 2),
         },
       },
     },
-    viewConfiguration: {
+    "settings.events": {
       control: {
         type: "object",
       },
-      description: "View configuration object",
+      description: "Timeline events configuration",
       table: {
+        category: "settings",
         type: {
-          summary: "ViewConfiguration",
-          detail: JSON.stringify(defaultViewConfig, null, 2),
+          summary: "TimelineEvent[]",
+          detail: JSON.stringify(baseTimelineConfig.settings.events, null, 2),
+        },
+      },
+    },
+    "viewConfiguration.hideRuler": {
+      control: {
+        type: "boolean",
+      },
+      description: "Whether to hide the ruler",
+      table: {
+        category: "viewConfiguration",
+      },
+    },
+    "viewConfiguration.ruler": {
+      control: {
+        type: "object",
+      },
+      description: "Ruler view options",
+      table: {
+        category: "viewConfiguration",
+        type: {
+          summary: "RulerViewOptions",
+          detail: JSON.stringify(defaultViewConfig.ruler, null, 2),
+        },
+      },
+    },
+    "viewConfiguration.grid": {
+      control: {
+        type: "object",
+      },
+      description: "Grid view options",
+      table: {
+        category: "viewConfiguration",
+        type: {
+          summary: "GridViewOptions",
+          detail: JSON.stringify(defaultViewConfig.grid, null, 2),
+        },
+      },
+    },
+    "viewConfiguration.axes": {
+      control: {
+        type: "object",
+      },
+      description: "Axes view options",
+      table: {
+        category: "viewConfiguration",
+        type: {
+          summary: "AxesViewOptions",
+          detail: JSON.stringify(defaultViewConfig.axes, null, 2),
+        },
+      },
+    },
+    "viewConfiguration.events": {
+      control: {
+        type: "object",
+      },
+      description: "Events view options",
+      table: {
+        category: "viewConfiguration",
+        type: {
+          summary: "EnetsViewOptions",
+          detail: JSON.stringify(defaultViewConfig.events, null, 2),
+        },
+      },
+    },
+    "viewConfiguration.markers": {
+      control: {
+        type: "object",
+      },
+      description: "Markers view options",
+      table: {
+        category: "viewConfiguration",
+        type: {
+          summary: "MarkerViewOptions",
+          detail: JSON.stringify(defaultViewConfig.markers, null, 2),
         },
       },
     },
@@ -44,7 +145,7 @@ const meta: Meta<{
       </div>
     ),
   ],
-} satisfies Meta<typeof StoryWrapper>;
+} satisfies Meta<StoryProps>;
 
 export default meta;
 
@@ -52,8 +153,16 @@ type Story = StoryObj<typeof meta>;
 
 export const Basic: Story = {
   args: {
-    settings: baseTimelineConfig.settings,
-    viewConfiguration: defaultViewConfig,
+    "settings.start": baseTimelineConfig.settings.start,
+    "settings.end": baseTimelineConfig.settings.end,
+    "settings.axes": baseTimelineConfig.settings.axes,
+    "settings.events": baseTimelineConfig.settings.events,
+    "viewConfiguration.hideRuler": defaultViewConfig.hideRuler,
+    "viewConfiguration.ruler": defaultViewConfig.ruler,
+    "viewConfiguration.grid": defaultViewConfig.grid,
+    "viewConfiguration.axes": defaultViewConfig.axes,
+    "viewConfiguration.events": defaultViewConfig.events,
+    "viewConfiguration.markers": defaultViewConfig.markers,
   },
   parameters: {
     storyKey: "basic",
@@ -67,8 +176,16 @@ export const Basic: Story = {
 
 export const EndlessTimelines: Story = {
   args: {
-    settings: endlessTimelineConfig.settings,
-    viewConfiguration: defaultViewConfig,
+    "settings.start": endlessTimelineConfig.settings.start,
+    "settings.end": endlessTimelineConfig.settings.end,
+    "settings.axes": endlessTimelineConfig.settings.axes,
+    "settings.events": endlessTimelineConfig.settings.events,
+    "viewConfiguration.hideRuler": defaultViewConfig.hideRuler,
+    "viewConfiguration.ruler": defaultViewConfig.ruler,
+    "viewConfiguration.grid": defaultViewConfig.grid,
+    "viewConfiguration.axes": defaultViewConfig.axes,
+    "viewConfiguration.events": defaultViewConfig.events,
+    "viewConfiguration.markers": defaultViewConfig.markers,
   },
   parameters: {
     storyKey: "endless",

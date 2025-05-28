@@ -3,18 +3,40 @@ import { useTimeline } from "../react-component/hooks/useTimeline";
 import { useTimelineEvent } from "../react-component/hooks/useTimelineEvent";
 import { action } from "@storybook/addon-actions";
 import { TimelineCanvas } from "../react-component/TimelineCanvas";
-import { TimeLineConfig } from "../types";
+import { TimelineSettings, ViewConfiguration } from "../types";
 
-// Define the props that our story will control
-type TimelineStoryProps = {
-  settings: TimeLineConfig["settings"];
-  viewConfiguration: TimeLineConfig["viewConfiguration"];
+type ViewConfigurationControls = {
+  [K in keyof ViewConfiguration as `viewConfiguration.${K}`]: ViewConfiguration[K];
 };
 
-export const StoryWrapper: React.FC<TimelineStoryProps> = ({
-  settings,
-  viewConfiguration,
-}) => {
+type SettingsControls = {
+  [K in keyof TimelineSettings as `settings.${K}`]: TimelineSettings[K];
+};
+
+type TimelineStoryProps = SettingsControls & ViewConfigurationControls;
+
+export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
+  // Reconstruct settings object from flattened props
+  const settings = Object.entries(props).reduce((acc, [key, value]) => {
+    if (key.startsWith("settings.")) {
+      const propName = key.replace("settings.", "");
+      acc[propName] = value;
+    }
+    return acc;
+  }, {} as TimelineSettings);
+
+  // Reconstruct viewConfiguration object from flattened props
+  const viewConfiguration = Object.entries(props).reduce(
+    (acc, [key, value]) => {
+      if (key.startsWith("viewConfiguration.")) {
+        const propName = key.replace("viewConfiguration.", "");
+        acc[propName] = value;
+      }
+      return acc;
+    },
+    {} as ViewConfiguration,
+  );
+
   const { timeline } = useTimeline({ settings, viewConfiguration });
 
   useEffect(() => {
