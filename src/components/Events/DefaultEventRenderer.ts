@@ -12,14 +12,14 @@ export class DefaultEventRenderer extends AbstractEventRenderer {
     x0: number,
     x1: number,
     y0: number,
+    h: number,
   ) {
     let color = event.color || DEFAULT_COLOR;
     if (isSelected) color = event.selectedColor || DEFAULT_SELECTED_COLOR;
 
     ctx.beginPath();
-    // eslint-disable-next-line no-param-reassign
     ctx.fillStyle = color;
-    ctx.rect(x0, y0 - 10, x1 - x0, 20);
+    ctx.rect(x0, y0 - h / 2, x1 - x0, h);
     ctx.fill();
   }
 
