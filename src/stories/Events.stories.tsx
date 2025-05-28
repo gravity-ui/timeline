@@ -1,6 +1,10 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import { baseTimelineConfig, endlessTimelineConfig } from "./configs";
+import {
+  baseTimelineConfig,
+  customRendererConfig,
+  endlessTimelineConfig,
+} from "./configs";
 import { defaultViewConfig } from "../constants/options";
 import { StoryWrapper } from "./StoryWrapper";
 import { TimelineSettings, ViewConfiguration } from "../types";
@@ -151,18 +155,22 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
+const defaultViewConfigArgs: ViewConfigurationControls = {
+  "viewConfiguration.hideRuler": defaultViewConfig.hideRuler,
+  "viewConfiguration.ruler": defaultViewConfig.ruler,
+  "viewConfiguration.grid": defaultViewConfig.grid,
+  "viewConfiguration.axes": defaultViewConfig.axes,
+  "viewConfiguration.events": defaultViewConfig.events,
+  "viewConfiguration.markers": defaultViewConfig.markers,
+};
+
 export const Basic: Story = {
   args: {
     "settings.start": baseTimelineConfig.settings.start,
     "settings.end": baseTimelineConfig.settings.end,
     "settings.axes": baseTimelineConfig.settings.axes,
     "settings.events": baseTimelineConfig.settings.events,
-    "viewConfiguration.hideRuler": defaultViewConfig.hideRuler,
-    "viewConfiguration.ruler": defaultViewConfig.ruler,
-    "viewConfiguration.grid": defaultViewConfig.grid,
-    "viewConfiguration.axes": defaultViewConfig.axes,
-    "viewConfiguration.events": defaultViewConfig.events,
-    "viewConfiguration.markers": defaultViewConfig.markers,
+    ...defaultViewConfigArgs,
   },
   parameters: {
     storyKey: "basic",
@@ -180,18 +188,31 @@ export const EndlessTimelines: Story = {
     "settings.end": endlessTimelineConfig.settings.end,
     "settings.axes": endlessTimelineConfig.settings.axes,
     "settings.events": endlessTimelineConfig.settings.events,
-    "viewConfiguration.hideRuler": defaultViewConfig.hideRuler,
-    "viewConfiguration.ruler": defaultViewConfig.ruler,
-    "viewConfiguration.grid": defaultViewConfig.grid,
-    "viewConfiguration.axes": defaultViewConfig.axes,
-    "viewConfiguration.events": defaultViewConfig.events,
-    "viewConfiguration.markers": defaultViewConfig.markers,
+    ...defaultViewConfigArgs,
   },
   parameters: {
     storyKey: "endless",
     docs: {
       description: {
         story: "Demonstration of a timeline with infinite scrolling",
+      },
+    },
+  },
+};
+
+export const CustomRenderer: Story = {
+  args: {
+    "settings.start": customRendererConfig.settings.start,
+    "settings.end": customRendererConfig.settings.end,
+    "settings.axes": customRendererConfig.settings.axes,
+    "settings.events": customRendererConfig.settings.events,
+    ...defaultViewConfigArgs,
+  },
+  parameters: {
+    storyKey: "custom renderer",
+    docs: {
+      description: {
+        story: "Demonstration of a timeline with custom renderer",
       },
     },
   },

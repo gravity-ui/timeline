@@ -1,17 +1,25 @@
 import { TimeLineConfig } from "../types";
+import { MyEvent, MyRenderer } from "./MyRenderer";
+
+export const commonConfig: Pick<
+  TimeLineConfig["settings"],
+  "start" | "end" | "axes"
+> = {
+  start: 1739537126347,
+  end: 1739537186347,
+  axes: [
+    {
+      id: "1",
+      tracksCount: 5,
+      top: 0,
+      height: 20,
+    },
+  ],
+};
 
 export const baseTimelineConfig: TimeLineConfig = {
   settings: {
-    start: 1739537126347,
-    end: 1739537186347,
-    axes: [
-      {
-        id: "1",
-        tracksCount: 5,
-        top: 0,
-        height: 40,
-      },
-    ],
+    ...commonConfig,
     events: [
       {
         id: "test2",
@@ -51,16 +59,7 @@ export const baseTimelineConfig: TimeLineConfig = {
 
 export const endlessTimelineConfig: TimeLineConfig = {
   settings: {
-    start: 1739537126347,
-    end: 1739537186347,
-    axes: [
-      {
-        id: "1",
-        tracksCount: 5,
-        top: 0,
-        height: 40,
-      },
-    ],
+    ...commonConfig,
     events: [
       {
         id: "test2",
@@ -77,5 +76,39 @@ export const endlessTimelineConfig: TimeLineConfig = {
         color: "rgb(11, 180, 193)",
       },
     ],
+  },
+};
+
+const customEvents: MyEvent[] = [
+  {
+    id: "test2",
+    from: 1739537144007,
+    to: 1739537166347,
+    axisId: "1",
+    trackIndex: 1,
+    phases: [
+      {
+        percent: 20,
+        color: "rgb(254, 127, 45)",
+      },
+      {
+        percent: 50,
+        color: "rgb(255,198,2)",
+      },
+      {
+        percent: 30,
+        color: "rgb(161, 193, 129)",
+      },
+    ],
+    borderColor: "#243",
+    selectedBorderColor: "#f60630",
+    renderer: new MyRenderer(),
+  },
+];
+
+export const customRendererConfig: TimeLineConfig = {
+  settings: {
+    ...commonConfig,
+    events: customEvents,
   },
 };
