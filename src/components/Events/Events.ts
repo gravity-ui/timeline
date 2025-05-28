@@ -178,9 +178,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     color?: string,
   ) {
     if (!event.renderer) {
-      const defaultRenderer = new DefaultEventRenderer();
-      defaultRenderer.render(ctx, event, isSelected, x0, x1, y);
-      return;
+      event.renderer = new DefaultEventRenderer();
     }
 
     event.renderer.render(
