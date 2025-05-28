@@ -80,7 +80,9 @@ export class Timeline {
    */
   public destroy() {
     this.controller.destroy();
-    this.api.destroy();
+    if (this.api) {
+      this.api.destroy();
+    }
   }
 
   /**

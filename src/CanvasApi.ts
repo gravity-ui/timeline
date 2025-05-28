@@ -165,7 +165,7 @@ export class CanvasApi {
 
   public destroy(): void {
     this.components.forEach((component, key) => {
-      component?.destroy();
+      component?.destroy?.();
       this.removeComponent(key);
     });
   }
