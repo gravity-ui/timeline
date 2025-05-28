@@ -1,5 +1,6 @@
 import { TimelineAxis } from "./axis";
 import { TimelineEvent } from "./events";
+import { TimelineMarker } from "./markers";
 
 export type RulerViewOptions = {
   spacing?: number;
@@ -70,6 +71,7 @@ export type TimelineSettings = {
   end: number;
   axes: TimelineAxis[];
   events: TimelineEvent[];
+  markers?: TimelineMarker[];
 };
 
 export type TimeLineConfig = {

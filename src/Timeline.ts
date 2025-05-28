@@ -66,6 +66,7 @@ export class Timeline {
 
     this.api.setAxes(this.settings.axes);
     this.api.setEvents(this.settings.events);
+    this.api.setMarkers(this.settings.markers || []);
 
     this.controller = new TimelineController(this.api);
     this.state = TimelineState.READY;
