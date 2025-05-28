@@ -1,10 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
-import {
-  baseTimelineConfig,
-  customRendererConfig,
-  endlessTimelineConfig,
-} from "./configs/events";
+import { baseTimelineConfig } from "./configs/events";
+import { markersBaseConfig, markersWithLabelsConfig } from "./configs/markers";
 import { defaultViewConfig } from "../constants/options";
 import { StoryWrapper } from "./StoryWrapper";
 import { TimelineSettings, ViewConfiguration } from "../types";
@@ -20,7 +17,7 @@ type SettingsControls = {
 type StoryProps = SettingsControls & ViewConfigurationControls;
 
 const meta = {
-  title: "Timeline/Events",
+  title: "Timeline/Markers",
   component: StoryWrapper as React.ComponentType<StoryProps>,
   argTypes: {
     "settings.start": {
@@ -64,6 +61,19 @@ const meta = {
         type: {
           summary: "TimelineEvent[]",
           detail: JSON.stringify(baseTimelineConfig.settings.events, null, 2),
+        },
+      },
+    },
+    "settings.markers": {
+      control: {
+        type: "object",
+      },
+      description: "Timeline markers configuration",
+      table: {
+        category: "settings",
+        type: {
+          summary: "TimelineMarker[]",
+          detail: JSON.stringify(markersBaseConfig.settings.markers, null, 2),
         },
       },
     },
@@ -166,10 +176,11 @@ const defaultViewConfigArgs: ViewConfigurationControls = {
 
 export const Basic: Story = {
   args: {
-    "settings.start": baseTimelineConfig.settings.start,
-    "settings.end": baseTimelineConfig.settings.end,
-    "settings.axes": baseTimelineConfig.settings.axes,
-    "settings.events": baseTimelineConfig.settings.events,
+    "settings.start": markersBaseConfig.settings.start,
+    "settings.end": markersBaseConfig.settings.end,
+    "settings.axes": markersBaseConfig.settings.axes,
+    "settings.events": markersBaseConfig.settings.events,
+    "settings.markers": markersBaseConfig.settings.markers,
     ...defaultViewConfigArgs,
   },
   parameters: {
@@ -182,37 +193,20 @@ export const Basic: Story = {
   },
 };
 
-export const EndlessTimelines: Story = {
+export const WithLabels: Story = {
   args: {
-    "settings.start": endlessTimelineConfig.settings.start,
-    "settings.end": endlessTimelineConfig.settings.end,
-    "settings.axes": endlessTimelineConfig.settings.axes,
-    "settings.events": endlessTimelineConfig.settings.events,
+    "settings.start": markersWithLabelsConfig.settings.start,
+    "settings.end": markersWithLabelsConfig.settings.end,
+    "settings.axes": markersWithLabelsConfig.settings.axes,
+    "settings.events": markersWithLabelsConfig.settings.events,
+    "settings.markers": markersWithLabelsConfig.settings.markers,
     ...defaultViewConfigArgs,
   },
   parameters: {
-    storyKey: "endless",
+    storyKey: "basic",
     docs: {
       description: {
-        story: "Demonstration of a timeline with infinite scrolling",
-      },
-    },
-  },
-};
-
-export const CustomRenderer: Story = {
-  args: {
-    "settings.start": customRendererConfig.settings.start,
-    "settings.end": customRendererConfig.settings.end,
-    "settings.axes": customRendererConfig.settings.axes,
-    "settings.events": customRendererConfig.settings.events,
-    ...defaultViewConfigArgs,
-  },
-  parameters: {
-    storyKey: "custom renderer",
-    docs: {
-      description: {
-        story: "Demonstration of a timeline with custom renderer",
+        story: "Basic timeline configuration with regular events",
       },
     },
   },

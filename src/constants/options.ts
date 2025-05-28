@@ -50,7 +50,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     labelHeight: 14,
     labelFont: DEFAULT_FONT,
     textPadding: 10,
-    markerWidth: 1,
+    markerWidth: 2,
     color: {
       textColor: defaultPalette.gray1,
     },
