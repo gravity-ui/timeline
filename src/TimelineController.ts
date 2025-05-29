@@ -26,7 +26,7 @@ export class TimelineController {
     this.api.canvas.removeEventListener("wheel", this.handleCanvasWheel);
   }
 
-  private updateCanvasSize() {
+  private updateCanvasSize = () => {
     const pixelRatio = window.devicePixelRatio || 1;
     this.api.canvas.width = Math.floor(
       this.api.canvas.offsetWidth * pixelRatio,
@@ -36,7 +36,7 @@ export class TimelineController {
     );
 
     this.api.rerender();
-  }
+  };
 
   private handleCanvasWheel = (event: WheelEvent) => {
     event.stopPropagation();
