@@ -5,6 +5,10 @@ import { clamp, convertDomain } from "../helpers/math";
 import { BaseComponentInterface } from "../types/component";
 import { CanvasApi } from "../CanvasApi";
 
+/**
+ * Ruler component responsible for rendering time scale and labels on the timeline
+ * Implements BaseComponentInterface for consistent component structure
+ */
 export class Ruler implements BaseComponentInterface {
   private api: CanvasApi;
   private levelCache = new Map<RulerLevel, number>();
@@ -15,6 +19,9 @@ export class Ruler implements BaseComponentInterface {
     this.labelLevels = getLabelLevels(this.api.getVisualConfiguration().ruler);
   }
 
+  /**
+   * Renders the ruler component including background, labels and grid lines
+   */
   public render() {
     const { ruler } = this.api.getVisualConfiguration();
     const { ctx, width } = this.api;
@@ -36,6 +43,7 @@ export class Ruler implements BaseComponentInterface {
 
   /**
    * Renders the bottom border line of the ruler
+   * Uses ruler's border color from visual configuration
    */
   private renderBottomLine() {
     const { ruler } = this.api.getVisualConfiguration();
@@ -49,7 +57,8 @@ export class Ruler implements BaseComponentInterface {
   }
 
   /**
-   * Selects and renders appropriate time marking levels
+   * Selects and renders appropriate time marking levels based on zoom level
+   * Renders both primary and secondary levels if applicable
    */
   private renderLevels() {
     const { start, end } = this.api.getInterval();
@@ -180,7 +189,9 @@ export class Ruler implements BaseComponentInterface {
   }
 
   /**
-   * Converts time value to horizontal position
+   * Converts a time value to horizontal position on the canvas
+   * @param t - Time value (timestamp or dayjs object)
+   * @returns X coordinate corresponding to the time value
    */
   private timeToPosition(t: number | dayjs.Dayjs): number {
     const { start, end } = this.api.getInterval();
@@ -188,7 +199,9 @@ export class Ruler implements BaseComponentInterface {
   }
 
   /**
-   * Converts horizontal position to time value
+   * Converts a horizontal position to time value
+   * @param x - X coordinate on the canvas
+   * @returns Timestamp corresponding to the position
    */
   private positionToTime(x: number): number {
     const { start, end } = this.api.getInterval();

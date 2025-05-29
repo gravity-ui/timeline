@@ -5,6 +5,11 @@ import { CanvasApi } from "../CanvasApi";
 import { TimelineAxis } from "../types/axis";
 import { StrokeMode } from "../enums";
 
+/**
+ * Axes component responsible for managing and rendering timeline axes
+ * Implements BaseComponentInterface for consistent component structure
+ * @template Axis - Type of axis extending TimelineAxis
+ */
 export class Axes<Axis extends TimelineAxis = TimelineAxis>
   implements BaseComponentInterface
 {
@@ -21,7 +26,9 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis>
   }
 
   /**
-   * Replaces all axes with new set
+   * Replaces all axes with a new set and triggers re-render
+   * @param newAxes - Array of new axes to display
+   * @throws Error if newAxes is not an array
    */
   public setAxes(newAxes: Axis[]) {
     if (!newAxes || !Array.isArray(newAxes)) {
@@ -33,7 +40,8 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis>
   }
 
   /**
-   * Gets all axes indexed by their ID
+   * Gets all axes indexed by their ID for quick lookup
+   * @returns Record mapping axis IDs to axis objects
    */
   public getAxesById(): Record<string, Axis> {
     return this.axesIndex.axesById;
@@ -41,6 +49,10 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis>
 
   /**
    * Calculates vertical position for a track within an axis
+   * @param axis - Axis containing the track
+   * @param trackIndex - Index of the track within the axis
+   * @returns Y coordinate of the track's center
+   * @throws Error if axis is invalid or trackIndex is out of bounds
    */
   public getAxisTrackPosition(axis: Axis, trackIndex: number): number {
     if (!axis || axis.tracksCount < 0) {

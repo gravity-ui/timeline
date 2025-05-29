@@ -6,9 +6,17 @@ const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
 const ZOOM_MAX = MONTH * 2;
 
+/**
+ * Controller class responsible for handling timeline interactions and canvas resizing
+ * Manages zoom, pan, and canvas size updates
+ */
 export class TimelineController {
   api: CanvasApi;
 
+  /**
+   * Creates a new TimelineController instance
+   * @param api - CanvasApi instance for timeline manipulation
+   */
   constructor(api: CanvasApi) {
     this.api = api;
 
@@ -16,16 +24,27 @@ export class TimelineController {
     this.init();
   }
 
+  /**
+   * Initializes event listeners for window resize and canvas wheel events
+   */
   public init() {
     window.addEventListener("resize", this.updateCanvasSize);
     this.api.canvas.addEventListener("wheel", this.handleCanvasWheel);
   }
 
+  /**
+   * Cleans up event listeners when controller is destroyed
+   */
   public destroy() {
     window.removeEventListener("resize", this.updateCanvasSize);
     this.api.canvas.removeEventListener("wheel", this.handleCanvasWheel);
   }
 
+  /**
+   * Updates canvas size based on container dimensions and device pixel ratio
+   * Triggers re-render after size update
+   * @private
+   */
   private updateCanvasSize = () => {
     const pixelRatio = window.devicePixelRatio || 1;
     this.api.canvas.width = Math.floor(
@@ -38,6 +57,15 @@ export class TimelineController {
     this.api.rerender();
   };
 
+  /**
+   * Handles mouse wheel events for zooming and panning
+   * Supports:
+   * - Zoom with mouse wheel (centered on cursor position)
+   * - Pan with shift + wheel
+   * - Horizontal pan with wheel deltaX
+   * @param event - WheelEvent from canvas
+   * @private
+   */
   private handleCanvasWheel = (event: WheelEvent) => {
     event.stopPropagation();
     event.preventDefault();

@@ -10,6 +10,11 @@ import { TimelineEvent } from "../../types/events";
 
 const MAX_INDEX_TREE_WIDTH = 16;
 
+/**
+ * Events component responsible for managing and rendering timeline events
+ * Implements BaseComponentInterface for consistent component structure
+ * @template Event - Type of event extending TimelineEvent
+ */
 export class Events<Event extends TimelineEvent = TimelineEvent>
   implements BaseComponentInterface
 {
@@ -27,12 +32,21 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     this.addEventListeners();
   }
 
+  /**
+   * Updates the events data and rebuilds the spatial index
+   * @param newEvents - Array of events to display on the timeline
+   */
   public setEvents(newEvents: Event[]) {
     this._events = newEvents;
     this.rebuildIndex();
     this.render();
   }
 
+  /**
+   * Finds events that intersect with the given rectangle
+   * @param rect - DOMRect representing the search area
+   * @returns Array of events that intersect with the rectangle
+   */
   public getEventsAt(rect: DOMRect): Event[] {
     const vConfig = this.api.getVisualConfiguration();
     const rulerHeight = vConfig.ruler.height || 0;
@@ -46,25 +60,49 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     return events.map((box) => box.event);
   }
 
+  /**
+   * Finds events at a specific point on the canvas
+   * @param x - X coordinate
+   * @param y - Y coordinate
+   * @returns Array of events at the specified point
+   */
   public getEventsAtPoint(x: number, y: number) {
     const p = 6;
     return this.getEventsAt(new DOMRect(x - p / 2, y - p / 2, p, p));
   }
 
+  /**
+   * Updates the set of selected event IDs
+   * @param ids - Array of event IDs to mark as selected
+   */
   public setSelectedEvents(ids: string[]) {
     this._selectedEvents = new Set<string>(ids);
     this.render();
   }
 
+  /**
+   * Gets all currently selected events
+   * @returns Array of selected events
+   */
   public getSelectedEvents(): Event[] {
     return this._events.filter((event) => this.isSelectedEvent(event));
   }
 
+  /**
+   * Checks if an event is currently selected
+   * @param event - Event to check
+   * @returns True if the event is selected, false otherwise
+   */
   public isSelectedEvent(event: Event | undefined): boolean {
     if (!event) return false;
     return this._selectedEvents.has(event.id);
   }
 
+  /**
+   * Selects or deselects events based on provided options
+   * @param events - Array of events to select/deselect
+   * @param options - Selection options (append, toggle)
+   */
   public selectEvents(events: Event[], options: SelectOptions = {}): void {
     const selection = this._selectedEvents;
 
@@ -145,6 +183,9 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     }
   }
 
+  /**
+   * Cleans up event listeners when component is destroyed
+   */
   public destroy() {
     this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
     this.api.canvas.removeEventListener(
@@ -157,6 +198,9 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     );
   }
 
+  /**
+   * Adds necessary event listeners for mouse interactions
+   */
   protected addEventListeners() {
     this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
     this.api.canvas.addEventListener(
@@ -166,6 +210,18 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     this.api.canvas.addEventListener("mousemove", this.handleCanvasMousemove);
   }
 
+  /**
+   * Renders an event using its renderer or the default renderer
+   * @param ctx - Canvas rendering context
+   * @param event - Event to render
+   * @param isSelected - Whether the event is selected
+   * @param x0 - Start X coordinate
+   * @param x1 - End X coordinate
+   * @param y - Y coordinate
+   * @param h - Height of the event
+   * @param timeToPosition - Optional function to convert time to position
+   * @param color - Optional color override
+   */
   protected runRenderer(
     ctx: CanvasRenderingContext2D,
     event: Event,
@@ -251,6 +307,10 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     });
   };
 
+  /**
+   * Rebuilds the spatial index for efficient event lookup
+   * Updates the RBush tree with current event positions
+   */
   protected rebuildIndex(): void {
     const { end } = this.api.getInterval();
     const { axes } = this.api.getVisualConfiguration();

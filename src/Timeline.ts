@@ -14,6 +14,10 @@ import { ComponentType, TimelineState } from "./enums";
 import { Markers } from "./components/Markers";
 import { ApiEvent, EventParams } from "./types/events";
 
+/**
+ * Main Timeline class that manages the timeline visualization and interactions
+ * Handles component initialization, event management, and timeline state
+ */
 export class Timeline {
   public canvasScrollTop: number;
   public settings: TimelineSettings;
@@ -45,6 +49,7 @@ export class Timeline {
 
   /**
    * Initializes the timeline with a canvas element
+   * Sets up components, axes, events, and markers
    * @param canvas - HTML canvas element to render the timeline on
    * @throws {Error} If the provided canvas is invalid or not an HTMLCanvasElement
    * @example
