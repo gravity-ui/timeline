@@ -9,7 +9,8 @@
     "lint": "eslint",
     "lint:all": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
     "storybook": "storybook dev -p 6006",
-    "build-storybook": "sb build"
+    "build-storybook": "sb build",
+    "test": "echo \"No tests\" && exit 0"
   },
   "dependencies": {
     "dayjs": "^1.11.13",
