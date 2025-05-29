@@ -111,6 +111,122 @@ The component uses custom hooks for timeline management:
 
 The component automatically handles cleanup and destruction of the timeline instance when unmounted.
 
+### Direct TypeScript Usage
+
+The Timeline class can be used directly in TypeScript without React. This is useful for integrating with other frameworks or vanilla JavaScript applications:
+
+```typescript
+import { Timeline } from 'timeline';
+
+const timestamp = Date.now();
+
+// Create a timeline instance
+const timeline = new Timeline({
+  settings: {
+    start: timestamp,
+    end: timestamp + 3600000, // 1 hour from now
+    axes: [
+      {
+        id: 'main',
+        label: 'Main Axis',
+        color: '#000000'
+      }
+    ],
+    events: [
+      {
+        id: 'event1',
+        start: timestamp + 1800000, // 30 minutes from now
+        end: timestamp + 2400000,   // 40 minutes from now
+        label: 'Sample Event',
+        axisId: 'main'
+      }
+    ],
+    markers: [
+      {
+        id: 'marker1',
+        time: timestamp + 1200000, // 20 minutes from now
+        label: 'Important Point',
+        color: '#ff0000'
+      }
+    ]
+  },
+  viewConfiguration: {
+    // Optional: customize view settings
+    zoomLevels: [1, 2, 4, 8, 16],
+    hideRuler: false,
+    showGrid: true
+  }
+});
+
+// Initialize with a canvas element
+const canvas = document.querySelector('canvas');
+if (canvas instanceof HTMLCanvasElement) {
+  timeline.init(canvas);
+}
+
+// Add event listeners
+timeline.on('on-click', (detail) => {
+  console.log('Timeline clicked:', detail);
+});
+
+timeline.on('on-select-change', (detail) => {
+  console.log('Selection changed:', detail);
+});
+
+// Clean up when done
+timeline.destroy();
+```
+
+The Timeline class provides a rich API for managing the timeline:
+
+- **Event Management**:
+  ```typescript
+  // Add event listener
+  timeline.on('eventClick', (detail) => {
+    console.log('Event clicked:', detail);
+  });
+
+  // Remove event listener
+  const handler = (detail) => console.log(detail);
+  timeline.on('eventClick', handler);
+  timeline.off('eventClick', handler);
+
+  // Emit custom events
+  timeline.emit('customEvent', { data: 'custom data' });
+  ```
+
+- **Timeline Control**:
+  ```typescript
+  // Update timeline data
+  timeline.api.setEvents([
+    {
+      id: 'newEvent',
+      start: Date.now(),
+      end: Date.now() + 3600000,
+      label: 'New Event'
+    }
+  ]);
+
+  // Update axes
+  timeline.api.setAxes([
+    {
+      id: 'newAxis',
+      label: 'New Axis',
+      color: '#0000ff'
+    }
+  ]);
+
+  // Update markers
+  timeline.api.setMarkers([
+    {
+      id: 'newMarker',
+      time: Date.now(),
+      label: 'New Marker',
+      color: '#00ff00'
+    }
+  ]);
+  ```
+
 ## Development
 
 ### Storybook
@@ -130,8 +246,6 @@ To build a static version of Storybook for deployment:
 ```bash
 npm run build-storybook
 ```
-
-For more information on using Storybook, see the [Storybook README](.storybook/README.md).
 
 ## License
 
