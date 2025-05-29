@@ -1,5 +1,19 @@
 # Changelog
 
+## [1.2.0](https://github.com/gravity-ui/timeline/compare/v1.1.0...v1.2.0) (2025-05-29)
+
+
+### Features
+
+* **CI:** add title lint ([1cc48b3](https://github.com/gravity-ui/timeline/commit/1cc48b3046b1ad966069cac532d529b9f1e503a3))
+* **Doc:** add documentation ([a744743](https://github.com/gravity-ui/timeline/commit/a744743fe6ee79c1a0176844186a3e543e9a0233))
+* **Readme:** add new info ([f252bd1](https://github.com/gravity-ui/timeline/commit/f252bd1357569d8d0f9843d2a4303f72624929a5))
+
+
+### Bug Fixes
+
+* **Readme:** update readme ([d7993f8](https://github.com/gravity-ui/timeline/commit/d7993f85a3336b4d0c6299ae2afea401685a0fd2))
+
 ## [1.1.0](https://github.com/gravity-ui/timeline/compare/v1.0.0...v1.1.0) (2025-05-29)
 
 
