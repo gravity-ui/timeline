@@ -2,6 +2,10 @@
 
 A React-based library for building interactive timeline visualizations with canvas rendering.
 
+## Documentation
+
+For details see [Documentation](./docs/docs.md).
+
 ## Features
 
 - Canvas-based rendering for high performance
@@ -226,6 +230,16 @@ The Timeline class provides a rich API for managing the timeline:
     }
   ]);
   ```
+
+## Live Examples
+
+Explore interactive examples in our [Storybook](https://preview.gravity-ui.com/timeline/):
+
+- [Basic Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--basic) - Simple timeline with events and axes
+- [Endless Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--endless-timelines) - Endless timeline with events and axes
+- [Markers](https://preview.gravity-ui.com/timeline/?path=/story/timeline-markers--basic) - Timeline with vertical markers and labels
+- [Custom Events](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--custom-renderer) - Timeline with custom event rendering
+
 
 ## Development
 
