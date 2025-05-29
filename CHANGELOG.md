@@ -1,5 +1,36 @@
 # Changelog
 
+## [1.2.0](https://github.com/gravity-ui/timeline/compare/v1.1.0...v1.2.0) (2025-05-29)
+
+
+### Features
+
+* **CI:** add pr check ([8ae70df](https://github.com/gravity-ui/timeline/commit/8ae70dfc5e4b55ad79b6525edc21c4b76d73ee90))
+* **Ci:** add preview build ([e115966](https://github.com/gravity-ui/timeline/commit/e1159661bf7300999c1961541bf58e93064066e0))
+* **Ci:** add release ([de46e14](https://github.com/gravity-ui/timeline/commit/de46e14d91aee6569ac8e35e7a7c53c1746eba39))
+* **Ci:** add release please ([7d65bcc](https://github.com/gravity-ui/timeline/commit/7d65bcc401f0d1c0bfeac9c9c00a5f2a7b7b2c95))
+* **CI:** add title lint ([1cc48b3](https://github.com/gravity-ui/timeline/commit/1cc48b3046b1ad966069cac532d529b9f1e503a3))
+* **Events:** add event emitter ([b1e6c1e](https://github.com/gravity-ui/timeline/commit/b1e6c1ea1b959f72191b7155b5755c121e745dd7))
+* **Events:** add events ([805a558](https://github.com/gravity-ui/timeline/commit/805a558a6802eea8565c7e04fb68099da16412b5))
+* **Grid:** add grid ([2a60257](https://github.com/gravity-ui/timeline/commit/2a60257c6ffeef986884539883116619858b1701))
+* **Hook:** add timeline hook ([8088989](https://github.com/gravity-ui/timeline/commit/8088989559ca8916cba404496b64eb2a81174397))
+* **Markers:** add markers ([0755d51](https://github.com/gravity-ui/timeline/commit/0755d51ee1dbe4dccb88838f4c07787fa44ede3b))
+* **Readme:** add new info ([f252bd1](https://github.com/gravity-ui/timeline/commit/f252bd1357569d8d0f9843d2a4303f72624929a5))
+* **Ruler:** add ruler ([2c035c1](https://github.com/gravity-ui/timeline/commit/2c035c1513d6238b69285e89181b8fe1c550166b))
+* **Storybook:** add actions ([a06ffde](https://github.com/gravity-ui/timeline/commit/a06ffde75cf79cd00df936cc2954b5c9310d2e10))
+* **Storybook:** add custom renderer story ([390f7d4](https://github.com/gravity-ui/timeline/commit/390f7d46993c159ab5135b0b561f617e444b76a5))
+* **Storybook:** add events story ([3175e6f](https://github.com/gravity-ui/timeline/commit/3175e6f66cae63c748f9dd600860d2dd6c095b58))
+* **Storybook:** add markers story ([57ea26f](https://github.com/gravity-ui/timeline/commit/57ea26fbaae27541459543bffd968896440e6ce1))
+* **Storybook:** add story ([10c5039](https://github.com/gravity-ui/timeline/commit/10c503990c93312bc03c8443a476f50d8877655d))
+* **Zoom:** center zoom around cursor position ([f5b56d5](https://github.com/gravity-ui/timeline/commit/f5b56d5da2fba02d77da312cd1ae14660af4e625))
+
+
+### Bug Fixes
+
+* **Events:** use axis height in renderer ([d886805](https://github.com/gravity-ui/timeline/commit/d886805e9d78b34e16ac62ed2cd7c73db490648b))
+* **Readme:** update readme ([d7993f8](https://github.com/gravity-ui/timeline/commit/d7993f85a3336b4d0c6299ae2afea401685a0fd2))
+* **TimelineController:** resize error ([c6cde69](https://github.com/gravity-ui/timeline/commit/c6cde6900c72a41b58dba7a18e5bdd2c8fcc9d8f))
+
 ## [1.1.0](https://github.com/gravity-ui/timeline/compare/v1.0.0...v1.1.0) (2025-05-29)
 
 
