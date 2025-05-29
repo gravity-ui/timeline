@@ -1,4 +1,4 @@
-# Timeline Library
+# @gravity-ui/timeline [![Release](https://img.shields.io/github/actions/workflow/status/gravity-ui/graph/release.yml?branch=main&label=Release)](https://github.com/gravity-ui/timeline/actions/workflows/release.yml?query=branch:main) [![storybook](https://img.shields.io/badge/Storybook-deployed-ff4685)](https://preview.gravity-ui.com/timeline/)
 
 A React-based library for building interactive timeline visualizations with canvas rendering.
 
