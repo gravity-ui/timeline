@@ -187,7 +187,7 @@ export const Basic: Story = {
     storyKey: "basic",
     docs: {
       description: {
-        story: "Basic timeline configuration with regular events",
+        story: "Basic timeline configuration with markers",
       },
     },
   },
@@ -203,10 +203,10 @@ export const WithLabels: Story = {
     ...defaultViewConfigArgs,
   },
   parameters: {
-    storyKey: "basic",
+    storyKey: "with labels",
     docs: {
       description: {
-        story: "Basic timeline configuration with regular events",
+        story: "Timeline configuration with markers that have labels",
       },
     },
   },
