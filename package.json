@@ -18,6 +18,7 @@
     "rbush": "^4.0.1"
   },
   "devDependencies": {
+    "@commitlint/config-conventional": "^19.8.1",
     "@gravity-ui/eslint-config": "^4.0.1",
     "@storybook/addon-actions": "^8.6.14",
     "@storybook/addon-essentials": "^8.6.14",
