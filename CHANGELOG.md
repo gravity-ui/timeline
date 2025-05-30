@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.2.1](https://github.com/gravity-ui/timeline/compare/v1.2.0...v1.2.1) (2025-05-30)
+
+
+### Bug Fixes
+
+* **CI:** release fix ([335ee58](https://github.com/gravity-ui/timeline/commit/335ee58e37c2953408d34b923d05bb6014d344de))
+* **UI:** remove old dependencies ([8a9777f](https://github.com/gravity-ui/timeline/commit/8a9777f6eb2aab3df5ece9b5909b76d41ba5b72a))
+
 ## [1.2.0](https://github.com/gravity-ui/timeline/compare/v1.1.0...v1.2.0) (2025-05-29)
 
 
