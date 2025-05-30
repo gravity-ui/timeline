@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.2.2](https://github.com/gravity-ui/timeline/compare/v1.2.1...v1.2.2) (2025-05-30)
+
+
+### Bug Fixes
+
+* **CI:** preparing pacakge.json ([4b3cc33](https://github.com/gravity-ui/timeline/commit/4b3cc3374ef6ac329199d5e19462a2992f363d86))
+
 ## [1.2.1](https://github.com/gravity-ui/timeline/compare/v1.2.0...v1.2.1) (2025-05-30)
 
 
