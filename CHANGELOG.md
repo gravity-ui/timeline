@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.3.0](https://github.com/gravity-ui/timeline/compare/v1.2.2...v1.3.0) (2025-05-30)
+
+
+### Features
+
+* **Readme:** add npm shield ([18664dd](https://github.com/gravity-ui/timeline/commit/18664dd9c8957c95ef739ca76c5a45531ed7a96d))
+
+
+### Bug Fixes
+
+* **Readme:** shields spacing ([076de42](https://github.com/gravity-ui/timeline/commit/076de428332726e4f668e5bc10092f240d7b6cbb))
+
 ## [1.2.2](https://github.com/gravity-ui/timeline/compare/v1.2.1...v1.2.2) (2025-05-30)
 
 
