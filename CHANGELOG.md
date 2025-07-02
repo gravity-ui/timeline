@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.3.1](https://github.com/gravity-ui/timeline/compare/v1.3.0...v1.3.1) (2025-07-02)
+
+
+### Bug Fixes
+
+* **License:** change license files ([22547f1](https://github.com/gravity-ui/timeline/commit/22547f1b5de7cbb81a84ffa7be74440677b42857))
+* **License:** change license to mit ([8df03be](https://github.com/gravity-ui/timeline/commit/8df03be25ec9f710825fc2bf8cc8405234ea2040))
+* **Readme:** replace old library name ([af9d449](https://github.com/gravity-ui/timeline/commit/af9d449f7d61c48c3e8cd6cf87e960341e900ff4))
+
 ## [1.3.0](https://github.com/gravity-ui/timeline/compare/v1.2.2...v1.3.0) (2025-05-30)
 
 
