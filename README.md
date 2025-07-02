@@ -263,4 +263,4 @@ npm run build-storybook
 
 ## License
 
-Apache License 2.0
+MIT
