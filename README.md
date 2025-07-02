@@ -18,7 +18,7 @@ For details see [Documentation](./docs/docs.md).
 ## Installation
 
 ```bash
-npm install timeline
+npm install @gravity-ui/timeline
 ```
 
 ## Usage
@@ -26,8 +26,8 @@ npm install timeline
 The timeline component can be used in React applications with the following basic setup:
 
 ```tsx
-import { TimelineCanvas } from 'timeline';
-import { useTimeline } from 'timeline';
+import { TimelineCanvas } from '@gravity-ui/timeline';
+import { useTimeline } from '@gravity-ui/timeline';
 
 const MyTimelineComponent = () => {
   const { timeline } = useTimeline({
@@ -83,7 +83,7 @@ The timeline component supports several interactive events:
 Example of event handling:
 
 ```tsx
-import { useTimelineEvent } from 'timeline';
+import { useTimelineEvent } from '@gravity-ui/timeline';
 
 const MyTimelineComponent = () => {
   const { timeline } = useTimeline({ /* ... */ });
@@ -120,7 +120,7 @@ The component automatically handles cleanup and destruction of the timeline inst
 The Timeline class can be used directly in TypeScript without React. This is useful for integrating with other frameworks or vanilla JavaScript applications:
 
 ```typescript
-import { Timeline } from 'timeline';
+import { Timeline } from '@gravity-ui/timeline';
 
 const timestamp = Date.now();
 
