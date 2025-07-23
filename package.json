@@ -25,6 +25,9 @@
     "dayjs": "^1.11.13",
     "rbush": "^4.0.1"
   },
+  "peerDependencies": {
+    "react": ">=18.0.0"
+  },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.1",
     "@gravity-ui/eslint-config": "^4.0.1",
