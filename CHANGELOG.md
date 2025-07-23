@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.3](https://github.com/gravity-ui/timeline/compare/v1.3.2...v1.3.3) (2025-07-23)
+
+
+### Bug Fixes
+
+* **UI:** edd react components to index ([76ac07a](https://github.com/gravity-ui/timeline/commit/76ac07a0f0f2bb2b5994f043386a535128de5ee2))
+
 ## [1.3.2](https://github.com/gravity-ui/timeline/compare/v1.3.1...v1.3.2) (2025-07-23)
 
 
