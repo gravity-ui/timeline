@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.3.2](https://github.com/gravity-ui/timeline/compare/v1.3.1...v1.3.2) (2025-07-23)
+
+
+### Bug Fixes
+
+* **Npm:** build problem ([4c0bbfb](https://github.com/gravity-ui/timeline/commit/4c0bbfb9ba50a3e4af8a7de5e8aebb10d18a6757))
+
 ## [1.3.1](https://github.com/gravity-ui/timeline/compare/v1.3.0...v1.3.1) (2025-07-02)
 
 
