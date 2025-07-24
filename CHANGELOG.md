@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.0](https://github.com/gravity-ui/timeline/compare/v1.3.3...v1.4.0) (2025-07-24)
+
+
+### Features
+
+* **UI:** split export to js and react components ([6a12bc2](https://github.com/gravity-ui/timeline/commit/6a12bc28a199362b6dc4250fcfc7c07af88298e4))
+
 ## [1.3.3](https://github.com/gravity-ui/timeline/compare/v1.3.2...v1.3.3) (2025-07-23)
 
 
