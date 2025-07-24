@@ -1,8 +1,8 @@
 import React, { useEffect } from "react";
-import { useTimeline } from "../react-component/hooks/useTimeline";
-import { useTimelineEvent } from "../react-component/hooks/useTimelineEvent";
+import { useTimeline } from "../react-components/hooks/useTimeline";
+import { useTimelineEvent } from "../react-components/hooks/useTimelineEvent";
 import { action } from "@storybook/addon-actions";
-import { TimelineCanvas } from "../react-component/TimelineCanvas";
+import { TimelineCanvas } from "../react-components/TimelineCanvas";
 import { TimelineSettings, ViewConfiguration } from "../types";
 
 type ViewConfigurationControls = {
