@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.2](https://github.com/gravity-ui/timeline/compare/v1.4.1...v1.4.2) (2025-07-25)
+
+
+### Bug Fixes
+
+* **UI:** wrong types export ([16bb368](https://github.com/gravity-ui/timeline/commit/16bb3681bcf211c0d8580fbb32249dddba5f7d99))
+
 ## [1.4.1](https://github.com/gravity-ui/timeline/compare/v1.4.0...v1.4.1) (2025-07-25)
 
 
