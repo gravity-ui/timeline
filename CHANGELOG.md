@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.4.1](https://github.com/gravity-ui/timeline/compare/v1.4.0...v1.4.1) (2025-07-25)
+
+
+### Bug Fixes
+
+* **UI:** error in package-lock.json ([9e8f22c](https://github.com/gravity-ui/timeline/commit/9e8f22c7227a86d9f1fae1459c2006553cca947e))
+
 ## [1.4.0](https://github.com/gravity-ui/timeline/compare/v1.3.3...v1.4.0) (2025-07-24)
 
 
