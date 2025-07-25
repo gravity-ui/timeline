@@ -1,9 +1,17 @@
 {
   "name": "@gravity-ui/timeline",
   "version": "1.4.1",
-  "type": "module",
   "description": "Interactive timeline component for React with zoom, pan and custom event rendering capabilities.",
   "main": "build/index.js",
+  "module": "build/index.js",
+  "types": "build/index.d.ts",
+  "typesVersions": {
+    "*": {
+      "react": [
+        "build/react-components/index.d.ts"
+      ]
+    }
+  },
   "license": "MIT",
   "repository": {
     "type": "git",
