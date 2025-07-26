@@ -48,14 +48,16 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
    * @returns Array of events that intersect with the rectangle
    */
   public getEventsAt(rect: DOMRect): Event[] {
-    const vConfig = this.api.getVisualConfiguration();
-    const rulerHeight = vConfig.ruler.height || 0;
+    const {
+      events: { hitboxPadding },
+    } = this.api.getVisualConfiguration();
+    const rulerHeight = this.api.getRulerHeight();
     const topOffset = -rulerHeight + this.api.canvasScrollTop;
     const events = this.index.search({
-      minX: this.api.positionToTime(rect.left - vConfig.events.hitboxPadding),
-      maxX: this.api.positionToTime(rect.right + vConfig.events.hitboxPadding),
-      minY: rect.top + topOffset - vConfig.events.hitboxPadding,
-      maxY: rect.bottom + topOffset + vConfig.events.hitboxPadding,
+      minX: this.api.positionToTime(rect.left - hitboxPadding),
+      maxX: this.api.positionToTime(rect.right + hitboxPadding),
+      minY: rect.top + topOffset - hitboxPadding,
+      maxY: rect.bottom + topOffset + hitboxPadding,
     });
     return events.map((box) => box.event);
   }
@@ -138,10 +140,9 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   }
 
   public render() {
-    const { ruler, events } = this.api.getVisualConfiguration();
+    const { events } = this.api.getVisualConfiguration();
     const { start, end } = this.api.getInterval();
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
-    const rulerHeight = ruler.height || 0;
 
     if (!axesComponent) {
       return;
@@ -152,7 +153,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     const ctx = this.api.ctx;
     const timeToPosition = (t: number) => this.api.timeToPosition(t);
 
-    ctx.translate(0, rulerHeight);
+    ctx.translate(0, this.api.getRulerHeight());
 
     ctx.font = events.font;
     ctx.lineWidth = 2;

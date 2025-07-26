@@ -22,7 +22,6 @@ export class Grid implements BaseComponentInterface {
    */
   public render() {
     this.api.useStaticTransform();
-    const { ruler } = this.api.getVisualConfiguration();
     const { start, end } = this.api.getInterval();
     const { ctx, width } = this.api;
     const domainSize = end - start;
@@ -33,7 +32,7 @@ export class Grid implements BaseComponentInterface {
 
     // Set up the drawing area
     this.api.useStaticTransform();
-    const rulerHeight = ruler.height || 0;
+    const rulerHeight = this.api.getRulerHeight();
     const top = rulerHeight;
     const height = ctx.canvas.height - rulerHeight;
 

@@ -58,6 +58,12 @@ export class CanvasApi {
     return this.timeline.viewConfiguration;
   }
 
+  public getRulerHeight() {
+    const config = this.timeline.viewConfiguration;
+    if (config.hideRuler) return 0;
+    return config.ruler.height || 0;
+  }
+
   public getTimelineSettings() {
     return this.timeline.settings;
   }

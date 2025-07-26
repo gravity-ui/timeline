@@ -68,7 +68,7 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis>
    * Renders all axes to the canvas
    */
   public render() {
-    const { ruler, axes } = this.api.getVisualConfiguration();
+    const { axes } = this.api.getVisualConfiguration();
     const { ctx } = this.api;
 
     if (this.strokeMode === StrokeMode.DASHED) {
@@ -76,7 +76,7 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis>
     }
 
     this.api.useScrollTransform();
-    ctx.translate(0, ruler.height);
+    ctx.translate(0, this.api.getRulerHeight());
 
     const canvasWidth = ctx.canvas.width;
     ctx.strokeStyle = axes.color.line;
