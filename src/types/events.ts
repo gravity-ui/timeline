@@ -21,18 +21,24 @@ export type EventParams<T extends CustomEvent> = T extends CustomEvent
   ? T["detail"]
   : never;
 
+export type ClickEvent = CustomEvent<
+  { events: TimelineEvent[] } & BaseEventData
+>;
+export type SelectEvent = CustomEvent<
+  { events: TimelineEvent[] } & BaseEventData
+>;
+export type ContextEvent = CustomEvent<
+  { event?: TimelineEvent } & BaseEventData
+>;
+export type HoverEvent = CustomEvent<{ event: TimelineEvent } & BaseEventData>;
+export type LeaveEvent = CustomEvent<{ event: TimelineEvent }>;
+
 export type ApiEvent = {
-  "on-click": (
-    event: CustomEvent<{ events: TimelineEvent[] } & BaseEventData>,
-  ) => void;
-  "on-context-click": (
-    event: CustomEvent<{ event?: TimelineEvent } & BaseEventData>,
-  ) => void;
-  "on-select-change": (event: CustomEvent<{ events: TimelineEvent[] }>) => void;
-  "on-hover": (
-    event: CustomEvent<{ event: TimelineEvent } & BaseEventData>,
-  ) => void;
-  "on-leave": (event: CustomEvent<{ event: TimelineEvent }>) => void;
+  "on-click": (event: ClickEvent) => void;
+  "on-context-click": (event: ContextEvent) => void;
+  "on-select-change": (event: SelectEvent) => void;
+  "on-hover": (event: HoverEvent) => void;
+  "on-leave": (event: LeaveEvent) => void;
 };
 
 export type UnwrapTimelineEvents<
