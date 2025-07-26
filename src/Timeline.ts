@@ -172,9 +172,19 @@ export class Timeline {
   private getViewConfig(
     config?: TimeLineConfig["viewConfiguration"],
   ): ViewConfigurationDefault {
-    return config
-      ? ({ ...defaultViewConfig, ...config } as ViewConfigurationDefault)
-      : defaultViewConfig;
+    if (!config) return defaultViewConfig;
+
+    return {
+      ruler: { ...defaultViewConfig.ruler, ...config.ruler },
+      grid: { ...defaultViewConfig.grid, ...config.grid },
+      axes: { ...defaultViewConfig.axes, ...config.axes },
+      markers: { ...defaultViewConfig.markers, ...config.markers },
+      events: { ...defaultViewConfig.events, ...config.events },
+      hideRuler:
+        config.hideRuler === undefined
+          ? defaultViewConfig.hideRuler
+          : config.hideRuler,
+    } as ViewConfigurationDefault;
   }
 
   /**
