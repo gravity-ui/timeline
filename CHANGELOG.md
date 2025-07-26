@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.4.3](https://github.com/gravity-ui/timeline/compare/v1.4.2...v1.4.3) (2025-07-26)
+
+
+### Bug Fixes
+
+* **Config:** correct config merge ([e9b3103](https://github.com/gravity-ui/timeline/commit/e9b3103f448e9310829ee4685ee60767ad212945))
+* **Eslint:** eslint errors ([fd36b60](https://github.com/gravity-ui/timeline/commit/fd36b604d509678fd526ba265391eb3044ce2813))
+* **Ruler:** get correct padding if ruler hide ([9dbb90c](https://github.com/gravity-ui/timeline/commit/9dbb90c2ec253556ca46af2ac61aaa35930831e4))
+
 ## [1.4.2](https://github.com/gravity-ui/timeline/compare/v1.4.1...v1.4.2) (2025-07-25)
 
 
