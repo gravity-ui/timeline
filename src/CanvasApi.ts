@@ -9,6 +9,7 @@ import { TimelineAxis } from "./types/axis";
 import { TimelineEvent } from "./types/events";
 import { Markers } from "./components/Markers";
 import { TimelineMarker } from "./types/markers";
+import { ViewConfiguration } from "./types";
 
 export class CanvasApi {
   public readonly canvas: HTMLCanvasElement;
@@ -54,7 +55,7 @@ export class CanvasApi {
     this.ctx.restore();
   }
 
-  public getVisualConfiguration() {
+  public getVisualConfiguration(): ViewConfiguration {
     return this.timeline.viewConfiguration;
   }
 

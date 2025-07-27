@@ -1,4 +1,5 @@
 import { TimelineEvent } from "../../types/events";
+import { ViewConfiguration } from "../../types";
 
 export type Hitbox = {
   top: number;
@@ -16,8 +17,8 @@ export abstract class AbstractEventRenderer {
     x1: number,
     y: number,
     h: number,
+    viewConfiguration: ViewConfiguration,
     timeToPosition?: (n: number) => number,
-    color?: string,
   ): void;
 
   protected hitboxResult: Hitbox = {

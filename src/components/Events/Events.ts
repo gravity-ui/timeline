@@ -7,6 +7,7 @@ import { CanvasApi } from "../../CanvasApi";
 import { ComponentType } from "../../enums";
 import { BaseComponentInterface } from "../../types/component";
 import { TimelineEvent } from "../../types/events";
+import { ViewConfiguration } from "../../types";
 
 const MAX_INDEX_TREE_WIDTH = 16;
 
@@ -140,7 +141,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   }
 
   public render() {
-    const { events } = this.api.getVisualConfiguration();
+    const viewConfiguration = this.api.getVisualConfiguration();
     const { start, end } = this.api.getInterval();
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
 
@@ -155,7 +156,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
 
     ctx.translate(0, this.api.getRulerHeight());
 
-    ctx.font = events.font;
+    ctx.font = viewConfiguration.events.font;
     ctx.lineWidth = 2;
 
     for (let i = 0, len = this._events.length; i < len; i += 1) {
@@ -178,6 +179,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
           x1,
           y,
           axis.height,
+          viewConfiguration,
           timeToPosition,
         );
       }
@@ -220,8 +222,8 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
    * @param x1 - End X coordinate
    * @param y - Y coordinate
    * @param h - Height of the event
+   * @param viewConfiguration - Timeline view configuration
    * @param timeToPosition - Optional function to convert time to position
-   * @param color - Optional color override
    */
   protected runRenderer(
     ctx: CanvasRenderingContext2D,
@@ -231,8 +233,8 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     x1: number,
     y: number,
     h: number,
+    viewConfiguration: ViewConfiguration,
     timeToPosition?: (n: number) => number,
-    color?: string,
   ) {
     if (!event.renderer) {
       event.renderer = new DefaultEventRenderer();
@@ -246,8 +248,8 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
       x1,
       y,
       h,
+      viewConfiguration,
       timeToPosition,
-      color,
     );
   }
 
