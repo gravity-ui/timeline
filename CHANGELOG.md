@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.5.0](https://github.com/gravity-ui/timeline/compare/v1.4.3...v1.5.0) (2025-07-27)
+
+
+### Features
+
+* **Events:** passing visual configuration to renderer ([62d2273](https://github.com/gravity-ui/timeline/commit/62d2273317a7f1a1e2ecaad5a6e021d614c64942))
+
+
+### Bug Fixes
+
+* **Config:** removed unused parameter ([bb95744](https://github.com/gravity-ui/timeline/commit/bb95744b11cb8ae44b4969dcff081b15abea43fc))
+
 ## [1.4.3](https://github.com/gravity-ui/timeline/compare/v1.4.2...v1.4.3) (2025-07-26)
 
 
