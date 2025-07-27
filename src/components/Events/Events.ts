@@ -51,7 +51,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   public getEventsAt(rect: DOMRect): Event[] {
     const {
       events: { hitboxPadding },
-    } = this.api.getVisualConfiguration();
+    } = this.api.getViewConfiguration();
     const rulerHeight = this.api.getRulerHeight();
     const topOffset = -rulerHeight + this.api.canvasScrollTop;
     const events = this.index.search({
@@ -141,7 +141,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   }
 
   public render() {
-    const viewConfiguration = this.api.getVisualConfiguration();
+    const viewConfiguration = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
 
@@ -316,7 +316,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
    */
   protected rebuildIndex(): void {
     const { end } = this.api.getInterval();
-    const { axes } = this.api.getVisualConfiguration();
+    const { axes } = this.api.getViewConfiguration();
 
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
     const axesById = axesComponent.getAxesById();

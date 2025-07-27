@@ -59,7 +59,7 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis>
       throw new Error("Invalid axis configuration");
     }
 
-    const { axes } = this.api.getVisualConfiguration();
+    const { axes } = this.api.getViewConfiguration();
     const index = clamp(trackIndex, 0, axis.tracksCount - 1);
     return axis.top + axes.trackHeight * index + axes.trackHeight / 2;
   }
@@ -68,7 +68,7 @@ export class Axes<Axis extends TimelineAxis = TimelineAxis>
    * Renders all axes to the canvas
    */
   public render() {
-    const { axes } = this.api.getVisualConfiguration();
+    const { axes } = this.api.getViewConfiguration();
     const { ctx } = this.api;
 
     if (this.strokeMode === StrokeMode.DASHED) {

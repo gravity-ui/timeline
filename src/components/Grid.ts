@@ -14,7 +14,7 @@ export class Grid implements BaseComponentInterface {
 
   constructor(api: CanvasApi) {
     this.api = api;
-    this.levels = getGridLevels(this.api.getVisualConfiguration().grid);
+    this.levels = getGridLevels(this.api.getViewConfiguration().grid);
   }
 
   /**
@@ -55,7 +55,7 @@ export class Grid implements BaseComponentInterface {
       // Check if the marks fit within the visible area
       if (
         this.calculateMarksWidth(level, domainSize) >
-        canvasWidth + this.api.getVisualConfiguration().grid.widthBuffer
+        canvasWidth + this.api.getViewConfiguration().grid.widthBuffer
       ) {
         continue;
       }
@@ -76,7 +76,7 @@ export class Grid implements BaseComponentInterface {
 
     while (Number(time) < domainSize) {
       const x = convertDomain(Number(time), 0, domainSize, 0, totalWidth);
-      totalWidth += x > 0 ? this.api.getVisualConfiguration().grid.spacing : 0;
+      totalWidth += x > 0 ? this.api.getViewConfiguration().grid.spacing : 0;
       time = level.step(time);
     }
 
@@ -93,7 +93,7 @@ export class Grid implements BaseComponentInterface {
     height: number,
     level: TGridLevel,
   ) {
-    const { grid } = this.api.getVisualConfiguration();
+    const { grid } = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
     const { ctx } = this.api;
     ctx.lineWidth = grid.lineWidth;

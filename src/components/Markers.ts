@@ -36,7 +36,7 @@ export class Markers implements BaseComponentInterface {
     // Reset label positions for new render pass
     this.lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
 
-    const { markers } = this.api.getVisualConfiguration();
+    const { markers } = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
 
     // Render markers in reverse order for proper label placement
@@ -65,7 +65,7 @@ export class Markers implements BaseComponentInterface {
    * @param marker - Marker data to render
    */
   protected renderMarker(marker: TimelineMarker) {
-    const { markers } = this.api.getVisualConfiguration();
+    const { markers } = this.api.getViewConfiguration();
     const ctx = this.api.ctx;
     const markerPosition = this.api.timeToPosition(marker.time);
 
@@ -123,7 +123,7 @@ export class Markers implements BaseComponentInterface {
     }: { label: string; backgroundColor: string; textColor?: string },
     position: "top" | "bottom",
   ) {
-    const { markers } = this.api.getVisualConfiguration();
+    const { markers } = this.api.getViewConfiguration();
     const ctx = this.api.ctx;
     const labelWidth = this.getLabelWidth(label);
 
@@ -161,7 +161,7 @@ export class Markers implements BaseComponentInterface {
       return this.textWidthCache.get(text);
     }
 
-    const { markers } = this.api.getVisualConfiguration();
+    const { markers } = this.api.getViewConfiguration();
     const width =
       this.api.ctx.measureText(text).width + markers.labelPadding * 2;
     this.textWidthCache.set(text, width);

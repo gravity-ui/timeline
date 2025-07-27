@@ -16,14 +16,14 @@ export class Ruler implements BaseComponentInterface {
 
   constructor(api: CanvasApi) {
     this.api = api;
-    this.labelLevels = getLabelLevels(this.api.getVisualConfiguration().ruler);
+    this.labelLevels = getLabelLevels(this.api.getViewConfiguration().ruler);
   }
 
   /**
    * Renders the ruler component including background, labels and grid lines
    */
   public render() {
-    const { ruler } = this.api.getVisualConfiguration();
+    const { ruler } = this.api.getViewConfiguration();
     const { ctx, width } = this.api;
     this.api.useStaticTransform();
 
@@ -46,7 +46,7 @@ export class Ruler implements BaseComponentInterface {
    * Uses ruler's border color from visual configuration
    */
   private renderBottomLine() {
-    const { ruler } = this.api.getVisualConfiguration();
+    const { ruler } = this.api.getViewConfiguration();
     const { ctx, width } = this.api;
 
     ctx.strokeStyle = ruler.color.borderColor;
@@ -62,7 +62,7 @@ export class Ruler implements BaseComponentInterface {
    */
   private renderLevels() {
     const { start, end } = this.api.getInterval();
-    const { ruler } = this.api.getVisualConfiguration();
+    const { ruler } = this.api.getViewConfiguration();
     if (!ruler) return;
 
     const domain = end - start;
@@ -115,7 +115,7 @@ export class Ruler implements BaseComponentInterface {
     domain: number,
     width: number,
   ): number {
-    const { ruler } = this.api.getVisualConfiguration();
+    const { ruler } = this.api.getViewConfiguration();
     let marksWidth = 0;
 
     for (let t = dayjs(0); Number(t) < domain; t = level.step(t)) {
@@ -137,7 +137,7 @@ export class Ruler implements BaseComponentInterface {
     y: number,
     color: string,
   ) {
-    const { ruler } = this.api.getVisualConfiguration();
+    const { ruler } = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
     const { ctx, width } = this.api;
 
