@@ -43,7 +43,6 @@ export type AxesViewOptions = {
 export type EnetsViewOptions = {
   hitboxPadding?: number;
   font?: string;
-  maxIndexTreeWidth?: number;
 };
 
 export type MarkerViewOptions = {

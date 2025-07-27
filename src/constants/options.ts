@@ -43,7 +43,6 @@ export const defaultViewConfig: ViewConfigurationDefault = {
   events: {
     font: DEFAULT_FONT,
     hitboxPadding: 2,
-    maxIndexTreeWidth: 16,
   },
   markers: {
     labelPadding: 3,
