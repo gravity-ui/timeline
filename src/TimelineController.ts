@@ -1,6 +1,7 @@
 import { clamp } from "./helpers/math";
 import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
+import debounce_ from "lodash/debounce";
 
 const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
@@ -12,6 +13,10 @@ const ZOOM_MAX = MONTH * 2;
  */
 export class TimelineController {
   api: CanvasApi;
+
+  private emitCameraChange = debounce_((newStart: number, newEnd: number) => {
+    this.api.emit("on-camera-change", { from: newStart, to: newEnd });
+  }, 150);
 
   /**
    * Creates a new TimelineController instance
@@ -112,7 +117,7 @@ export class TimelineController {
 
     if (newStart !== start || newEnd !== end) {
       this.api.setRange(newStart, newEnd);
-      this.api.emit("on-camera-change", { from: newStart, to: newEnd });
+      this.emitCameraChange(newStart, newEnd);
     }
   };
 }
