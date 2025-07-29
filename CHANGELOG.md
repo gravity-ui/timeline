@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.6.0](https://github.com/gravity-ui/timeline/compare/v1.5.0...v1.6.0) (2025-07-29)
+
+
+### Features
+
+* **Events:** add on-camera-change event ([b15ad7d](https://github.com/gravity-ui/timeline/commit/b15ad7d4abdf0dde9d2021716d3dbed61d27abff))
+
+
+### Bug Fixes
+
+* typo Enets ([776f663](https://github.com/gravity-ui/timeline/commit/776f663a6e86c5856b82c548d4eedc0c33ebb3e2))
+
 ## [1.5.0](https://github.com/gravity-ui/timeline/compare/v1.4.3...v1.5.0) (2025-07-27)
 
 
