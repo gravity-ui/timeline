@@ -67,6 +67,10 @@ export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
     action("on-leave")(data);
   });
 
+  useTimelineEvent(timeline, "on-camera-change", (data) => {
+    action("on-camera-change")(data);
+  });
+
   return (
     <div
       style={{

@@ -32,6 +32,7 @@ export type ContextEvent = CustomEvent<
 >;
 export type HoverEvent = CustomEvent<{ event: TimelineEvent } & BaseEventData>;
 export type LeaveEvent = CustomEvent<{ event: TimelineEvent }>;
+export type CameraEvent = CustomEvent<{ from: number; to: number }>;
 
 export type ApiEvent = {
   "on-click": (event: ClickEvent) => void;
@@ -39,6 +40,7 @@ export type ApiEvent = {
   "on-select-change": (event: SelectEvent) => void;
   "on-hover": (event: HoverEvent) => void;
   "on-leave": (event: LeaveEvent) => void;
+  "on-camera-change": (event: CameraEvent) => void;
 };
 
 export type UnwrapTimelineEvents<

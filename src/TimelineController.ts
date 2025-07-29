@@ -112,6 +112,7 @@ export class TimelineController {
 
     if (newStart !== start || newEnd !== end) {
       this.api.setRange(newStart, newEnd);
+      this.api.emit("on-camera-change", { from: newStart, to: newEnd });
     }
   };
 }
