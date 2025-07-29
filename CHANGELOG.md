@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.2](https://github.com/gravity-ui/timeline/compare/v1.6.1...v1.6.2) (2025-07-29)
+
+
+### Bug Fixes
+
+* **Events:** add debounce to camera change event ([e5202cc](https://github.com/gravity-ui/timeline/commit/e5202cc217858184a648d828bba42f0ece8b7cd1))
+
 ## [1.6.1](https://github.com/gravity-ui/timeline/compare/v1.6.0...v1.6.1) (2025-07-29)
 
 
