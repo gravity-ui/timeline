@@ -299,6 +299,8 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
       return;
     }
 
+    if (this.activeEvent === candidate) return;
+
     const api = this.api;
     this.activeEvent = candidate;
 
