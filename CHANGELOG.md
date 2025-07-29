@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.1](https://github.com/gravity-ui/timeline/compare/v1.6.0...v1.6.1) (2025-07-29)
+
+
+### Bug Fixes
+
+* **Events:** hover event is triggered too often ([167e47a](https://github.com/gravity-ui/timeline/commit/167e47ad66e8a69fae36907f4d9fd3ef7a82238e))
+
 ## [1.6.0](https://github.com/gravity-ui/timeline/compare/v1.5.0...v1.6.0) (2025-07-29)
 
 
