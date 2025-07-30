@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.6.3](https://github.com/gravity-ui/timeline/compare/v1.6.2...v1.6.3) (2025-07-30)
+
+
+### Bug Fixes
+
+* **Events:** reworked the events of events ([7703fc2](https://github.com/gravity-ui/timeline/commit/7703fc26c5a5480b6049404c7d379d52dcb544d6))
+
 ## [1.6.2](https://github.com/gravity-ui/timeline/compare/v1.6.1...v1.6.2) (2025-07-29)
 
 
