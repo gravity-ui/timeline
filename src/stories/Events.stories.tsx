@@ -67,6 +67,15 @@ const meta = {
         },
       },
     },
+    "settings.selectedEventIds": {
+      control: {
+        type: "object",
+      },
+      description: "Selected event ids",
+      table: {
+        category: "settings",
+      },
+    },
     "viewConfiguration.hideRuler": {
       control: {
         type: "boolean",
@@ -170,6 +179,7 @@ export const Basic: Story = {
     "settings.end": baseTimelineConfig.settings.end,
     "settings.axes": baseTimelineConfig.settings.axes,
     "settings.events": baseTimelineConfig.settings.events,
+    "settings.selectedEventIds": baseTimelineConfig.settings.selectedEventIds,
     ...defaultViewConfigArgs,
   },
   parameters: {
@@ -188,6 +198,7 @@ export const EndlessTimelines: Story = {
     "settings.end": endlessTimelineConfig.settings.end,
     "settings.axes": endlessTimelineConfig.settings.axes,
     "settings.events": endlessTimelineConfig.settings.events,
+    "settings.selectedEventIds": baseTimelineConfig.settings.selectedEventIds,
     ...defaultViewConfigArgs,
   },
   parameters: {
@@ -206,6 +217,7 @@ export const CustomRenderer: Story = {
     "settings.end": customRendererConfig.settings.end,
     "settings.axes": customRendererConfig.settings.axes,
     "settings.events": customRendererConfig.settings.events,
+    "settings.selectedEventIds": baseTimelineConfig.settings.selectedEventIds,
     ...defaultViewConfigArgs,
   },
   parameters: {

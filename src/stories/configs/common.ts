@@ -2,7 +2,7 @@ import { TimeLineConfig } from "../../types";
 
 export const commonConfig: Pick<
   TimeLineConfig["settings"],
-  "start" | "end" | "axes"
+  "start" | "end" | "axes" | "selectedEventIds"
 > = {
   start: 1739537126347,
   end: 1739537186347,
@@ -14,4 +14,5 @@ export const commonConfig: Pick<
       height: 20,
     },
   ],
+  selectedEventIds: [],
 };

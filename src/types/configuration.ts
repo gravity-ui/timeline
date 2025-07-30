@@ -71,6 +71,7 @@ export type TimelineSettings = {
   axes: TimelineAxis[];
   events: TimelineEvent[];
   markers?: TimelineMarker[];
+  selectedEventIds?: string[];
 };
 
 export type TimeLineConfig = {
