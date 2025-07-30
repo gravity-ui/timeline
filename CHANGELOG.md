@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.7.0](https://github.com/gravity-ui/timeline/compare/v1.6.3...v1.7.0) (2025-07-30)
+
+
+### Features
+
+* **Settings:** add selected events in config ([8387f05](https://github.com/gravity-ui/timeline/commit/8387f05248f5bc1463cda9c5076669d4523a081d))
+
 ## [1.6.3](https://github.com/gravity-ui/timeline/compare/v1.6.2...v1.6.3) (2025-07-30)
 
 
