@@ -28,4 +28,10 @@ export default [
       ],
     },
   },
+  {
+    files: ["src/stories/**/*.{ts,tsx}"],
+    rules: {
+      "import/no-extraneous-dependencies": "off",
+    },
+  },
 ];
