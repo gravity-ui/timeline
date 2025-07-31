@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.8.0](https://github.com/gravity-ui/timeline/compare/v1.7.0...v1.8.0) (2025-07-31)
+
+
+### Features
+
+* **UI:** improved event types ([ae40fd0](https://github.com/gravity-ui/timeline/commit/ae40fd04f3f2880c85b5fa1c153481e8b6acbd33))
+
 ## [1.7.0](https://github.com/gravity-ui/timeline/compare/v1.6.3...v1.7.0) (2025-07-30)
 
 
