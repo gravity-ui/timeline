@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.9.0](https://github.com/gravity-ui/timeline/compare/v1.8.0...v1.9.0) (2025-07-31)
+
+
+### Features
+
+* **Api:** add get event position method ([f724546](https://github.com/gravity-ui/timeline/commit/f724546aa6bc80e92d55da955aa212b21da30633))
+
 ## [1.8.0](https://github.com/gravity-ui/timeline/compare/v1.7.0...v1.8.0) (2025-07-31)
 
 
