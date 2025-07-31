@@ -175,4 +175,28 @@ export class CanvasApi<TEvent extends TimelineEvent> {
       this.removeComponent(key);
     });
   }
+
+  public getEventPosition(event: TEvent) {
+    const axesComponent = this.getComponent<Axes>(ComponentType.Axes);
+    if (!axesComponent) {
+      throw new Error("Invalid axes configuration");
+    }
+
+    const axis = axesComponent.getAxesById()[event.axisId];
+    if (!axis) {
+      throw new Error("Invalid axis id");
+    }
+
+    const { end } = this.getInterval();
+    const x0 = this.timeToPosition(event.from);
+    const x1 = this.timeToPosition(event.to || end);
+    const y0 = axesComponent.getAxisTrackPosition(axis, event.trackIndex);
+
+    return {
+      x0,
+      x1,
+      y0,
+      h: axis.height,
+    };
+  }
 }
