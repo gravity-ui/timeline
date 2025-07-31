@@ -10,14 +10,14 @@ import { TimelineEvent } from "./types/events";
 import { Markers } from "./components/Markers";
 import { TimelineMarker } from "./types/markers";
 
-export class CanvasApi {
+export class CanvasApi<TEvent extends TimelineEvent> {
   public readonly canvas: HTMLCanvasElement;
   public readonly ctx: CanvasRenderingContext2D;
 
   protected components: Map<string, BaseComponentInterface>;
-  protected timeline: Timeline;
+  protected timeline: Timeline<TEvent>;
 
-  constructor(timeline: Timeline) {
+  constructor(timeline: Timeline<TEvent>) {
     this.timeline = timeline;
     this.canvas = this.timeline.canvas;
     this.components = new Map<string, BaseComponentInterface>();

@@ -3,27 +3,27 @@ import { useTimeline } from "../react-components/hooks/useTimeline";
 import { useTimelineEvent } from "../react-components/hooks/useTimelineEvent";
 import { action } from "@storybook/addon-actions";
 import { TimelineCanvas } from "../react-components/TimelineCanvas";
-import { TimelineSettings, ViewConfiguration } from "../types";
+import { TimelineEvent, TimelineSettings, ViewConfiguration } from "../types";
 
 type ViewConfigurationControls = {
   [K in keyof ViewConfiguration as `viewConfiguration.${K}`]: ViewConfiguration[K];
 };
 
 type SettingsControls = {
-  [K in keyof TimelineSettings as `settings.${K}`]: TimelineSettings[K];
+  [K in keyof TimelineSettings<TimelineEvent> as `settings.${K}`]: TimelineSettings<TimelineEvent>[K];
 };
 
 type TimelineStoryProps = SettingsControls & ViewConfigurationControls;
 
 export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
-  // Reconstruct settings object from flattened props
+  // Reconstruct a settings object from flattened props
   const settings = Object.entries(props).reduce((acc, [key, value]) => {
     if (key.startsWith("settings.")) {
       const propName = key.replace("settings.", "");
       acc[propName] = value;
     }
     return acc;
-  }, {} as TimelineSettings);
+  }, {} as TimelineSettings<TimelineEvent>);
 
   // Reconstruct viewConfiguration object from flattened props
   const viewConfiguration = Object.entries(props).reduce(

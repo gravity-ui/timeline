@@ -14,7 +14,7 @@ const MAX_INDEX_TREE_WIDTH = 16;
 /**
  * Events component responsible for managing and rendering timeline events
  * Implements BaseComponentInterface for consistent component structure
- * @template Event - Type of event extending TimelineEvent
+ * @template Event - Type of event-extending TimelineEvent
  */
 export class Events<Event extends TimelineEvent = TimelineEvent>
   implements BaseComponentInterface
@@ -23,11 +23,11 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   public activeEvent: TimelineEvent | null = null;
   protected index = new RBush<BBox & { event: Event }>(MAX_INDEX_TREE_WIDTH);
 
-  private api: CanvasApi;
+  private api: CanvasApi<Event>;
   private _selectedEvents = new Set<string>();
   private _events: Event[] = [];
 
-  constructor(api: CanvasApi) {
+  constructor(api: CanvasApi<Event>) {
     this.api = api;
 
     this.addEventListeners();

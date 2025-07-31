@@ -1,8 +1,8 @@
-import { TimeLineConfig } from "../../types";
+import { TimeLineConfig, TimelineEvent } from "../../types";
 import { MyEvent, MyRenderer } from "../MyRenderer";
 import { commonConfig } from "./common";
 
-export const baseTimelineConfig: TimeLineConfig = {
+export const baseTimelineConfig: TimeLineConfig<TimelineEvent> = {
   settings: {
     ...commonConfig,
     events: [
@@ -42,7 +42,7 @@ export const baseTimelineConfig: TimeLineConfig = {
   },
 };
 
-export const endlessTimelineConfig: TimeLineConfig = {
+export const endlessTimelineConfig: TimeLineConfig<TimelineEvent> = {
   settings: {
     ...commonConfig,
     events: [
@@ -91,7 +91,7 @@ const customEvents: MyEvent[] = [
   },
 ];
 
-export const customRendererConfig: TimeLineConfig = {
+export const customRendererConfig: TimeLineConfig<MyEvent> = {
   settings: {
     ...commonConfig,
     events: customEvents,
