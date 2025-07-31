@@ -2,19 +2,22 @@ import { clamp, pointToRangeIntersect } from "../helpers/math";
 import { BaseComponentInterface } from "../types/component";
 import { TimelineMarker } from "../types/markers";
 import { CanvasApi } from "../CanvasApi";
+import { TimelineEvent } from "../types";
 
 /**
  * Handles rendering timeline markers on the canvas
- * Implements BaseComponentInterface for consistent component structure
+ * Implements BaseComponentInterface for a consistent component structure
  */
-export class Markers implements BaseComponentInterface {
-  protected api: CanvasApi;
+export class Markers<TEvent extends TimelineEvent = TimelineEvent>
+  implements BaseComponentInterface
+{
+  protected api: CanvasApi<TEvent>;
   protected sortedMarkers: TimelineMarker[] = [];
   // Tracks last rendered label positions to prevent overlapping
   protected lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
   private textWidthCache = new Map<string, number>();
 
-  constructor(api: CanvasApi) {
+  constructor(api: CanvasApi<TEvent>) {
     this.api = api;
   }
 
@@ -29,7 +32,7 @@ export class Markers implements BaseComponentInterface {
   }
 
   /**
-   * Renders all visible markers within current viewport
+   * Renders all visible markers within the current viewport
    */
   public render() {
     this.api.useStaticTransform();
@@ -51,7 +54,7 @@ export class Markers implements BaseComponentInterface {
         );
       }
 
-      // Only render markers visible in current view (with overscan for labels)
+      // Only render markers visible in the current view (with overscan for labels)
       if (
         pointToRangeIntersect(marker.time, start - overscan, end + overscan)
       ) {

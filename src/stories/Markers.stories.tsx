@@ -4,14 +4,14 @@ import { baseTimelineConfig } from "./configs/events";
 import { markersBaseConfig, markersWithLabelsConfig } from "./configs/markers";
 import { defaultViewConfig } from "../constants/options";
 import { StoryWrapper } from "./StoryWrapper";
-import { TimelineSettings, ViewConfiguration } from "../types";
+import { TimelineEvent, TimelineSettings, ViewConfiguration } from "../types";
 
 type ViewConfigurationControls = {
   [K in keyof ViewConfiguration as `viewConfiguration.${K}`]: ViewConfiguration[K];
 };
 
 type SettingsControls = {
-  [K in keyof TimelineSettings as `settings.${K}`]: TimelineSettings[K];
+  [K in keyof TimelineSettings<TimelineEvent> as `settings.${K}`]: TimelineSettings<TimelineEvent>[K];
 };
 
 type StoryProps = SettingsControls & ViewConfigurationControls;

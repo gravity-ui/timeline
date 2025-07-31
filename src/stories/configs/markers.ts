@@ -1,7 +1,7 @@
-import { TimeLineConfig } from "../../types";
+import { TimeLineConfig, TimelineEvent } from "../../types";
 import { commonConfig } from "./common";
 
-const events: TimeLineConfig["settings"]["events"] = [
+const events: TimeLineConfig<TimelineEvent>["settings"]["events"] = [
   {
     id: "test4",
     from: 1739537150000,
@@ -12,7 +12,7 @@ const events: TimeLineConfig["settings"]["events"] = [
   },
 ];
 
-export const markersBaseConfig: TimeLineConfig = {
+export const markersBaseConfig: TimeLineConfig<TimelineEvent> = {
   settings: {
     ...commonConfig,
     events,
@@ -31,7 +31,7 @@ export const markersBaseConfig: TimeLineConfig = {
   },
 };
 
-export const markersWithLabelsConfig: TimeLineConfig = {
+export const markersWithLabelsConfig: TimeLineConfig<TimelineEvent> = {
   settings: {
     ...commonConfig,
     events,

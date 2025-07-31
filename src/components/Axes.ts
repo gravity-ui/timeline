@@ -4,20 +4,23 @@ import { BaseComponentInterface } from "../types/component";
 import { CanvasApi } from "../CanvasApi";
 import { TimelineAxis } from "../types/axis";
 import { StrokeMode } from "../enums";
+import { TimelineEvent } from "../types";
 
 /**
  * Axes component responsible for managing and rendering timeline axes
  * Implements BaseComponentInterface for consistent component structure
  * @template Axis - Type of axis extending TimelineAxis
  */
-export class Axes<Axis extends TimelineAxis = TimelineAxis>
-  implements BaseComponentInterface
+export class Axes<
+  Axis extends TimelineAxis = TimelineAxis,
+  TEvent extends TimelineEvent = TimelineEvent,
+> implements BaseComponentInterface
 {
   public strokeMode = StrokeMode.STRAIGHT;
-  private api: CanvasApi;
+  private api: CanvasApi<TEvent>;
   private axesIndex!: AxesIndex<Axis>;
 
-  constructor(api: CanvasApi) {
+  constructor(api: CanvasApi<TEvent>) {
     this.api = api;
 
     this.axesIndex = new AxesIndex<Axis>([], {

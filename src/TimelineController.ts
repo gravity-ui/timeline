@@ -2,6 +2,7 @@ import { clamp } from "./helpers/math";
 import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
 import debounce_ from "lodash/debounce";
+import { TimelineEvent } from "./types";
 
 const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
@@ -11,8 +12,8 @@ const ZOOM_MAX = MONTH * 2;
  * Controller class responsible for handling timeline interactions and canvas resizing
  * Manages zoom, pan, and canvas size updates
  */
-export class TimelineController {
-  api: CanvasApi;
+export class TimelineController<TEvent extends TimelineEvent = TimelineEvent> {
+  api: CanvasApi<TEvent>;
 
   private emitCameraChange = debounce_((newStart: number, newEnd: number) => {
     this.api.emit("on-camera-change", { from: newStart, to: newEnd });
@@ -22,7 +23,7 @@ export class TimelineController {
    * Creates a new TimelineController instance
    * @param api - CanvasApi instance for timeline manipulation
    */
-  constructor(api: CanvasApi) {
+  constructor(api: CanvasApi<TEvent>) {
     this.api = api;
 
     this.updateCanvasSize();
@@ -30,7 +31,7 @@ export class TimelineController {
   }
 
   /**
-   * Initializes event listeners for window resize and canvas wheel events
+   * Initializes event listeners for window resize and canvas-wheel events
    */
   public init() {
     window.addEventListener("resize", this.updateCanvasSize);
@@ -38,7 +39,7 @@ export class TimelineController {
   }
 
   /**
-   * Cleans up event listeners when controller is destroyed
+   * Cleans up event listeners when the controller is destroyed
    */
   public destroy() {
     window.removeEventListener("resize", this.updateCanvasSize);
@@ -92,14 +93,14 @@ export class TimelineController {
         const factor = event.deltaY > 0 ? 1.15 : 0.9;
         const newDomain = clamp(oldDomain * factor, ZOOM_MIN, ZOOM_MAX);
 
-        // Check if cursor is inside the canvas
+        // Check if the cursor is inside the canvas
         if (
           event.offsetX >= 0 &&
           event.offsetX <= this.api.canvas.width &&
           event.offsetY >= 0 &&
           event.offsetY <= this.api.canvas.height
         ) {
-          // Center zoom around cursor position
+          // Center zoom around the cursor position
           const cursorTime = this.api.positionToTime(event.offsetX);
           const ratio = (cursorTime - start) / oldDomain;
           newStart = Math.round(cursorTime - ratio * newDomain);

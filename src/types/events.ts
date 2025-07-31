@@ -5,7 +5,7 @@ export type TimelineEvent = {
   from: number;
   to?: number;
   axisId: string;
-  trackIndex: number;
+  trackIndex: number; //index in axis
   renderer?: AbstractEventRenderer;
   color?: string;
   selectedColor?: string;
@@ -21,30 +21,42 @@ export type EventParams<T extends CustomEvent> = T extends CustomEvent
   ? T["detail"]
   : never;
 
-export type ClickEvent = { events: TimelineEvent[] } & BaseEventData;
-export type SelectEvent = { events: TimelineEvent[] } & BaseEventData;
-export type ContextEvent = { event?: TimelineEvent } & BaseEventData;
-export type HoverEvent = { event: TimelineEvent } & BaseEventData;
-export type LeaveEvent = { event: TimelineEvent };
+export type ClickEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+  events: TEvent[];
+} & BaseEventData;
+export type SelectEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+  events: TEvent[];
+} & BaseEventData;
+export type ContextEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+  event?: TEvent;
+} & BaseEventData;
+export type HoverEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+  event: TEvent;
+} & BaseEventData;
+export type LeaveEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+  event: TEvent;
+};
 export type CameraEvent = { from: number; to: number };
 
-export type ApiEvent = {
-  "on-click": (event: CustomEvent<ClickEvent>) => void;
-  "on-context-click": (event: CustomEvent<ContextEvent>) => void;
-  "on-select-change": (event: CustomEvent<SelectEvent>) => void;
-  "on-hover": (event: CustomEvent<HoverEvent>) => void;
-  "on-leave": (event: CustomEvent<LeaveEvent>) => void;
+export type ApiEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+  "on-click": (event: CustomEvent<ClickEvent<TEvent>>) => void;
+  "on-context-click": (event: CustomEvent<ContextEvent<TEvent>>) => void;
+  "on-select-change": (event: CustomEvent<SelectEvent<TEvent>>) => void;
+  "on-hover": (event: CustomEvent<HoverEvent<TEvent>>) => void;
+  "on-leave": (event: CustomEvent<LeaveEvent<TEvent>>) => void;
   "on-camera-change": (event: CustomEvent<CameraEvent>) => void;
 };
 
 export type UnwrapTimelineEvents<
-  Key extends keyof ApiEvent,
-  T extends ApiEvent[Key] = ApiEvent[Key],
-  P extends Parameters<T>[0] = Parameters<T>[0],
+  Key extends keyof ApiEvent<TEvent>,
+  TEvent extends TimelineEvent = TimelineEvent,
+  U extends ApiEvent<TEvent>[Key] = ApiEvent<TEvent>[Key],
+  P extends Parameters<U>[0] = Parameters<U>[0],
 > = P extends CustomEvent ? P : never;
 
 export type UnwrapTimelineEventsDetail<
-  Key extends keyof ApiEvent,
-  T extends ApiEvent[Key] = ApiEvent[Key],
-  P extends Parameters<T>[0] = Parameters<T>[0],
-> = UnwrapTimelineEvents<Key, T, P>["detail"];
+  Key extends keyof ApiEvent<TEvent>,
+  TEvent extends TimelineEvent = TimelineEvent,
+  U extends ApiEvent<TEvent>[Key] = ApiEvent<TEvent>[Key],
+  P extends Parameters<U>[0] = Parameters<U>[0],
+> = UnwrapTimelineEvents<Key, TEvent, U, P>["detail"];

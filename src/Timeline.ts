@@ -12,17 +12,17 @@ import { CanvasApi } from "./CanvasApi";
 import { TimelineController } from "./TimelineController";
 import { ComponentType, TimelineState } from "./enums";
 import { Markers } from "./components/Markers";
-import { ApiEvent, EventParams } from "./types/events";
+import { ApiEvent, EventParams, TimelineEvent } from "./types/events";
 
 /**
- * Main Timeline class that manages the timeline visualization and interactions
+ * The main Timeline class that manages the timeline visualization and interactions
  * Handles component initialization, event management, and timeline state
  */
-export class Timeline {
+export class Timeline<TEvent extends TimelineEvent> {
   public canvasScrollTop: number;
-  public settings: TimelineSettings;
+  public settings: TimelineSettings<TEvent>;
   public viewConfiguration: ViewConfigurationDefault;
-  public api: CanvasApi;
+  public api: CanvasApi<TEvent>;
   public eventEmitter = new EventTarget();
   public canvas: HTMLCanvasElement;
   public state = TimelineState.INIT;
@@ -43,7 +43,7 @@ export class Timeline {
    *   }
    * });
    */
-  constructor(config: TimeLineConfig) {
+  constructor(config: TimeLineConfig<TEvent>) {
     this.viewConfiguration = this.getViewConfig(config.viewConfiguration);
     this.settings = config.settings;
   }
@@ -83,7 +83,7 @@ export class Timeline {
    * Destroys the timeline instance, cleaning up all resources and event listeners
    * This method should be called when the timeline is no longer needed
    * @example
-   * // Clean up when component unmounts
+   * // Clean up when a component unmounts
    * timeline.destroy();
    */
   public destroy() {
@@ -106,8 +106,9 @@ export class Timeline {
    * });
    */
   public on<
-    EventName extends keyof ApiEvent = keyof ApiEvent,
-    Cb extends ApiEvent[EventName] = ApiEvent[EventName],
+    EventName extends keyof ApiEvent<T> = keyof ApiEvent<undefined>,
+    T extends undefined = undefined,
+    Cb extends ApiEvent<T>[EventName] = ApiEvent<T>[EventName],
   >(
     type: EventName,
     listener: Cb,
@@ -130,8 +131,8 @@ export class Timeline {
    * timeline.off('eventClick', handler);
    */
   public off<
-    EventName extends keyof ApiEvent = keyof ApiEvent,
-    Cb extends ApiEvent[EventName] = ApiEvent[EventName],
+    EventName extends keyof ApiEvent<TEvent> = keyof ApiEvent<undefined>,
+    Cb extends ApiEvent<TEvent>[EventName] = ApiEvent<TEvent>[EventName],
   >(
     type: EventName,
     listener: Cb,
@@ -152,8 +153,8 @@ export class Timeline {
    * timeline.emit('eventClick', { eventId: '123', time: Date.now() });
    */
   public emit<
-    EventName extends keyof ApiEvent = keyof ApiEvent,
-    Cb extends ApiEvent[EventName] = ApiEvent[EventName],
+    EventName extends keyof ApiEvent<TEvent> = keyof ApiEvent<undefined>,
+    Cb extends ApiEvent<TEvent>[EventName] = ApiEvent<TEvent>[EventName],
     P extends Parameters<Cb>[0] = Parameters<Cb>[0],
   >(type: EventName, detail?: EventParams<P>) {
     const event = new CustomEvent(type, {
@@ -172,7 +173,7 @@ export class Timeline {
    * @private
    */
   private getViewConfig(
-    config?: TimeLineConfig["viewConfiguration"],
+    config?: TimeLineConfig<TEvent>["viewConfiguration"],
   ): ViewConfigurationDefault {
     if (!config) return defaultViewConfig;
 
