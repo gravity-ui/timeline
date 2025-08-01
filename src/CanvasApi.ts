@@ -94,6 +94,11 @@ export class CanvasApi<TEvent extends TimelineEvent> {
     markers.setMarkers(newMarkers);
   }
 
+  public setCanvasScrollTop(newScrollTop: number) {
+    this.timeline.canvasScrollTop = newScrollTop;
+    this.rerender();
+  }
+
   public get pixelRatio(): number {
     return window.devicePixelRatio || 1;
   }
