@@ -18,8 +18,8 @@ export default meta;
 
 type Story = StoryObj<typeof meta>;
 
-export const RangeDateSelectionStory: Story = {
-  name: "RangeDateSelection",
+export const TimelineRuler: Story = {
+  name: "TimelineRuler",
   render: () => <RangeSelection />,
   parameters: {
     docs: {
