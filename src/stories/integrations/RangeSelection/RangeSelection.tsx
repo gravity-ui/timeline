@@ -1,22 +1,12 @@
 import React, { FC } from "react";
 import { ThemeProvider } from "@gravity-ui/uikit";
-import "@gravity-ui/uikit/styles/fonts.css";
-import "@gravity-ui/uikit/styles/styles.css";
 import { TimelineCanvas, useTimeline } from "../../../react-components";
-import { defaultViewConfig } from "../../../constants/options";
-import { TimeLineConfig, TimelineEvent } from "../../../types";
+import { TimelineEvent } from "../../../types";
 import { baseTimelineConfig } from "../../configs/events";
 import { TimelineRuler } from "./TimelineRuler";
-
-const config: TimeLineConfig<TimelineEvent> = {
-  settings: {
-    start: baseTimelineConfig.settings.start,
-    end: baseTimelineConfig.settings.end,
-    axes: baseTimelineConfig.settings.axes,
-    events: baseTimelineConfig.settings.events,
-  },
-  viewConfiguration: defaultViewConfig,
-};
+import "@gravity-ui/uikit/styles/fonts.css";
+import "@gravity-ui/uikit/styles/styles.css";
+import { config } from "../config";
 
 export const RangeSelection: FC = () => {
   const { timeline } = useTimeline<TimelineEvent>(config);
