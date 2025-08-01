@@ -190,7 +190,9 @@ export class CanvasApi<TEvent extends TimelineEvent> {
     const { end } = this.getInterval();
     const x0 = this.timeToPosition(event.from);
     const x1 = this.timeToPosition(event.to || end);
-    const y0 = axesComponent.getAxisTrackPosition(axis, event.trackIndex);
+    const y0 =
+      axesComponent.getAxisTrackPosition(axis, event.trackIndex) +
+      this.getRulerHeight();
 
     return {
       x0,
