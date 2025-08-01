@@ -1,18 +1,16 @@
 import React, { FC } from "react";
-import { ThemeProvider } from "@gravity-ui/uikit";
 import { TimelineCanvas, useTimeline } from "../../../react-components";
 import { TimelineEvent } from "../../../types";
 import { baseTimelineConfig } from "../../configs/events";
 import { TimelineRuler } from "./TimelineRuler";
-import "@gravity-ui/uikit/styles/fonts.css";
-import "@gravity-ui/uikit/styles/styles.css";
 import { config } from "../config";
+import { GravityWrap } from "../GravityWrap";
 
 export const RangeSelection: FC = () => {
   const { timeline } = useTimeline<TimelineEvent>(config);
 
   return (
-    <ThemeProvider theme="light">
+    <GravityWrap>
       <TimelineRuler
         timeline={timeline}
         initialInterval={{
@@ -21,6 +19,6 @@ export const RangeSelection: FC = () => {
         }}
       />
       <TimelineCanvas timeline={timeline} />
-    </ThemeProvider>
+    </GravityWrap>
   );
 };

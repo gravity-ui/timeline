@@ -1,0 +1,8 @@
+.event-list-container {
+  height: 100%;
+  overflow: auto;
+
+  &__item {
+    padding: 4px;
+  }
+}

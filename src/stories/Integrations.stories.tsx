@@ -2,6 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { RangeSelection } from "./integrations/RangeSelection";
 import { TimelineWithPopup } from "./integrations/Popup";
+import { ListIntegration } from "./integrations/Table";
 
 const meta = {
   title: "Timeline/Integrations",
@@ -38,6 +39,18 @@ export const Popup: Story = {
     docs: {
       description: {
         story: "Popup component from integrations",
+      },
+    },
+  },
+};
+
+export const List: Story = {
+  name: "List",
+  render: () => <ListIntegration />,
+  parameters: {
+    docs: {
+      description: {
+        story: "List component from integrations",
       },
     },
   },
