@@ -8,7 +8,7 @@ export const commonConfig: Pick<
   end: 1739537186347,
   axes: [
     {
-      id: "1",
+      id: "main",
       tracksCount: 5,
       top: 0,
       height: 20,
