@@ -1,6 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { RangeSelection } from "./integrations/RangeSelection";
+import { TimelineWithPopup } from "./integrations/Popup";
 
 const meta = {
   title: "Timeline/Integrations",
@@ -25,6 +26,18 @@ export const TimelineRuler: Story = {
     docs: {
       description: {
         story: "RangeDateSelection component from integrations",
+      },
+    },
+  },
+};
+
+export const Popup: Story = {
+  name: "Popup",
+  render: () => <TimelineWithPopup />,
+  parameters: {
+    docs: {
+      description: {
+        story: "Popup component from integrations",
       },
     },
   },
