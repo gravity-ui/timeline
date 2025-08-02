@@ -6,7 +6,7 @@ const events: TimeLineConfig<TimelineEvent>["settings"]["events"] = [
     id: "test4",
     from: 1739537150000,
     to: 1739537170000,
-    axisId: "1",
+    axisId: "main",
     trackIndex: 3,
     color: "rgb(87, 156, 135)",
   },
