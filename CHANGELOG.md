@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.10.0](https://github.com/gravity-ui/timeline/compare/v1.9.0...v1.10.0) (2025-08-02)
+
+
+### Features
+
+* **Api:** add scroll top method ([5189ce1](https://github.com/gravity-ui/timeline/commit/5189ce1e6f428d9c25abdc6e6f782f49ed2f23a0))
+* **Render:** add virtualization ([f29cb1a](https://github.com/gravity-ui/timeline/commit/f29cb1ad27ed0d9367b9834a3c2296fc444f1d57))
+* **storybook:** add integration range date selection example ([5659bf0](https://github.com/gravity-ui/timeline/commit/5659bf0666d95c387c61c25b5d31343535211d2f))
+* **Storybook:** add list integration example ([85f4975](https://github.com/gravity-ui/timeline/commit/85f497502b2b6f991abe8e2fe2dd66f0a6630473))
+* **Storybook:** add popup integration story ([4291a29](https://github.com/gravity-ui/timeline/commit/4291a29c567ae4e56ad2c8bfb53956f67c4bd7e8))
+
+
+### Bug Fixes
+
+* **Api:** getAxisTrackPosition now takes Ruler into account ([9c2bcda](https://github.com/gravity-ui/timeline/commit/9c2bcdad9df320c85f2aae3990a613e23d097b92))
+
 ## [1.9.0](https://github.com/gravity-ui/timeline/compare/v1.8.0...v1.9.0) (2025-07-31)
 
 
