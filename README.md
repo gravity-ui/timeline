@@ -11,6 +11,7 @@ For details see [Documentation](./docs/docs.md).
 - Canvas-based rendering for high performance
 - Interactive timeline with zoom and pan capabilities
 - Support for events, markers, axes, and grid
+- Virtualized rendering for improved performance with large datasets (only active when timeline content exceeds the viewport)
 - Customizable appearance and behavior
 - TypeScript support with full type definitions
 - React integration with custom hooks
