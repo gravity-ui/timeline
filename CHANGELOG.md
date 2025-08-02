@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.11.0](https://github.com/gravity-ui/timeline/compare/v1.10.0...v1.11.0) (2025-08-02)
+
+
+### Features
+
+* **Api:** rerender optimization ([9f8f6a9](https://github.com/gravity-ui/timeline/commit/9f8f6a98a2569923d7d9e2d86f27a591c0658a22))
+
+
+### Bug Fixes
+
+* **Storybook:** error in markers config ([4c3a8d6](https://github.com/gravity-ui/timeline/commit/4c3a8d65025537b9e91e28b49f89b271069f0dde))
+
 ## [1.10.0](https://github.com/gravity-ui/timeline/compare/v1.9.0...v1.10.0) (2025-08-02)
 
 
