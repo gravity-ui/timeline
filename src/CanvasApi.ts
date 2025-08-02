@@ -16,6 +16,9 @@ export class CanvasApi<TEvent extends TimelineEvent> {
 
   protected components: Map<string, BaseComponentInterface>;
   protected timeline: Timeline<TEvent>;
+  private lastRenderTime = 0;
+  private renderPending = false;
+  private readonly RENDER_THROTTLE_MS: number = 16; // ~60fps
 
   constructor(timeline: Timeline<TEvent>) {
     this.timeline = timeline;
@@ -40,17 +43,59 @@ export class CanvasApi<TEvent extends TimelineEvent> {
     return undefined;
   }
 
-  public rerender(clearBeforeRender = true) {
+  public rerender(clearBeforeRender = true, specificComponents?: string[]) {
+    // Skip if no components to render
+    if (!this.components.size) return;
+
+    // Throttle renders to avoid performance issues during rapid interactions
+    const now = performance.now();
+    if (
+      this.renderPending &&
+      now - this.lastRenderTime < this.RENDER_THROTTLE_MS
+    ) {
+      // If a render is already scheduled, don't schedule another one
+      return;
+    }
+
+    // If we're in the throttle period, schedule a render for later and return
+    if (now - this.lastRenderTime < this.RENDER_THROTTLE_MS) {
+      if (!this.renderPending) {
+        this.renderPending = true;
+        window.requestAnimationFrame(() => {
+          this.lastRenderTime = performance.now();
+          this.renderPending = false;
+          this.rerender(clearBeforeRender, specificComponents);
+        });
+      }
+      return;
+    }
+
+    // Update last render time
+    this.lastRenderTime = now;
+    this.renderPending = false;
+
+    // Clear canvas if needed
     if (clearBeforeRender) {
       this.clear();
     }
 
-    if (!this.components.size) return;
-
     this.ctx.save();
-    this.components.forEach((component) => {
-      component.render();
-    });
+
+    // If specific components are specified, only render those
+    if (specificComponents && specificComponents.length > 0) {
+      specificComponents.forEach((key) => {
+        const component = this.components.get(key);
+        if (component) {
+          component.render();
+        }
+      });
+    } else {
+      // Otherwise render all components
+      this.components.forEach((component) => {
+        component.render();
+      });
+    }
+
     this.ctx.restore();
   }
 
@@ -71,7 +116,7 @@ export class CanvasApi<TEvent extends TimelineEvent> {
   public setRange(start: number, end: number) {
     this.timeline.settings.start = start;
     this.timeline.settings.end = end;
-    this.rerender();
+    this.rerender(true);
   }
 
   public setAxes<Axis extends TimelineAxis>(newAxes: Axis[]) {
@@ -96,7 +141,7 @@ export class CanvasApi<TEvent extends TimelineEvent> {
 
   public setCanvasScrollTop(newScrollTop: number) {
     this.timeline.canvasScrollTop = newScrollTop;
-    this.rerender();
+    this.rerender(true);
   }
 
   public get pixelRatio(): number {
