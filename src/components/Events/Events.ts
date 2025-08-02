@@ -159,6 +159,8 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     ctx.font = viewConfiguration.events.font;
     ctx.lineWidth = 2;
 
+    const camera = this.api.getCameraPosition();
+
     for (let i = 0, len = this._events.length; i < len; i += 1) {
       const event: Event = this._events[i];
       const axis = axesComponent.getAxesById()[event.axisId];
@@ -168,7 +170,13 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
       const y = axesComponent.getAxisTrackPosition(axis, event.trackIndex);
       const eventTo = event.to || end;
 
-      if (axis && rangeToRangeIntersect(start, end, event.from, eventTo)) {
+      // Check if event is within time range and vertical camera view
+      if (
+        axis &&
+        rangeToRangeIntersect(start, end, event.from, eventTo) &&
+        y >= camera.y0 &&
+        y <= camera.y1
+      ) {
         const x0 = this.api.timeToPosition(event.from);
         const x1 = this.api.timeToPosition(eventTo);
         this.runRenderer(

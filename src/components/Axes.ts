@@ -1,4 +1,4 @@
-import { clamp } from "../helpers/math";
+import { clamp, rangeToRangeIntersect } from "../helpers/math";
 import { AxesIndex } from "../lib/AxesIndex";
 import { BaseComponentInterface } from "../types/component";
 import { CanvasApi } from "../CanvasApi";
@@ -86,11 +86,24 @@ export class Axes<
     ctx.beginPath();
     ctx.lineWidth = axes.lineWidth;
 
-    for (const axis of this.axesIndex.sortedAxes) {
+    const camera = this.api.getCameraPosition();
+    const visibleAxes = this.axesIndex.sortedAxes.filter((axis) => {
+      return rangeToRangeIntersect(
+        axis.top,
+        axis.top + axis.tracksCount * axes.trackHeight,
+        camera.y0,
+        camera.y1,
+      );
+    });
+
+    for (const axis of visibleAxes) {
       for (let i = 0; i < axis.tracksCount; i += 1) {
         const y = this.getAxisTrackPosition(axis, i);
-        ctx.moveTo(0, y);
-        ctx.lineTo(canvasWidth, y);
+        // Check if this track is within the camera's field of view
+        if (y >= camera.y0 && y <= camera.y1) {
+          ctx.moveTo(0, y);
+          ctx.lineTo(canvasWidth, y);
+        }
       }
     }
 

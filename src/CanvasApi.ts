@@ -181,6 +181,15 @@ export class CanvasApi<TEvent extends TimelineEvent> {
     });
   }
 
+  public getCameraPosition() {
+    return {
+      y0: this.canvasScrollTop,
+      y1: this.canvasScrollTop + this.height,
+      x0: 0,
+      x1: this.width,
+    };
+  }
+
   public getEventPosition(event: TEvent) {
     const axesComponent = this.getComponent<Axes>(ComponentType.Axes);
     if (!axesComponent) {
