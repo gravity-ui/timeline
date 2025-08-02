@@ -60,7 +60,7 @@ export class TimelineController<TEvent extends TimelineEvent = TimelineEvent> {
       this.api.canvas.offsetHeight * pixelRatio,
     );
 
-    this.api.rerender();
+    this.api.rerender(true);
   };
 
   /**

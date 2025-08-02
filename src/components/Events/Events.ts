@@ -137,7 +137,9 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     }
 
     this.api.emit("on-select-change", { events: this.getSelectedEvents() });
-    this.api.rerender();
+
+    // When selection changes, we only need to redraw the Events component
+    this.api.rerender(false, [ComponentType.Events]);
   }
 
   public render() {

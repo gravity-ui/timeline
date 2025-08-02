@@ -64,20 +64,24 @@ const events = api.getComponent<Events>(ComponentType.Events);
 
 ### Rendering
 
-#### `rerender(clearBeforeRender = true)`
+#### `rerender(clearBeforeRender = true, specificComponents?: string[])`
 
-Triggers a re-render of all timeline components.
+Triggers a re-render of timeline components with performance optimizations.
 
 ```typescript
-// Re-render with clearing
+// Re-render all components with clearing
 api.rerender();
 
-// Re-render without clearing
+// Re-render all components without clearing
 api.rerender(false);
+
+// Re-render only specific components
+api.rerender(true, [ComponentType.Events, ComponentType.Markers]);
 ```
 
 **Parameters:**
 - `clearBeforeRender`: Whether to clear the canvas before rendering (default: true)
+- `specificComponents`: Optional array of component keys to render (renders all if not specified)
 
 #### `clear()`
 
@@ -305,7 +309,7 @@ const api = timeline.api;
 api.addComponent('custom', new CustomComponent(api));
 
 // Re-render with custom component
-api.rerender();
+api.rerender(true, ['custom']);
 ```
 
 ### Event Handling with CanvasApi
