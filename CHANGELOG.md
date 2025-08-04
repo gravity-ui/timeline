@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.1](https://github.com/gravity-ui/timeline/compare/v1.12.0...v1.12.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* **Events:** wrong event type ([6103ac1](https://github.com/gravity-ui/timeline/commit/6103ac1313b6454aca4a48485417f62f02ca9b3a))
+
 ## [1.12.0](https://github.com/gravity-ui/timeline/compare/v1.11.1...v1.12.0) (2025-08-04)
 
 
