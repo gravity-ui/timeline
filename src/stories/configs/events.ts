@@ -24,6 +24,14 @@ export const baseTimelineConfig: TimeLineConfig<TimelineEvent> = {
       },
       {
         id: "test4",
+        from: 1739537146347,
+        to: 1739537160000,
+        axisId: "main",
+        trackIndex: 2,
+        color: "rgb(45,181,254)",
+      },
+      {
+        id: "test5",
         from: 1739537150000,
         to: 1739537170000,
         axisId: "main",
@@ -31,7 +39,7 @@ export const baseTimelineConfig: TimeLineConfig<TimelineEvent> = {
         color: "rgb(87, 156, 135)",
       },
       {
-        id: "test5",
+        id: "test6",
         from: 1739537170000,
         to: 1739537186347,
         axisId: "main",

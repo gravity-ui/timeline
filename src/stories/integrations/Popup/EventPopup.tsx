@@ -21,7 +21,8 @@ export const EventPopup = <TEvent extends TimelineEvent>({
   >(undefined);
 
   const handleEventsHover = useCallback(
-    ({ event }: HoverEvent<TEvent>) => {
+    ({ events }: HoverEvent<TEvent>) => {
+      const event = events[0];
       const position = timeline.api.getEventPosition(event);
       setEventData({ event, position });
     },

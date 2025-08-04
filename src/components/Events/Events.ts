@@ -20,7 +20,7 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   implements BaseComponentInterface
 {
   public allowMultipleSelection = true;
-  public activeEvent: TimelineEvent | null = null;
+  public activeEvents: TimelineEvent[] | null = null;
   protected index = new RBush<BBox & { event: Event }>(MAX_INDEX_TREE_WIDTH);
 
   private api: CanvasApi<Event>;
@@ -296,24 +296,29 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   protected handleCanvasMousemove = (event: MouseEvent) => {
     event.preventDefault();
     const candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
-    const candidate = candidates.length > 0 ? candidates[0] : undefined;
 
-    if (this.activeEvent && (this.activeEvent !== candidate || !candidate)) {
-      this.api.emit("on-leave", { event: this.activeEvent });
+    const isEqual =
+      JSON.stringify(this.activeEvents) === JSON.stringify(candidates);
+
+    if (this.activeEvents && (!isEqual || !candidates.length)) {
+      const candidateIds = new Set(candidates.map(({ id }) => id));
+      this.api.emit("on-leave", {
+        event: this.activeEvents.filter(({ id }) => !candidateIds.has(id)),
+      });
     }
 
-    if (!candidate) {
-      this.activeEvent = null;
+    if (!candidates.length) {
+      this.activeEvents = null;
       return;
     }
 
-    if (this.activeEvent === candidate) return;
+    if (isEqual) return;
 
     const api = this.api;
-    this.activeEvent = candidate;
+    this.activeEvents = candidates;
 
     this.api.emit("on-hover", {
-      event: candidate,
+      events: candidates,
       time: api.positionToTime(event.offsetX),
       relativeX: event.clientX,
       relativeY: event.clientY,
