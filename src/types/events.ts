@@ -31,10 +31,10 @@ export type ContextEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   event?: TEvent;
 } & BaseEventData;
 export type HoverEvent<TEvent extends TimelineEvent = TimelineEvent> = {
-  event: TEvent;
+  events: TEvent;
 } & BaseEventData;
 export type LeaveEvent<TEvent extends TimelineEvent = TimelineEvent> = {
-  event: TEvent;
+  events: TEvent;
 };
 export type CameraEvent = { from: number; to: number };
 
@@ -42,8 +42,8 @@ export type ApiEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   "on-click": (event: CustomEvent<ClickEvent<TEvent>>) => void;
   "on-context-click": (event: CustomEvent<ContextEvent<TEvent>>) => void;
   "on-select-change": (event: CustomEvent<SelectEvent<TEvent>>) => void;
-  "on-hover": (event: CustomEvent<HoverEvent<TEvent>>) => void;
-  "on-leave": (event: CustomEvent<LeaveEvent<TEvent>>) => void;
+  "on-hover": (events: CustomEvent<HoverEvent<TEvent>>) => void;
+  "on-leave": (events: CustomEvent<LeaveEvent<TEvent>>) => void;
   "on-camera-change": (event: CustomEvent<CameraEvent>) => void;
 };
 
