@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.11.1](https://github.com/gravity-ui/timeline/compare/v1.11.0...v1.11.1) (2025-08-04)
+
+
+### Bug Fixes
+
+* **Api:** revert render optimization ([1d04967](https://github.com/gravity-ui/timeline/commit/1d049672dd9c248475bb9dad80236bb703ddaf33))
+
 ## [1.11.0](https://github.com/gravity-ui/timeline/compare/v1.10.0...v1.11.0) (2025-08-02)
 
 
