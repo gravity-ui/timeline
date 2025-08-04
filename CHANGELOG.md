@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.12.0](https://github.com/gravity-ui/timeline/compare/v1.11.1...v1.12.0) (2025-08-04)
+
+
+### Features
+
+* **Events:** change event to events ([ccf2db1](https://github.com/gravity-ui/timeline/commit/ccf2db1d50130a157d45de93b363b93b65126afb))
+
 ## [1.11.1](https://github.com/gravity-ui/timeline/compare/v1.11.0...v1.11.1) (2025-08-04)
 
 
