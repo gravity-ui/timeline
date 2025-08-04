@@ -31,10 +31,10 @@ export type ContextEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   event?: TEvent;
 } & BaseEventData;
 export type HoverEvent<TEvent extends TimelineEvent = TimelineEvent> = {
-  events: TEvent;
+  events: TEvent[];
 } & BaseEventData;
 export type LeaveEvent<TEvent extends TimelineEvent = TimelineEvent> = {
-  events: TEvent;
+  events: TEvent[];
 };
 export type CameraEvent = { from: number; to: number };
 
