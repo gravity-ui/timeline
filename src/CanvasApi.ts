@@ -79,9 +79,12 @@ export class CanvasApi<TEvent extends TimelineEvent> {
     axes.setAxes(newAxes);
   }
 
-  public setEvents<Event extends TimelineEvent>(newEvents: Event[]) {
-    const events = this.getComponent<Events>(ComponentType.Events);
-    events.setEvents(newEvents);
+  public setEvents<Event extends TimelineEvent>(
+    newEvents: Event[],
+    selectedIds?: string[],
+  ) {
+    const events = this.getComponent<Events<Event>>(ComponentType.Events);
+    events.setEvents(newEvents, selectedIds);
   }
 
   public setSelectedEvents(ids: string[]) {
