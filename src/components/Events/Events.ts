@@ -45,7 +45,6 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
     if (selectedIds) {
       this._selectedEvents = new Set<string>(selectedIds);
     }
-    this.render();
   }
 
   /**

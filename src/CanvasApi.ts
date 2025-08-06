@@ -85,6 +85,7 @@ export class CanvasApi<TEvent extends TimelineEvent> {
   ) {
     const events = this.getComponent<Events<Event>>(ComponentType.Events);
     events.setEvents(newEvents, selectedIds);
+    this.rerender();
   }
 
   public setSelectedEvents(ids: string[]) {
