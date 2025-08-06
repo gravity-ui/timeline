@@ -36,10 +36,15 @@ export class Events<Event extends TimelineEvent = TimelineEvent>
   /**
    * Updates the events data and rebuilds the spatial index
    * @param newEvents - Array of events to display on the timeline
+   * @param selectedIds - Optional array of event IDs to mark as selected
    */
-  public setEvents(newEvents: Event[]) {
+  public setEvents(newEvents: Event[], selectedIds?: string[]): void {
     this._events = newEvents;
     this.rebuildIndex();
+
+    if (selectedIds) {
+      this._selectedEvents = new Set<string>(selectedIds);
+    }
     this.render();
   }
 
