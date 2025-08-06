@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.1](https://github.com/gravity-ui/timeline/compare/v1.13.0...v1.13.1) (2025-08-06)
+
+
+### Bug Fixes
+
+* **Api:** double render in set events method ([d92328c](https://github.com/gravity-ui/timeline/commit/d92328c984817b30285459095cf31bd4069a2296))
+
 ## [1.13.0](https://github.com/gravity-ui/timeline/compare/v1.12.1...v1.13.0) (2025-08-06)
 
 
