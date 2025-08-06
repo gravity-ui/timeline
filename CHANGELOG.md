@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.13.0](https://github.com/gravity-ui/timeline/compare/v1.12.1...v1.13.0) (2025-08-06)
+
+
+### Features
+
+* **Api:** add get selected events method ([c89364d](https://github.com/gravity-ui/timeline/commit/c89364df59589eb3ccf4ef20dbdbf07e2fd71dbf))
+* **Api:** add selected ids in setEvents method ([0854bb1](https://github.com/gravity-ui/timeline/commit/0854bb1dabe692d1c5ab4d736e8dde91142a3177))
+
 ## [1.12.1](https://github.com/gravity-ui/timeline/compare/v1.12.0...v1.12.1) (2025-08-04)
 
 
