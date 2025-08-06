@@ -119,6 +119,11 @@ export class CanvasApi<TEvent extends TimelineEvent> {
     };
   }
 
+  public getSelectedEvents(): TEvent[] {
+    const events = this.getComponent<Events<TEvent>>(ComponentType.Events);
+    return events.getSelectedEvents();
+  }
+
   public get width(): number {
     return this.canvas.width / this.pixelRatio;
   }
