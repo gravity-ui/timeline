@@ -215,7 +215,8 @@ export class CanvasApi<TEvent extends TimelineEvent> {
     const x1 = this.timeToPosition(event.to || end);
     const y0 =
       axesComponent.getAxisTrackPosition(axis, event.trackIndex) +
-      this.getRulerHeight();
+      this.getRulerHeight() -
+      this.canvasScrollTop;
 
     return {
       x0,
