@@ -2,7 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { RangeSelection } from "./integrations/RangeSelection";
 import { TimelineWithPopup } from "./integrations/Popup";
-import { ListIntegration } from "./integrations/Table";
+import { ListIntegration } from "./integrations/List";
 
 const meta = {
   title: "Timeline/Integrations",
