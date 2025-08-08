@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.13.2](https://github.com/gravity-ui/timeline/compare/v1.13.1...v1.13.2) (2025-08-08)
+
+
+### Bug Fixes
+
+* **Api:** getElementPosition did not observe the top scroll ([68a3ccb](https://github.com/gravity-ui/timeline/commit/68a3ccb95ad9ccd19eca60f1e53f83f4bb56d9b3))
+
 ## [1.13.1](https://github.com/gravity-ui/timeline/compare/v1.13.0...v1.13.1) (2025-08-06)
 
 
