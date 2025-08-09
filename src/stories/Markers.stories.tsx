@@ -1,7 +1,11 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseTimelineConfig } from "./configs/events";
-import { markersBaseConfig, markersWithLabelsConfig } from "./configs/markers";
+import {
+  collapsedBaseConfig,
+  markersBaseConfig,
+  markersWithLabelsConfig,
+} from "./configs/markers";
 import { defaultViewConfig } from "../constants/options";
 import { StoryWrapper } from "./StoryWrapper";
 import { TimelineEvent, TimelineSettings, ViewConfiguration } from "../types";
@@ -185,6 +189,25 @@ export const Basic: Story = {
   },
   parameters: {
     storyKey: "basic",
+    docs: {
+      description: {
+        story: "Basic timeline configuration with markers",
+      },
+    },
+  },
+};
+
+export const WithCollapse: Story = {
+  args: {
+    "settings.start": collapsedBaseConfig.settings.start,
+    "settings.end": collapsedBaseConfig.settings.end,
+    "settings.axes": collapsedBaseConfig.settings.axes,
+    "settings.events": collapsedBaseConfig.settings.events,
+    "settings.markers": collapsedBaseConfig.settings.markers,
+    ...defaultViewConfigArgs,
+  },
+  parameters: {
+    storyKey: "withCollapse",
     docs: {
       description: {
         story: "Basic timeline configuration with markers",

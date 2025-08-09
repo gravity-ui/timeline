@@ -31,6 +31,35 @@ export const markersBaseConfig: TimeLineConfig<TimelineEvent> = {
   },
 };
 
+export const collapsedBaseConfig: TimeLineConfig<TimelineEvent> = {
+  settings: {
+    ...commonConfig,
+    events,
+    markers: [
+      {
+        time: 1739537150100,
+        color: "rgb(254, 127, 45)",
+        width: 1,
+      },
+      {
+        time: 1739537150200,
+        color: "rgb(11, 180, 193)",
+        width: 1,
+      },
+      {
+        time: 1739537150300,
+        color: "rgb(254, 127, 45)",
+        width: 1,
+      },
+      {
+        time: 1739537150400,
+        color: "rgb(255,198,2)",
+        width: 1,
+      },
+    ],
+  },
+};
+
 export const markersWithLabelsConfig: TimeLineConfig<TimelineEvent> = {
   settings: {
     ...commonConfig,
