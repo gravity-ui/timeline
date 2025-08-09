@@ -50,6 +50,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     labelFont: DEFAULT_FONT,
     textPadding: 10,
     markerWidth: 2,
+    collapseMinDistance: 2,
     color: {
       textColor: defaultPalette.gray1,
     },

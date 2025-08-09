@@ -51,6 +51,7 @@ export type MarkerViewOptions = {
   labelFont?: string;
   textPadding?: number;
   markerWidth?: number;
+  collapseMinDistance?: number;
   color?: {
     textColor?: string;
   };
