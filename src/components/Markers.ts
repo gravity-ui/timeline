@@ -42,24 +42,26 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
     const { markers } = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
 
-    // Render markers in reverse order for proper label placement
-    for (let i = this.sortedMarkers.length - 1; i >= 0; i -= 1) {
+    const visibleMarkers: TimelineMarker[] = [];
+    for (let i = 0; i < this.sortedMarkers.length; i += 1) {
       const marker = this.sortedMarkers[i];
       let overscan = 0;
-
-      // Calculate extra space needed for labels
       if (marker.label) {
         overscan = this.api.widthToTime(
           this.api.ctx.measureText(marker.label).width + markers.labelPadding,
         );
       }
-
-      // Only render markers visible in the current view (with overscan for labels)
       if (
         pointToRangeIntersect(marker.time, start - overscan, end + overscan)
       ) {
-        this.renderMarker(marker);
+        visibleMarkers.push(marker);
       }
+    }
+
+    const collapsedMarkers = this.collapseCloseSimilarMarkers(visibleMarkers);
+
+    for (let i = collapsedMarkers.length - 1; i >= 0; i -= 1) {
+      this.renderMarker(collapsedMarkers[i]);
     }
   }
 
@@ -169,5 +171,67 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
       this.api.ctx.measureText(text).width + markers.labelPadding * 2;
     this.textWidthCache.set(text, width);
     return width;
+  }
+
+  /**
+   * Collapses groups of similar markers that are closer than or equal to
+   * `viewConfiguration.markers.collapseMinDistance` pixels in the current zoom level.
+   */
+  private collapseCloseSimilarMarkers(
+    markers: TimelineMarker[],
+  ): TimelineMarker[] {
+    if (!markers.length) return markers;
+
+    const { markers: markersCfg } = this.api.getViewConfiguration();
+    const list = [...markers].sort((a, b) => a.time - b.time);
+
+    const result: TimelineMarker[] = [];
+    let group: TimelineMarker[] = [];
+    let lastX = Number.NEGATIVE_INFINITY;
+
+    const flushGroup = () => {
+      if (!group.length) return;
+      if (group.length === 1) {
+        result.push(group[0]);
+      } else {
+        const avgTime = Math.round(
+          group.reduce((sum, m) => sum + m.time, 0) / group.length,
+        );
+        const template = group[0];
+        result.push({
+          ...template,
+          time: avgTime,
+          label: String(group.length),
+          labelBottom: String(group.length),
+        });
+      }
+      group = [];
+      lastX = Number.NEGATIVE_INFINITY;
+    };
+
+    for (let i = 0; i < list.length; i += 1) {
+      const cur = list[i];
+      const curX = this.api.timeToPosition(cur.time);
+
+      if (!group.length) {
+        group.push(cur);
+        lastX = curX;
+        continue;
+      }
+
+      const closeEnough =
+        Math.abs(curX - lastX) <= markersCfg.collapseMinDistance;
+      if (closeEnough) {
+        group.push(cur);
+        lastX = curX;
+      } else {
+        flushGroup();
+        group.push(cur);
+        lastX = curX;
+      }
+    }
+
+    flushGroup();
+    return result;
   }
 }
