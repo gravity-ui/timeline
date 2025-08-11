@@ -71,6 +71,10 @@ export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
     action("on-camera-change")(data);
   });
 
+  useTimelineEvent(timeline, "on-marker-select-change", (data) => {
+    action("on-marker-select-change")(data);
+  });
+
   return (
     <div
       style={{

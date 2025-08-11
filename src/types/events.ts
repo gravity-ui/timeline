@@ -1,4 +1,5 @@
 import { AbstractEventRenderer } from "../components/Events";
+import { TimelineMarker } from "./markers";
 
 export type TimelineEvent = {
   id: string;
@@ -37,6 +38,7 @@ export type LeaveEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   events: TEvent[];
 };
 export type CameraEvent = { from: number; to: number };
+export type MarkerSelectEvent = { markers: TimelineMarker[] } & BaseEventData;
 
 export type ApiEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   "on-click": (event: CustomEvent<ClickEvent<TEvent>>) => void;
@@ -45,6 +47,7 @@ export type ApiEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   "on-hover": (events: CustomEvent<HoverEvent<TEvent>>) => void;
   "on-leave": (events: CustomEvent<LeaveEvent<TEvent>>) => void;
   "on-camera-change": (event: CustomEvent<CameraEvent>) => void;
+  "on-marker-select-change": (markers: CustomEvent<MarkerSelectEvent>) => void;
 };
 
 export type UnwrapTimelineEvents<

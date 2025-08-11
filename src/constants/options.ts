@@ -46,6 +46,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
   },
   markers: {
     font: DEFAULT_FONT,
-    collapseMinDistance: 2,
+    hitboxPadding: 2,
+    collapseMinDistance: 4,
   },
 };
