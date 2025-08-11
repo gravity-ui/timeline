@@ -24,6 +24,7 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
   protected lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
   private textWidthCache = new Map<string, LabelSize>();
   private _selectedMarkers = new Set<number>();
+  private hoveredMarker: number = undefined;
 
   constructor(api: CanvasApi<TEvent>) {
     this.api = api;
@@ -66,6 +67,10 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
     return this._selectedMarkers.has(time);
   }
 
+  public isHoveredMarker(time: number) {
+    return this.hoveredMarker === time;
+  }
+
   /**
    * Renders all visible markers within the current viewport
    */
@@ -98,6 +103,7 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
         ctx: this.api.ctx,
         marker,
         isSelected: this.isSelectedMarker(marker.time),
+        isHovered: this.isHoveredMarker(marker.time),
         markerPosition: this.api.timeToPosition(marker.time),
         viewConfiguration: this.api.getViewConfiguration(),
         lastRenderedLabelPosition: this.lastRenderedLabelPosition,
@@ -109,6 +115,10 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
 
   public destroy() {
     this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
+    this.api.canvas.removeEventListener(
+      "mousemove",
+      this.handleCanvasMousemove,
+    );
   }
 
   protected getLabelSize(text: string): LabelSize {
@@ -153,8 +163,19 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
     this.api.rerender();
   };
 
+  protected handleCanvasMousemove = (event: MouseEvent) => {
+    const candidates = this.getMarkersAtPoint(event.offsetX, event.offsetY);
+
+    const newHover = candidates.length ? candidates[0].time : undefined;
+    if (this.hoveredMarker === newHover) return;
+
+    this.hoveredMarker = newHover;
+    this.api.rerender();
+  };
+
   protected addEventListeners() {
     this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
+    this.api.canvas.addEventListener("mousemove", this.handleCanvasMousemove);
   }
 
   protected rebuildIndex(): void {
