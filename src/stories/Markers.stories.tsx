@@ -4,18 +4,27 @@ import { baseTimelineConfig } from "./configs/events";
 import {
   collapsedBaseConfig,
   markersBaseConfig,
+  markersCustomRenderer,
   markersWithLabelsConfig,
 } from "./configs/markers";
 import { defaultViewConfig } from "../constants/options";
 import { StoryWrapper } from "./StoryWrapper";
-import { TimelineEvent, TimelineSettings, ViewConfiguration } from "../types";
+import {
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSettings,
+  ViewConfiguration,
+} from "../types";
 
 type ViewConfigurationControls = {
   [K in keyof ViewConfiguration as `viewConfiguration.${K}`]: ViewConfiguration[K];
 };
 
 type SettingsControls = {
-  [K in keyof TimelineSettings<TimelineEvent> as `settings.${K}`]: TimelineSettings<TimelineEvent>[K];
+  [K in keyof TimelineSettings<
+    TimelineEvent,
+    TimelineMarker
+  > as `settings.${K}`]: TimelineSettings<TimelineEvent, TimelineMarker>[K];
 };
 
 type StoryProps = SettingsControls & ViewConfigurationControls;
@@ -230,6 +239,26 @@ export const WithLabels: Story = {
     docs: {
       description: {
         story: "Timeline configuration with markers that have labels",
+      },
+    },
+  },
+};
+
+export const CustomRenderer: Story = {
+  args: {
+    "settings.start": markersCustomRenderer.settings.start,
+    "settings.end": markersCustomRenderer.settings.end,
+    "settings.axes": markersCustomRenderer.settings.axes,
+    "settings.events": markersCustomRenderer.settings.events,
+    "settings.markers": markersCustomRenderer.settings.markers,
+    "settings.selectedEventIds": baseTimelineConfig.settings.selectedEventIds,
+    ...defaultViewConfigArgs,
+  },
+  parameters: {
+    storyKey: "custom renderer",
+    docs: {
+      description: {
+        story: "Demonstration of a timeline with custom renderer",
       },
     },
   },
