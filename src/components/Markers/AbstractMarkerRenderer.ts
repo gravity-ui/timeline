@@ -5,6 +5,7 @@ export abstract class AbstractMarkerRenderer {
     ctx: CanvasRenderingContext2D;
     marker: TimelineMarker;
     isSelected: boolean;
+    isHovered: boolean;
     markerPosition: number;
     viewConfiguration: ViewConfiguration;
     lastRenderedLabelPosition: { top: number; bottom: number };

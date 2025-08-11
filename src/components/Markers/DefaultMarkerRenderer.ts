@@ -4,12 +4,17 @@ import { clamp } from "../../helpers/math";
 
 const DEFAULT_LINE_WIDTH = 1;
 const DEFAULT_TEXT_COLOR = "#333";
+const DEFAULT_ACTIVE_COLOR = "red";
+const DEFAULT_HOVER_COLOR = "yellow";
 const DEFAULT_LABEL_PADDING = 4;
 
-export class DefaultMarkerRenderer extends AbstractMarkerRenderer {
+export class DefaultMarkerRenderer<
+  TMarker extends TimelineMarker,
+> extends AbstractMarkerRenderer<TMarker> {
   public render({
     ctx,
     isSelected,
+    isHovered,
     marker,
     markerPosition,
     viewConfiguration,
@@ -17,15 +22,24 @@ export class DefaultMarkerRenderer extends AbstractMarkerRenderer {
     getLabelSize,
   }: {
     ctx: CanvasRenderingContext2D;
-    marker: TimelineMarker;
+    marker: TMarker;
     isSelected: boolean;
+    isHovered: boolean;
     markerPosition: number;
     viewConfiguration: ViewConfiguration;
     lastRenderedLabelPosition: { top: number; bottom: number };
     getLabelSize: (label: string) => LabelSize;
   }) {
+    const activeColor = marker.activeColor || DEFAULT_ACTIVE_COLOR;
+    const hoverColor = marker.hoverColor || DEFAULT_HOVER_COLOR;
+
+    let color = isHovered ? hoverColor : marker.color;
+    if (isSelected) {
+      color = activeColor;
+    }
+
     // Draw marker line
-    ctx.strokeStyle = isSelected ? "red" : marker.color;
+    ctx.strokeStyle = color;
     ctx.lineWidth = marker.lineWidth || DEFAULT_LINE_WIDTH;
     ctx.beginPath();
     ctx.moveTo(markerPosition, 0);
@@ -37,7 +51,7 @@ export class DefaultMarkerRenderer extends AbstractMarkerRenderer {
     // Render the top label if present
     this.renderLabel(
       ctx,
-      isSelected,
+      color,
       marker,
       markerPosition,
       viewConfiguration.markers,
@@ -48,7 +62,7 @@ export class DefaultMarkerRenderer extends AbstractMarkerRenderer {
 
   protected renderLabel(
     ctx: CanvasRenderingContext2D,
-    isSelected: boolean,
+    color: string,
     marker: TimelineMarker,
     markerPosition: number,
     markerConfiguration: ViewConfiguration["markers"],
@@ -71,7 +85,7 @@ export class DefaultMarkerRenderer extends AbstractMarkerRenderer {
       // if (markerPosition > lastRenderedLabelPosition["top"]) {
       lastRenderedLabelPosition["top"] = labelPosition;
       ctx.font = markerConfiguration.font;
-      ctx.fillStyle = marker.color || DEFAULT_TEXT_COLOR;
+      ctx.fillStyle = color;
       ctx.fillRect(labelPosition, 0, widthWithPadding, heightWithPadding);
 
       //Draw label text
