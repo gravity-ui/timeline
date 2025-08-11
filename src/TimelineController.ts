@@ -2,7 +2,7 @@ import { clamp } from "./helpers/math";
 import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
 import debounce_ from "lodash/debounce";
-import { TimelineEvent } from "./types";
+import { TimelineEvent, TimelineMarker } from "./types";
 
 const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
@@ -12,8 +12,11 @@ const ZOOM_MAX = MONTH * 2;
  * Controller class responsible for handling timeline interactions and canvas resizing
  * Manages zoom, pan, and canvas size updates
  */
-export class TimelineController<TEvent extends TimelineEvent = TimelineEvent> {
-  api: CanvasApi<TEvent>;
+export class TimelineController<
+  TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+> {
+  api: CanvasApi<TEvent, TMarker>;
 
   private emitCameraChange = debounce_((newStart: number, newEnd: number) => {
     this.api.emit("on-camera-change", { from: newStart, to: newEnd });
@@ -23,7 +26,7 @@ export class TimelineController<TEvent extends TimelineEvent = TimelineEvent> {
    * Creates a new TimelineController instance
    * @param api - CanvasApi instance for timeline manipulation
    */
-  constructor(api: CanvasApi<TEvent>) {
+  constructor(api: CanvasApi<TEvent, TMarker>) {
     this.api = api;
 
     this.updateCanvasSize();

@@ -1,10 +1,13 @@
 import React, { FC, useEffect, useRef } from "react";
 import { Timeline } from "../Timeline";
-import { TimelineEvent } from "../types";
+import { TimelineEvent, TimelineMarker } from "../types";
 
-type Props<TEvent extends TimelineEvent = TimelineEvent> = {
+type Props<
+  TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+> = {
   className?: string;
-  timeline: Timeline<TEvent>;
+  timeline: Timeline<TEvent, TMarker>;
 };
 
 export const TimelineCanvas: FC<Props> = ({ timeline, className }) => {

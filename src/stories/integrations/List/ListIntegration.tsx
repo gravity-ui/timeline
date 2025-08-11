@@ -1,7 +1,7 @@
 import React, { FC } from "react";
 import { GravityWrap } from "../GravityWrap";
 import { TimelineCanvas, useTimeline } from "../../../react-components";
-import { TimeLineConfig, TimelineEvent } from "../../../types";
+import { TimeLineConfig, TimelineEvent, TimelineMarker } from "../../../types";
 import { commonConfig } from "../../configs/common";
 import { defaultViewConfig } from "../../../constants/options";
 import { EventsList } from "./EventsList";
@@ -10,7 +10,7 @@ import cn from "bem-cn-lite";
 
 const block = cn("list-integration");
 
-const config: TimeLineConfig<TimelineEvent> = {
+const config: TimeLineConfig<TimelineEvent, TimelineMarker> = {
   settings: {
     ...commonConfig,
     axes: [

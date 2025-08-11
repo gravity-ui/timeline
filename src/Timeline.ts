@@ -13,16 +13,20 @@ import { TimelineController } from "./TimelineController";
 import { ComponentType, TimelineState } from "./enums";
 import { Markers } from "./components/Markers";
 import { ApiEvent, EventParams, TimelineEvent } from "./types/events";
+import { TimelineMarker } from "./types";
 
 /**
  * The main Timeline class that manages the timeline visualization and interactions
  * Handles component initialization, event management, and timeline state
  */
-export class Timeline<TEvent extends TimelineEvent> {
+export class Timeline<
+  TEvent extends TimelineEvent,
+  TMarker extends TimelineMarker,
+> {
   public canvasScrollTop: number;
-  public settings: TimelineSettings<TEvent>;
+  public settings: TimelineSettings<TEvent, TMarker>;
   public viewConfiguration: ViewConfigurationDefault;
-  public api: CanvasApi<TEvent>;
+  public api: CanvasApi<TEvent, TMarker>;
   public eventEmitter = new EventTarget();
   public canvas: HTMLCanvasElement;
   public state = TimelineState.INIT;
@@ -43,7 +47,7 @@ export class Timeline<TEvent extends TimelineEvent> {
    *   }
    * });
    */
-  constructor(config: TimeLineConfig<TEvent>) {
+  constructor(config: TimeLineConfig<TEvent, TMarker>) {
     this.viewConfiguration = this.getViewConfig(config.viewConfiguration);
     this.settings = config.settings;
   }
@@ -173,7 +177,7 @@ export class Timeline<TEvent extends TimelineEvent> {
    * @private
    */
   private getViewConfig(
-    config?: TimeLineConfig<TEvent>["viewConfiguration"],
+    config?: TimeLineConfig<TEvent, TMarker>["viewConfiguration"],
   ): ViewConfigurationDefault {
     if (!config) return defaultViewConfig;
 
