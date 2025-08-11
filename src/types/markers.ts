@@ -1,11 +1,12 @@
+import { AbstractMarkerRenderer } from "../components/Markers/AbstractMarkerRenderer";
+
 export type TimelineMarker = {
   time: number;
   color: string;
-  width?: number;
+  lineWidth?: number;
   label?: string;
-  labelTextColor?: string;
-  labelBackgroundColor?: string;
-  labelBottom?: string;
-  labelBottomBackgroundColor?: string;
-  labelBottomTextColor?: string;
+  labelColor?: string;
+  renderer?: AbstractMarkerRenderer;
 };
+
+export type LabelSize = { height: number; width: number };
