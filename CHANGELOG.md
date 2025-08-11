@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.15.0](https://github.com/gravity-ui/timeline/compare/v1.14.0...v1.15.0) (2025-08-11)
+
+
+### Features
+
+* **Markers:** hover prop to renderer ([61e0481](https://github.com/gravity-ui/timeline/commit/61e0481b22bfab3e5ef092fedbe6e3595cd4004a))
+* **Storybook:** add custom marker story ([8a215f7](https://github.com/gravity-ui/timeline/commit/8a215f714b5e566a73b10aafe049704d596f1763))
+* **UI:** improved markers types ([763f687](https://github.com/gravity-ui/timeline/commit/763f687016292d24f75eb966a3021cf9fd2bf883))
+
 ## [1.14.0](https://github.com/gravity-ui/timeline/compare/v1.13.2...v1.14.0) (2025-08-11)
 
 
