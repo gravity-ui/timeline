@@ -41,12 +41,13 @@ export type AxesViewOptions = {
 };
 
 export type EventsViewOptions = {
-  hitboxPadding?: number;
   font?: string;
+  hitboxPadding?: number;
 };
 
 export type MarkerViewOptions = {
   font?: string;
+  hitboxPadding?: number;
   collapseMinDistance?: number;
 };
 

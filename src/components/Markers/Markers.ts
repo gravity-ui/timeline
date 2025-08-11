@@ -4,6 +4,9 @@ import { LabelSize, TimelineMarker } from "../../types/markers";
 import { CanvasApi } from "../../CanvasApi";
 import { TimelineEvent } from "../../types";
 import { DefaultMarkerRenderer } from "./DefaultMarkerRenderer";
+import RBush, { BBox } from "rbush";
+
+const MAX_INDEX_TREE_WIDTH = 16;
 
 /**
  * Handles rendering timeline markers on the canvas
@@ -13,13 +16,18 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
   implements BaseComponentInterface
 {
   protected api: CanvasApi<TEvent>;
-  protected sortedMarkers: TimelineMarker[] = [];
+  protected _sortedMarkers: TimelineMarker[] = [];
+  protected index = new RBush<BBox & { marker: TimelineMarker }>(
+    MAX_INDEX_TREE_WIDTH,
+  );
   // Tracks last rendered label positions to prevent overlapping
   protected lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
   private textWidthCache = new Map<string, LabelSize>();
+  private _selectedMarkers = new Set<number>();
 
   constructor(api: CanvasApi<TEvent>) {
     this.api = api;
+    this.addEventListeners();
   }
 
   /**
@@ -28,8 +36,34 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
    */
   public setMarkers(markers: TimelineMarker[]) {
     // Sort markers by time for efficient rendering
-    this.sortedMarkers = markers.slice().sort((a, b) => a.time - b.time);
+    this._sortedMarkers = markers.slice().sort((a, b) => a.time - b.time);
+    this.rebuildIndex();
     this.render();
+  }
+
+  public getMarkersAt(rect: DOMRect): TimelineMarker[] {
+    const {
+      markers: { hitboxPadding },
+    } = this.api.getViewConfiguration();
+
+    const markers = this.index.search({
+      minX: this.api.positionToTime(rect.left - hitboxPadding),
+      maxX: this.api.positionToTime(rect.right + hitboxPadding),
+      minY: 0,
+      maxY: this.api.ctx.canvas.height,
+    });
+    return markers
+      .filter((box) => !box.marker.nonSelectable)
+      .map((box) => box.marker);
+  }
+
+  public getMarkersAtPoint(x: number, y: number) {
+    const p = 6;
+    return this.getMarkersAt(new DOMRect(x - p / 2, y - p / 2, p, p));
+  }
+
+  public isSelectedMarker(time: number) {
+    return this._selectedMarkers.has(time);
   }
 
   /**
@@ -37,14 +71,14 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
    */
   public render() {
     this.api.useStaticTransform();
-    // Reset label positions for new render pass
+    // Reset label positions for a new render pass
     this.lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
 
     const { start, end } = this.api.getInterval();
 
     const visibleMarkers: TimelineMarker[] = [];
-    for (let i = 0; i < this.sortedMarkers.length; i += 1) {
-      const marker = this.sortedMarkers[i];
+    for (let i = 0; i < this._sortedMarkers.length; i += 1) {
+      const marker = this._sortedMarkers[i];
       const overscan = marker.label
         ? this.api.widthToTime(this.getLabelSize(marker.label).width)
         : 0;
@@ -63,7 +97,7 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
       renderer.render({
         ctx: this.api.ctx,
         marker,
-        isSelected: false,
+        isSelected: this.isSelectedMarker(marker.time),
         markerPosition: this.api.timeToPosition(marker.time),
         viewConfiguration: this.api.getViewConfiguration(),
         lastRenderedLabelPosition: this.lastRenderedLabelPosition,
@@ -71,6 +105,10 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
         getLabelSize: this.getLabelSize.bind(this),
       });
     }
+  }
+
+  public destroy() {
+    this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
   }
 
   protected getLabelSize(text: string): LabelSize {
@@ -88,6 +126,49 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
 
     this.textWidthCache.set(text, result);
     return result;
+  }
+
+  protected handleCanvasMouseup = (event: MouseEvent) => {
+    const candidates = this.getMarkersAtPoint(event.offsetX, event.offsetY);
+
+    const times = candidates.map((marker) => marker.time);
+    const arraysAreEqual =
+      times.length === this._selectedMarkers.size &&
+      times.every((num) => this._selectedMarkers.has(num));
+
+    if (arraysAreEqual) return;
+
+    if (candidates.length) {
+      this._selectedMarkers = new Set(times);
+    } else {
+      this._selectedMarkers.clear();
+    }
+
+    this.api.emit("on-marker-select-change", {
+      markers: candidates,
+      time: this.api.positionToTime(event.offsetX),
+      relativeX: event.clientX,
+      relativeY: event.clientY,
+    });
+    this.api.rerender();
+  };
+
+  protected addEventListeners() {
+    this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
+  }
+
+  protected rebuildIndex(): void {
+    const boxes = this._sortedMarkers.map(
+      (marker): BBox & { marker: TimelineMarker } => {
+        const minX = marker.time;
+        const maxX = marker.time;
+        const minY = 0;
+        const maxY = this.api.ctx.canvas.height;
+        return { minX, maxX, minY, maxY, marker };
+      },
+    );
+    this.index.clear();
+    this.index.load(boxes);
   }
 
   /**
