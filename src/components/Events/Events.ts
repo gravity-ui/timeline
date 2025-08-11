@@ -7,7 +7,7 @@ import { CanvasApi } from "../../CanvasApi";
 import { ComponentType } from "../../enums";
 import { BaseComponentInterface } from "../../types/component";
 import { TimelineEvent } from "../../types/events";
-import { ViewConfiguration } from "../../types";
+import { TimelineMarker, ViewConfiguration } from "../../types";
 
 const MAX_INDEX_TREE_WIDTH = 16;
 
@@ -16,18 +16,20 @@ const MAX_INDEX_TREE_WIDTH = 16;
  * Implements BaseComponentInterface for consistent component structure
  * @template Event - Type of event-extending TimelineEvent
  */
-export class Events<Event extends TimelineEvent = TimelineEvent>
-  implements BaseComponentInterface
+export class Events<
+  Event extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+> implements BaseComponentInterface
 {
   public allowMultipleSelection = true;
   public activeEvents: TimelineEvent[] | null = null;
   protected index = new RBush<BBox & { event: Event }>(MAX_INDEX_TREE_WIDTH);
 
-  private api: CanvasApi<Event>;
+  private api: CanvasApi<Event, TMarker>;
   private _selectedEvents = new Set<string>();
   private _events: Event[] = [];
 
-  constructor(api: CanvasApi<Event>) {
+  constructor(api: CanvasApi<Event, TMarker>) {
     this.api = api;
 
     this.addEventListeners();

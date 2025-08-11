@@ -12,21 +12,21 @@ const MAX_INDEX_TREE_WIDTH = 16;
  * Handles rendering timeline markers on the canvas
  * Implements BaseComponentInterface for a consistent component structure
  */
-export class Markers<TEvent extends TimelineEvent = TimelineEvent>
-  implements BaseComponentInterface
+export class Markers<
+  TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+> implements BaseComponentInterface
 {
-  protected api: CanvasApi<TEvent>;
-  protected _sortedMarkers: TimelineMarker[] = [];
-  protected index = new RBush<BBox & { marker: TimelineMarker }>(
-    MAX_INDEX_TREE_WIDTH,
-  );
+  protected api: CanvasApi<TEvent, TMarker>;
+  protected _sortedMarkers: TMarker[] = [];
+  protected index = new RBush<BBox & { marker: TMarker }>(MAX_INDEX_TREE_WIDTH);
   // Tracks last rendered label positions to prevent overlapping
   protected lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
   private textWidthCache = new Map<string, LabelSize>();
   private _selectedMarkers = new Set<number>();
   private hoveredMarker: number = undefined;
 
-  constructor(api: CanvasApi<TEvent>) {
+  constructor(api: CanvasApi<TEvent, TMarker>) {
     this.api = api;
     this.addEventListeners();
   }
@@ -35,14 +35,14 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
    * Updates markers data and triggers re-render
    * @param markers - Array of timeline markers to display
    */
-  public setMarkers(markers: TimelineMarker[]) {
+  public setMarkers(markers: TMarker[]) {
     // Sort markers by time for efficient rendering
     this._sortedMarkers = markers.slice().sort((a, b) => a.time - b.time);
     this.rebuildIndex();
     this.render();
   }
 
-  public getMarkersAt(rect: DOMRect): TimelineMarker[] {
+  public getMarkersAt(rect: DOMRect): TMarker[] {
     const {
       markers: { hitboxPadding },
     } = this.api.getViewConfiguration();
@@ -81,7 +81,7 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
 
     const { start, end } = this.api.getInterval();
 
-    const visibleMarkers: TimelineMarker[] = [];
+    const visibleMarkers: TMarker[] = [];
     for (let i = 0; i < this._sortedMarkers.length; i += 1) {
       const marker = this._sortedMarkers[i];
       const overscan = marker.label
@@ -98,7 +98,7 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
 
     for (let i = collapsedMarkers.length - 1; i >= 0; i -= 1) {
       const marker = collapsedMarkers[i];
-      const renderer = marker.renderer || new DefaultMarkerRenderer();
+      const renderer = marker.renderer || new DefaultMarkerRenderer<TMarker>();
       renderer.render({
         ctx: this.api.ctx,
         marker,
@@ -180,7 +180,7 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
 
   protected rebuildIndex(): void {
     const boxes = this._sortedMarkers.map(
-      (marker): BBox & { marker: TimelineMarker } => {
+      (marker): BBox & { marker: TMarker } => {
         const minX = marker.time;
         const maxX = marker.time;
         const minY = 0;
@@ -196,16 +196,14 @@ export class Markers<TEvent extends TimelineEvent = TimelineEvent>
    * Collapses groups of similar markers that are closer than or equal to
    * `viewConfiguration.markers.collapseMinDistance` pixels in the current zoom level.
    */
-  private collapseCloseSimilarMarkers(
-    markers: TimelineMarker[],
-  ): TimelineMarker[] {
+  private collapseCloseSimilarMarkers(markers: TMarker[]): TMarker[] {
     if (!markers.length) return markers;
 
     const { markers: markersCfg } = this.api.getViewConfiguration();
     const list = [...markers].sort((a, b) => a.time - b.time);
 
-    const result: TimelineMarker[] = [];
-    let group: TimelineMarker[] = [];
+    const result: TMarker[] = [];
+    let group: TMarker[] = [];
     let lastX = Number.NEGATIVE_INFINITY;
 
     const flushGroup = () => {

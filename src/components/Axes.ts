@@ -4,7 +4,7 @@ import { BaseComponentInterface } from "../types/component";
 import { CanvasApi } from "../CanvasApi";
 import { TimelineAxis } from "../types/axis";
 import { StrokeMode } from "../enums";
-import { TimelineEvent } from "../types";
+import { TimelineEvent, TimelineMarker } from "../types";
 
 /**
  * Axes component responsible for managing and rendering timeline axes
@@ -14,13 +14,14 @@ import { TimelineEvent } from "../types";
 export class Axes<
   Axis extends TimelineAxis = TimelineAxis,
   TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
 > implements BaseComponentInterface
 {
   public strokeMode = StrokeMode.STRAIGHT;
-  private api: CanvasApi<TEvent>;
+  private api: CanvasApi<TEvent, TMarker>;
   private axesIndex!: AxesIndex<Axis>;
 
-  constructor(api: CanvasApi<TEvent>) {
+  constructor(api: CanvasApi<TEvent, TMarker>) {
     this.api = api;
 
     this.axesIndex = new AxesIndex<Axis>([], {

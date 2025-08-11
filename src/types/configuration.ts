@@ -60,17 +60,23 @@ export type ViewConfiguration = {
   hideRuler?: boolean;
 };
 
-export type TimelineSettings<TEvent extends TimelineEvent> = {
+export type TimelineSettings<
+  TEvent extends TimelineEvent,
+  TMarker extends TimelineMarker,
+> = {
   start: number;
   end: number;
   axes: TimelineAxis[];
   events: TEvent[];
-  markers?: TimelineMarker[];
+  markers?: TMarker[];
   selectedEventIds?: string[];
 };
 
-export type TimeLineConfig<TEvent extends TimelineEvent> = {
-  settings: TimelineSettings<TEvent>;
+export type TimeLineConfig<
+  TEvent extends TimelineEvent,
+  TMarker extends TimelineMarker,
+> = {
+  settings: TimelineSettings<TEvent, TMarker>;
   viewConfiguration?: ViewConfiguration;
 };
 

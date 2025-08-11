@@ -1,9 +1,11 @@
 import { LabelSize, TimelineMarker, ViewConfiguration } from "../../types";
 
-export abstract class AbstractMarkerRenderer {
+export abstract class AbstractMarkerRenderer<
+  TMarker extends TimelineMarker = TimelineMarker,
+> {
   public abstract render(data: {
     ctx: CanvasRenderingContext2D;
-    marker: TimelineMarker;
+    marker: TMarker;
     isSelected: boolean;
     isHovered: boolean;
     markerPosition: number;

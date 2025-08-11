@@ -1,7 +1,11 @@
-import { TimeLineConfig, TimelineEvent } from "../../types";
+import { TimeLineConfig, TimelineEvent, TimelineMarker } from "../../types";
 import { commonConfig } from "./common";
+import { MyMarker, MyMarkerRenderer } from "../MyMarkerRenderer";
 
-const events: TimeLineConfig<TimelineEvent>["settings"]["events"] = [
+const events: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker
+>["settings"]["events"] = [
   {
     id: "test4",
     from: 1739537150000,
@@ -12,26 +16,30 @@ const events: TimeLineConfig<TimelineEvent>["settings"]["events"] = [
   },
 ];
 
-export const markersBaseConfig: TimeLineConfig<TimelineEvent> = {
-  settings: {
-    ...commonConfig,
-    events,
-    markers: [
-      {
-        time: 1739537150000,
-        color: "rgb(254, 127, 45)",
-        lineWidth: 1,
-      },
-      {
-        time: 1739537170000,
-        color: "rgb(11, 180, 193)",
-        lineWidth: 3,
-      },
-    ],
-  },
-};
+export const markersBaseConfig: TimeLineConfig<TimelineEvent, TimelineMarker> =
+  {
+    settings: {
+      ...commonConfig,
+      events,
+      markers: [
+        {
+          time: 1739537150000,
+          color: "rgb(254, 127, 45)",
+          lineWidth: 1,
+        },
+        {
+          time: 1739537170000,
+          color: "rgb(11, 180, 193)",
+          lineWidth: 3,
+        },
+      ],
+    },
+  };
 
-export const collapsedBaseConfig: TimeLineConfig<TimelineEvent> = {
+export const collapsedBaseConfig: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker
+> = {
   settings: {
     ...commonConfig,
     events,
@@ -60,7 +68,10 @@ export const collapsedBaseConfig: TimeLineConfig<TimelineEvent> = {
   },
 };
 
-export const markersWithLabelsConfig: TimeLineConfig<TimelineEvent> = {
+export const markersWithLabelsConfig: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker
+> = {
   settings: {
     ...commonConfig,
     events,
@@ -79,6 +90,25 @@ export const markersWithLabelsConfig: TimeLineConfig<TimelineEvent> = {
         time: 1739537170000,
         color: "rgb(11, 180, 193)",
         label: "End Phase",
+      },
+    ],
+  },
+};
+
+export const markersCustomRenderer: TimeLineConfig<TimelineEvent, MyMarker> = {
+  settings: {
+    ...commonConfig,
+    events,
+    markers: [
+      {
+        time: 1739537150000,
+        lineWidth: 2,
+        color: "rgb(161, 193, 129)",
+        hoverColor: "rgb(11, 180, 193)",
+        activeColor: "rgb(254, 127, 45)",
+        label: "test",
+        labelColor: "#333",
+        renderer: new MyMarkerRenderer(),
       },
     ],
   },

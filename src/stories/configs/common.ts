@@ -1,7 +1,7 @@
-import { TimeLineConfig, TimelineEvent } from "../../types";
+import { TimeLineConfig, TimelineEvent, TimelineMarker } from "../../types";
 
 export const commonConfig: Pick<
-  TimeLineConfig<TimelineEvent>["settings"],
+  TimeLineConfig<TimelineEvent, TimelineMarker>["settings"],
   "start" | "end" | "axes" | "selectedEventIds"
 > = {
   start: 1739537126347,

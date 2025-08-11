@@ -38,28 +38,36 @@ export type LeaveEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   events: TEvent[];
 };
 export type CameraEvent = { from: number; to: number };
-export type MarkerSelectEvent = { markers: TimelineMarker[] } & BaseEventData;
+export type MarkerSelectEvent<TMarker extends TimelineMarker = TimelineMarker> =
+  { markers: TMarker[] } & BaseEventData;
 
-export type ApiEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+export type ApiEvent<
+  TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+> = {
   "on-click": (event: CustomEvent<ClickEvent<TEvent>>) => void;
   "on-context-click": (event: CustomEvent<ContextEvent<TEvent>>) => void;
   "on-select-change": (event: CustomEvent<SelectEvent<TEvent>>) => void;
   "on-hover": (events: CustomEvent<HoverEvent<TEvent>>) => void;
   "on-leave": (events: CustomEvent<LeaveEvent<TEvent>>) => void;
   "on-camera-change": (event: CustomEvent<CameraEvent>) => void;
-  "on-marker-select-change": (markers: CustomEvent<MarkerSelectEvent>) => void;
+  "on-marker-select-change": (
+    markers: CustomEvent<MarkerSelectEvent<TMarker>>,
+  ) => void;
 };
 
 export type UnwrapTimelineEvents<
   Key extends keyof ApiEvent<TEvent>,
   TEvent extends TimelineEvent = TimelineEvent,
-  U extends ApiEvent<TEvent>[Key] = ApiEvent<TEvent>[Key],
+  TMarker extends TimelineMarker = TimelineMarker,
+  U extends ApiEvent<TEvent, TMarker>[Key] = ApiEvent<TEvent, TMarker>[Key],
   P extends Parameters<U>[0] = Parameters<U>[0],
 > = P extends CustomEvent ? P : never;
 
 export type UnwrapTimelineEventsDetail<
-  Key extends keyof ApiEvent<TEvent>,
+  Key extends keyof ApiEvent<TEvent, TMarker>,
   TEvent extends TimelineEvent = TimelineEvent,
-  U extends ApiEvent<TEvent>[Key] = ApiEvent<TEvent>[Key],
+  TMarker extends TimelineMarker = TimelineMarker,
+  U extends ApiEvent<TEvent, TMarker>[Key] = ApiEvent<TEvent, TMarker>[Key],
   P extends Parameters<U>[0] = Parameters<U>[0],
-> = UnwrapTimelineEvents<Key, TEvent, U, P>["detail"];
+> = UnwrapTimelineEvents<Key, TEvent, TMarker, U, P>["detail"];
