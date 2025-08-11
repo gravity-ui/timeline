@@ -1,5 +1,14 @@
 # Changelog
 
+## [1.14.0](https://github.com/gravity-ui/timeline/compare/v1.13.2...v1.14.0) (2025-08-11)
+
+
+### Features
+
+* **Markers:** add marker renderer ([72839db](https://github.com/gravity-ui/timeline/commit/72839dbf6e92c39e29b8b839bfa41c3b8f6dd83b))
+* **Markers:** add select change event ([7a8326f](https://github.com/gravity-ui/timeline/commit/7a8326f5381c9ac0fe7185ff842525d7380d19b9))
+* **Markers:** collapse markers ([9be304a](https://github.com/gravity-ui/timeline/commit/9be304aec543f80e6764283a66d1def69645e442))
+
 ## [1.13.2](https://github.com/gravity-ui/timeline/compare/v1.13.1...v1.13.2) (2025-08-08)
 
 
