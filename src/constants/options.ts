@@ -45,14 +45,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     hitboxPadding: 2,
   },
   markers: {
-    labelPadding: 3,
-    labelHeight: 14,
-    labelFont: DEFAULT_FONT,
-    textPadding: 10,
-    markerWidth: 2,
+    font: DEFAULT_FONT,
     collapseMinDistance: 2,
-    color: {
-      textColor: defaultPalette.gray1,
-    },
   },
 };

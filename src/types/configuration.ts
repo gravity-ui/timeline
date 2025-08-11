@@ -46,15 +46,8 @@ export type EventsViewOptions = {
 };
 
 export type MarkerViewOptions = {
-  labelPadding?: number;
-  labelHeight?: number;
-  labelFont?: string;
-  textPadding?: number;
-  markerWidth?: number;
+  font?: string;
   collapseMinDistance?: number;
-  color?: {
-    textColor?: string;
-  };
 };
 
 export type ViewConfiguration = {
