@@ -10,7 +10,7 @@ export type MyEvent = TimelineEvent & {
 
 const BORDER_WIDTH = 2;
 
-export class MyRenderer extends AbstractEventRenderer {
+export class MyEventRenderer extends AbstractEventRenderer {
   public render(
     ctx: CanvasRenderingContext2D,
     event: MyEvent,
