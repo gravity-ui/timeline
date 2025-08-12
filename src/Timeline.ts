@@ -21,7 +21,7 @@ import { TimelineMarker } from "./types";
  */
 export class Timeline<
   TEvent extends TimelineEvent,
-  TMarker extends TimelineMarker,
+  TMarker extends TimelineMarker = TimelineMarker,
 > {
   public canvasScrollTop: number;
   public settings: TimelineSettings<TEvent, TMarker>;
