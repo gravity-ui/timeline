@@ -16,6 +16,11 @@ const events: TimeLineConfig<
   },
 ];
 
+const colors: Pick<MyMarker, "hoverColor" | "activeColor"> = {
+  hoverColor: "rgb(11, 180, 193)",
+  activeColor: "rgb(255,198,2)",
+};
+
 export const markersBaseConfig: TimeLineConfig<TimelineEvent, TimelineMarker> =
   {
     settings: {
@@ -25,11 +30,13 @@ export const markersBaseConfig: TimeLineConfig<TimelineEvent, TimelineMarker> =
         {
           time: 1739537150000,
           color: "rgb(254, 127, 45)",
+          ...colors,
           lineWidth: 1,
         },
         {
           time: 1739537170000,
           color: "rgb(11, 180, 193)",
+          ...colors,
           lineWidth: 3,
         },
       ],
@@ -47,21 +54,25 @@ export const collapsedBaseConfig: TimeLineConfig<
       {
         time: 1739537150100,
         color: "rgb(254, 127, 45)",
+        ...colors,
         lineWidth: 1,
       },
       {
         time: 1739537150200,
         color: "rgb(11, 180, 193)",
+        ...colors,
         lineWidth: 1,
       },
       {
         time: 1739537150300,
         color: "rgb(254, 127, 45)",
+        ...colors,
         lineWidth: 1,
       },
       {
         time: 1739537150400,
         color: "rgb(255,198,2)",
+        ...colors,
         lineWidth: 1,
       },
     ],
@@ -79,16 +90,19 @@ export const markersWithLabelsConfig: TimeLineConfig<
       {
         time: 1739537150000,
         color: "rgb(254, 127, 45)",
+        ...colors,
         label: "Start Phase1",
       },
       {
         time: 1739537160000,
         color: "rgb(254, 127, 45)",
+        ...colors,
         label: "Start Phase2",
       },
       {
         time: 1739537170000,
         color: "rgb(11, 180, 193)",
+        ...colors,
         label: "End Phase",
       },
     ],
