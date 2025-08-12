@@ -32,7 +32,12 @@ export class MyMarkerRenderer<
     lastRenderedLabelPosition: { top: number; bottom: number };
     getLabelSize: (label: string) => LabelSize;
   }) {
+    const { markers } = viewConfiguration;
+
     let color = isHovered ? marker.hoverColor : marker.color;
+    if (marker.group) {
+      color = isHovered ? markers.groupColorHover : markers.groupColor;
+    }
     if (isSelected) {
       color = marker.activeColor;
     }
@@ -48,7 +53,7 @@ export class MyMarkerRenderer<
 
     if (!marker.label) return;
 
-    if (isHovered || isSelected) {
+    if (isHovered || isSelected || marker.group) {
       this.renderLabel(
         ctx,
         color,
