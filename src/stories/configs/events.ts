@@ -1,5 +1,5 @@
 import { TimeLineConfig, TimelineEvent, TimelineMarker } from "../../types";
-import { MyEvent, MyRenderer } from "../MyRenderer";
+import { MyEvent, MyEventRenderer } from "../MyEventRenderer";
 import { commonConfig } from "./common";
 
 export const baseTimelineConfig: TimeLineConfig<TimelineEvent, TimelineMarker> =
@@ -99,7 +99,7 @@ const customEvents: MyEvent[] = [
     ],
     borderColor: "#243",
     selectedBorderColor: "#f60630",
-    renderer: new MyRenderer(),
+    renderer: new MyEventRenderer(),
   },
 ];
 
