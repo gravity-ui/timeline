@@ -10,6 +10,7 @@ export type TimelineMarker = {
   labelColor?: string;
   renderer?: AbstractMarkerRenderer;
   nonSelectable?: boolean;
+  group?: boolean;
 };
 
 export type LabelSize = { height: number; width: number };

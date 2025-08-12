@@ -219,6 +219,7 @@ export class Markers<
           ...template,
           time: avgTime,
           label: `${group.length}`,
+          group: true,
         });
       }
       group = [];

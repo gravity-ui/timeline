@@ -30,8 +30,13 @@ export class DefaultMarkerRenderer<
     lastRenderedLabelPosition: { top: number; bottom: number };
     getLabelSize: (label: string) => LabelSize;
   }) {
-    const activeColor = marker.activeColor || DEFAULT_ACTIVE_COLOR;
-    const hoverColor = marker.hoverColor || DEFAULT_HOVER_COLOR;
+    const { markers } = viewConfiguration;
+    const activeColor = marker.group
+      ? markers.groupColor
+      : marker.activeColor || DEFAULT_ACTIVE_COLOR;
+    const hoverColor = marker.group
+      ? markers.groupColorHover
+      : marker.hoverColor || DEFAULT_HOVER_COLOR;
 
     let color = isHovered ? hoverColor : marker.color;
     if (isSelected) {

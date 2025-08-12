@@ -47,6 +47,8 @@ export type EventsViewOptions = {
 
 export type MarkerViewOptions = {
   font?: string;
+  groupColor?: string;
+  groupColorHover?: string;
   hitboxPadding?: number;
   collapseMinDistance?: number;
 };
