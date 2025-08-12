@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.2](https://github.com/gravity-ui/timeline/compare/v1.16.1...v1.16.2) (2025-08-12)
+
+
+### Bug Fixes
+
+* **Markers:** marker type props ([bee7d15](https://github.com/gravity-ui/timeline/commit/bee7d155eb7bd37cc5cc9825a33c95305f21a9f5))
+
 ## [1.16.1](https://github.com/gravity-ui/timeline/compare/v1.16.0...v1.16.1) (2025-08-12)
 
 
