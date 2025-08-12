@@ -2,6 +2,8 @@ import { ViewConfigurationDefault } from "../types/configuration";
 import { defaultPalette } from "./colors";
 
 const DEFAULT_FONT = "10px sans-serif";
+const DEFAULT_GROUP_COLOR = "rgb(254, 127, 45)";
+const DEFAULT_GROUP_COLOR_HOVER = "red";
 
 export const defaultViewConfig: ViewConfigurationDefault = {
   hideRuler: false,
@@ -46,6 +48,8 @@ export const defaultViewConfig: ViewConfigurationDefault = {
   },
   markers: {
     font: DEFAULT_FONT,
+    groupColor: DEFAULT_GROUP_COLOR,
+    groupColorHover: DEFAULT_GROUP_COLOR_HOVER,
     hitboxPadding: 2,
     collapseMinDistance: 4,
   },
