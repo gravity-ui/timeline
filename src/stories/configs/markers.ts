@@ -95,6 +95,16 @@ export const markersWithLabelsConfig: TimeLineConfig<
   },
 };
 
+const commonCustomConfig: Pick<
+  MyMarker,
+  "hoverColor" | "activeColor" | "labelColor" | "renderer"
+> = {
+  labelColor: "#333",
+  hoverColor: "rgb(11, 180, 193)",
+  activeColor: "rgb(254, 127, 45)",
+  renderer: new MyMarkerRenderer(),
+};
+
 export const markersCustomRenderer: TimeLineConfig<TimelineEvent, MyMarker> = {
   settings: {
     ...commonConfig,
@@ -104,11 +114,32 @@ export const markersCustomRenderer: TimeLineConfig<TimelineEvent, MyMarker> = {
         time: 1739537150000,
         lineWidth: 2,
         color: "rgb(161, 193, 129)",
-        hoverColor: "rgb(11, 180, 193)",
-        activeColor: "rgb(254, 127, 45)",
         label: "test",
-        labelColor: "#333",
-        renderer: new MyMarkerRenderer(),
+        ...commonCustomConfig,
+      },
+      {
+        time: 1739537150600,
+        color: "rgb(161, 193, 129)",
+        lineWidth: 1,
+        ...commonCustomConfig,
+      },
+      {
+        time: 1739537150700,
+        color: "rgb(11, 180, 193)",
+        lineWidth: 1,
+        ...commonCustomConfig,
+      },
+      {
+        time: 1739537150800,
+        color: "rgb(254, 127, 45)",
+        lineWidth: 1,
+        ...commonCustomConfig,
+      },
+      {
+        time: 1739537150900,
+        color: "rgb(255,198,2)",
+        lineWidth: 1,
+        ...commonCustomConfig,
       },
     ],
   },
