@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.1](https://github.com/gravity-ui/timeline/compare/v1.16.0...v1.16.1) (2025-08-12)
+
+
+### Bug Fixes
+
+* **UI:** fix imports ([5cd8bc8](https://github.com/gravity-ui/timeline/commit/5cd8bc87903d0bd515811e9b11bf61f07472e965))
+
 ## [1.16.0](https://github.com/gravity-ui/timeline/compare/v1.15.0...v1.16.0) (2025-08-12)
 
 
