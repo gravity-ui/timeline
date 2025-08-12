@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.16.0](https://github.com/gravity-ui/timeline/compare/v1.15.0...v1.16.0) (2025-08-12)
+
+
+### Features
+
+* **Markers:** add group prop and colors ([fe0ca18](https://github.com/gravity-ui/timeline/commit/fe0ca18e46d0a6078cc81c05fcc5d777fb566608))
+
 ## [1.15.0](https://github.com/gravity-ui/timeline/compare/v1.14.0...v1.15.0) (2025-08-11)
 
 
