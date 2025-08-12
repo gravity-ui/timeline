@@ -4,8 +4,6 @@ import { clamp } from "../../helpers/math";
 
 const DEFAULT_LINE_WIDTH = 1;
 const DEFAULT_TEXT_COLOR = "#333";
-const DEFAULT_ACTIVE_COLOR = "red";
-const DEFAULT_HOVER_COLOR = "yellow";
 const DEFAULT_LABEL_PADDING = 4;
 
 export class DefaultMarkerRenderer<
@@ -31,12 +29,10 @@ export class DefaultMarkerRenderer<
     getLabelSize: (label: string) => LabelSize;
   }) {
     const { markers } = viewConfiguration;
-    const activeColor = marker.group
-      ? markers.groupColor
-      : marker.activeColor || DEFAULT_ACTIVE_COLOR;
+    const activeColor = marker.group ? markers.groupColor : marker.activeColor;
     const hoverColor = marker.group
       ? markers.groupColorHover
-      : marker.hoverColor || DEFAULT_HOVER_COLOR;
+      : marker.hoverColor;
 
     let color = isHovered ? hoverColor : marker.color;
     if (isSelected) {
