@@ -195,60 +195,84 @@ export class Markers<
   /**
    * Collapses groups of similar markers that are closer than or equal to
    * `viewConfiguration.markers.collapseMinDistance` pixels in the current zoom level.
+   *
+   * This function groups markers that are visually close together and creates
+   * a single representative marker for each group, improving readability.
+   * @param markers - Array of markers to process
+   * @returns Array of collapsed markers where close groups are merged
    */
   private collapseCloseSimilarMarkers(markers: TMarker[]): TMarker[] {
     if (!markers.length) return markers;
 
     const { markers: markersCfg } = this.api.getViewConfiguration();
-    const list = [...markers].sort((a, b) => a.time - b.time);
+    const collapseDistance = markersCfg.collapseMinDistance;
+
+    // Early return if collapse distance is 0 or negative (no collapsing)
+    if (collapseDistance <= 0) return markers;
+
+    // Pre-calculate positions to avoid repeated API calls
+    const markersWithPositions = markers
+      .map((marker) => ({
+        marker,
+        position: this.api.timeToPosition(marker.time),
+      }))
+      .sort((a, b) => a.position - b.position);
 
     const result: TMarker[] = [];
-    let group: TMarker[] = [];
-    let lastX = Number.NEGATIVE_INFINITY;
+    let currentGroup: TMarker[] = [];
+    let lastPosition = Number.NEGATIVE_INFINITY;
 
-    const flushGroup = () => {
-      if (!group.length) return;
-      if (group.length === 1) {
-        result.push(group[0]);
+    const flushCurrentGroup = () => {
+      if (!currentGroup.length) return;
+
+      if (currentGroup.length === 1) {
+        result.push(currentGroup[0]);
       } else {
-        const avgTime = Math.round(
-          group.reduce((sum, m) => sum + m.time, 0) / group.length,
-        );
-        const template = group[0];
+        const avgTime = this.calculateAverageTime(currentGroup);
+        const template = currentGroup[0];
         result.push({
           ...template,
           time: avgTime,
-          label: `${group.length}`,
+          label: `${currentGroup.length}`,
           group: true,
         });
       }
-      group = [];
-      lastX = Number.NEGATIVE_INFINITY;
+      currentGroup = [];
     };
 
-    for (let i = 0; i < list.length; i += 1) {
-      const cur = list[i];
-      const curX = this.api.timeToPosition(cur.time);
-
-      if (!group.length) {
-        group.push(cur);
-        lastX = curX;
+    for (const { marker, position } of markersWithPositions) {
+      if (!currentGroup.length) {
+        currentGroup.push(marker);
+        lastPosition = position;
         continue;
       }
 
-      const closeEnough =
-        Math.abs(curX - lastX) <= markersCfg.collapseMinDistance;
-      if (closeEnough) {
-        group.push(cur);
-        lastX = curX;
+      const isCloseEnough =
+        Math.abs(position - lastPosition) <= collapseDistance;
+
+      if (isCloseEnough) {
+        currentGroup.push(marker);
+        lastPosition = position;
       } else {
-        flushGroup();
-        group.push(cur);
-        lastX = curX;
+        flushCurrentGroup();
+        currentGroup.push(marker);
+        lastPosition = position;
       }
     }
 
-    flushGroup();
+    flushCurrentGroup();
+
     return result;
+  }
+
+  /**
+   * Calculates the average time for a group of markers.
+   * Used when collapsing multiple markers into a single representative marker.
+   * @param markers - Array of markers to calculate average time for
+   * @returns Rounded average time value
+   */
+  private calculateAverageTime(markers: TMarker[]): number {
+    const totalTime = markers.reduce((sum, marker) => sum + marker.time, 0);
+    return Math.round(totalTime / markers.length);
   }
 }
