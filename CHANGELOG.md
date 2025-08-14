@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.17.0](https://github.com/gravity-ui/timeline/compare/v1.16.2...v1.17.0) (2025-08-14)
+
+
+### Features
+
+* **Markers:** zoom in on group click ([7f7fa99](https://github.com/gravity-ui/timeline/commit/7f7fa998d7123700f67ab6eb2159149ce1f47cea))
+* **Timeline:** add zoom mode prop ([4bbb50e](https://github.com/gravity-ui/timeline/commit/4bbb50e653118f91641c6c55953ada17b11e9010))
+
 ## [1.16.2](https://github.com/gravity-ui/timeline/compare/v1.16.1...v1.16.2) (2025-08-12)
 
 
