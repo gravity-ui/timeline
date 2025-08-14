@@ -21,6 +21,7 @@ const timeline = new Timeline({
     axes?: AxesViewOptions;
     events?: EventsViewOptions;
     markers?: MarkerViewOptions;
+    camera?: CameraViewOptions;
     hideRuler?: boolean;
   }
 });
@@ -73,6 +74,7 @@ const timeline = new Timeline({
       axes?: AxesViewOptions;
       events?: EventsViewOptions;
       markers?: MarkerViewOptions;
+      camera?: CameraViewOptions;
       hideRuler?: boolean;
     };
   };
@@ -152,6 +154,28 @@ timeline.emit('eventClick', { eventId: '123', time: Date.now() });
 **Returns:**
 - The created CustomEvent instance
 
+## Configuration Options
+
+### Camera Configuration
+
+The `camera` configuration controls timeline interaction behaviors, particularly zooming and panning:
+
+```typescript
+viewConfiguration: {
+  camera: {
+    zoom: ZoomMode.DEFAULT // or ZoomMode.NONE or ZoomMode.HORIZONTAL
+  }
+}
+```
+
+**Zoom Modes:**
+
+| Mode | Value | Behavior |
+|------|-------|----------|
+| `DEFAULT` | `"default"` | Standard zoom and pan behavior (mouse wheel zooms, Shift+wheel pans vertically) |
+| `HORIZONTAL` | `"horizontal"` | Mouse wheel pans horizontally without requiring Shift key |
+| `NONE` | `"none"` | Disables all zoom and pan interactions |
+
 ## Events
 
 The timeline emits the following events:
@@ -210,7 +234,7 @@ Fired when mouse leaves timeline elements.
 ### Basic Timeline Setup
 
 ```typescript
-import { Timeline } from '@gravity-ui/timeline';
+import { Timeline, ZoomMode } from '@gravity-ui/timeline';
 
 // Create timeline instance
 const timeline = new Timeline({
@@ -231,6 +255,11 @@ const timeline = new Timeline({
       axisId: 'main',
       trackIndex: 0
     }]
+  },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.DEFAULT
+    }
   }
 });
 

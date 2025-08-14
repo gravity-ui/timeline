@@ -14,7 +14,7 @@ The library consists of several core components that work together to create the
 The main class that orchestrates the timeline visualization. It manages the canvas, components, and user interactions.
 
 ```typescript
-import { Timeline } from '@gravity-ui/timeline';
+import { Timeline, ZoomMode } from '@gravity-ui/timeline';
 
 const timeline = new Timeline({
   settings: {
@@ -22,6 +22,11 @@ const timeline = new Timeline({
     end: Date.now() + 3600000,
     axes: [],
     events: []
+  },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.DEFAULT
+    }
   }
 });
 ```
