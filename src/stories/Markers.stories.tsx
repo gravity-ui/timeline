@@ -263,3 +263,51 @@ export const CustomRenderer: Story = {
     },
   },
 };
+
+export const GroupZoomDemo: StoryObj<StoryProps> = {
+  args: {
+    "settings.start": Date.now() - 24 * 60 * 60 * 1000, // 1 day ago
+    "settings.end": Date.now() + 24 * 60 * 60 * 1000, // 1 day from now
+    "settings.axes": baseTimelineConfig.settings.axes,
+    "settings.events": baseTimelineConfig.settings.events,
+    "settings.markers": [
+      // Create markers that will be grouped together
+      ...Array.from({ length: 20 }, (_, i) => ({
+        time: Date.now() + i * 1000, // 1 second apart
+        color: "#ff6b6b",
+        activeColor: "#ff5252",
+        hoverColor: "#ff1744",
+        label: `Marker ${i + 1}`,
+      })),
+      {
+        time: Date.now() + 30000, // 30 seconds later
+        color: "#4ecdc4",
+        activeColor: "#26c6da",
+        hoverColor: "#00bcd4",
+        label: "Distant Marker",
+      },
+      {
+        time: Date.now() + 60000, // 1 minute later
+        color: "#45b7d1",
+        activeColor: "#29b6f6",
+        hoverColor: "#03a9f4",
+        label: "Another Distant",
+      },
+    ],
+    "viewConfiguration.markers": {
+      ...defaultViewConfig.markers,
+      collapseMinDistance: 8, // Larger distance for better grouping
+      groupZoomEnabled: true,
+      groupZoomPadding: 0.3, // 30% padding around group
+      groupZoomMaxFactor: 0.3, // Max zoom factor
+    },
+  },
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "This story demonstrates the group zoom functionality. When you click on a grouped marker (showing a number), the timeline will zoom to show all individual markers in that group. Try clicking on the grouped markers to see the zoom effect.",
+      },
+    },
+  },
+};

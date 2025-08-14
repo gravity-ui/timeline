@@ -41,6 +41,14 @@ export type CameraEvent = { from: number; to: number };
 export type MarkerSelectEvent<TMarker extends TimelineMarker = TimelineMarker> =
   { markers: TMarker[] } & BaseEventData;
 
+export type GroupMarkerClickEvent<
+  TMarker extends TimelineMarker = TimelineMarker,
+> = {
+  groupMarker: TMarker;
+  originalMarkers: TMarker[];
+  newInterval: { start: number; end: number };
+};
+
 export type ApiEvent<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
@@ -53,6 +61,9 @@ export type ApiEvent<
   "on-camera-change": (event: CustomEvent<CameraEvent>) => void;
   "on-marker-select-change": (
     markers: CustomEvent<MarkerSelectEvent<TMarker>>,
+  ) => void;
+  "on-group-marker-click": (
+    event: CustomEvent<GroupMarkerClickEvent<TMarker>>,
   ) => void;
 };
 

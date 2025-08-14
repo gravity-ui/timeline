@@ -86,6 +86,10 @@ export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
     action("on-marker-select-change")(data);
   });
 
+  useTimelineEvent(timeline, "on-group-marker-click", (data) => {
+    action("on-group-marker-click")(data);
+  });
+
   return (
     <div
       style={{
