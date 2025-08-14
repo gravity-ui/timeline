@@ -13,6 +13,7 @@ import {
   TimelineSettings,
   ViewConfiguration,
 } from "../types";
+import { ZoomMode } from "../enums";
 
 type ViewConfigurationControls = {
   [K in keyof ViewConfiguration as `viewConfiguration.${K}`]: ViewConfiguration[K];
@@ -158,6 +159,23 @@ const meta = {
         },
       },
     },
+    "viewConfiguration.camera": {
+      control: {
+        type: "object",
+      },
+      description: "Camera view options",
+      table: {
+        category: "viewConfiguration",
+        type: {
+          summary: "CameraViewOptions",
+          detail: `Available zoom modes:\n${Object.entries(ZoomMode)
+            .map(([key, value]) => `- ${key}: "${value}"`)
+            .join(
+              "\n",
+            )}\n\nDefault configuration:\n${JSON.stringify(defaultViewConfig.camera, null, 2)}`,
+        },
+      },
+    },
   },
   decorators: [
     (Story) => (
@@ -179,6 +197,7 @@ const defaultViewConfigArgs: ViewConfigurationControls = {
   "viewConfiguration.axes": defaultViewConfig.axes,
   "viewConfiguration.events": defaultViewConfig.events,
   "viewConfiguration.markers": defaultViewConfig.markers,
+  "viewConfiguration.camera": defaultViewConfig.camera,
 };
 
 export const Basic: Story = {
