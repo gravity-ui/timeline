@@ -3,6 +3,7 @@ import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
 import debounce_ from "lodash/debounce";
 import { TimelineEvent, TimelineMarker } from "./types";
+import { ZoomMode } from "./enums";
 
 const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
@@ -80,6 +81,10 @@ export class TimelineController<
     event.preventDefault();
 
     const { start, end } = this.api.getInterval();
+    const { camera } = this.api.getViewConfiguration();
+    const zoomMode = camera.zoom;
+
+    if (zoomMode === ZoomMode.NONE) return;
 
     let newStart = start;
     let newEnd = end;
@@ -87,7 +92,7 @@ export class TimelineController<
     const oldDomain = newEnd - newStart;
 
     if (Math.abs(event.deltaY) > 2) {
-      if (event.shiftKey) {
+      if (event.shiftKey || zoomMode === ZoomMode.HORIZONTAL) {
         isPanned = true;
         const shift = oldDomain * event.deltaY * WHEEL_PAN_SPEED;
         newStart += shift;

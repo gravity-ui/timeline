@@ -1,5 +1,6 @@
 import { ViewConfigurationDefault } from "../types/configuration";
 import { defaultPalette } from "./colors";
+import { ZoomMode } from "../enums";
 
 const DEFAULT_FONT = "10px sans-serif";
 const DEFAULT_GROUP_COLOR = "rgb(254, 127, 45)";
@@ -56,5 +57,8 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     groupZoomEnabled: true,
     groupZoomPadding: 0.2,
     groupZoomMaxFactor: 0.5,
+  },
+  camera: {
+    zoom: ZoomMode.DEFAULT,
   },
 };
