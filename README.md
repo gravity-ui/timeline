@@ -11,6 +11,7 @@ For details see [Documentation](./docs/docs.md).
 - Canvas-based rendering for high performance
 - Interactive timeline with zoom and pan capabilities
 - Support for events, markers, axes, and grid
+- Smart marker grouping with automatic zoom to group - Click on grouped markers to zoom into their individual components
 - Virtualized rendering for improved performance with large datasets (only active when timeline content exceeds the viewport)
 - Customizable appearance and behavior
 - TypeScript support with full type definitions
@@ -48,6 +49,44 @@ const MyTimelineComponent = () => {
       <TimelineCanvas timeline={timeline} />
     </div>
   );
+};
+```
+
+### Marker Grouping and Zoom
+
+The timeline automatically groups markers that are close together and provides zoom functionality:
+
+```tsx
+const MyTimelineComponent = () => {
+  const { timeline } = useTimeline({
+    settings: {
+      start: Date.now(),
+      end: Date.now() + 3600000,
+      axes: [],
+      events: [],
+      markers: [
+        // These markers will be grouped together
+        { time: Date.now(), color: '#ff0000', label: 'Event 1' },
+        { time: Date.now() + 1000, color: '#ff0000', label: 'Event 2' },
+        { time: Date.now() + 2000, color: '#ff0000', label: 'Event 3' },
+      ]
+    },
+    viewConfiguration: {
+      markers: {
+        collapseMinDistance: 8,        // Group markers within 8 pixels
+        groupZoomEnabled: true,        // Enable zoom on group click
+        groupZoomPadding: 0.3,        // 30% padding around group
+        groupZoomMaxFactor: 0.3,      // Max zoom factor
+      }
+    }
+  });
+
+  // Listen for group zoom events
+  useTimelineEvent(timeline, 'on-group-marker-click', (data) => {
+    console.log('Group zoomed:', data);
+  });
+
+  return <TimelineCanvas timeline={timeline} />;
 };
 ```
 
