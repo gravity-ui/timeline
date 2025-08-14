@@ -60,17 +60,38 @@ The TimelineController provides the following interaction capabilities:
 
 ### Zoom
 
-- **Mouse Wheel**: Zoom in/out centered on cursor position
-- **Zoom Limits**: 
-  - Minimum zoom: 5 seconds
-  - Maximum zoom: 2 months
-- **Zoom Speed**: Controlled by wheel delta
+The zoom behavior is controlled by the camera configuration's zoom mode:
+
+- **DEFAULT Mode**: 
+  - **Mouse Wheel**: Zoom in/out centered on cursor position
+  - **Zoom Limits**: 
+    - Minimum zoom: 5 seconds
+    - Maximum zoom: 2 months
+  - **Zoom Speed**: Controlled by wheel delta
+
+- **HORIZONTAL Mode**: 
+  - **Mouse Wheel**: Horizontal panning instead of zooming
+  - **No Zoom**: Zoom functionality is disabled in this mode
+
+- **NONE Mode**: 
+  - **Disabled**: All zoom and pan interactions are disabled
 
 ### Pan
 
-- **Shift + Wheel**: Vertical panning
-- **Wheel Delta X**: Horizontal panning
-- **Pan Speed**: Controlled by `WHEEL_PAN_SPEED` constant (0.00025)
+The pan behavior also depends on the zoom mode:
+
+- **DEFAULT Mode**:
+  - **Shift + Wheel**: Vertical panning
+  - **Wheel Delta X**: Horizontal panning
+  - **Pan Speed**: Controlled by `WHEEL_PAN_SPEED` constant (0.00025)
+
+- **HORIZONTAL Mode**:
+  - **Mouse Wheel**: Horizontal panning (no Shift key required)
+  - **Wheel Delta X**: Horizontal panning
+  - **Pan Speed**: Controlled by `WHEEL_PAN_SPEED` constant (0.00025)
+
+- **NONE Mode**:
+  - **Disabled**: All panning interactions are disabled
 
 ### Canvas Resizing
 
@@ -107,6 +128,44 @@ if (canvas instanceof HTMLCanvasElement) {
 
 // Clean up
 timeline.destroy(); // This will also destroy the TimelineController
+```
+
+### Configuring Interaction Modes
+
+You can control zoom and pan behavior by setting the camera configuration:
+
+```typescript
+import { Timeline, ZoomMode } from '@gravity-ui/timeline';
+
+// Default zoom behavior
+const timelineDefault = new Timeline({
+  settings: { /* settings */ },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.DEFAULT
+    }
+  }
+});
+
+// Horizontal pan only (no zoom)
+const timelineHorizontal = new Timeline({
+  settings: { /* settings */ },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.HORIZONTAL
+    }
+  }
+});
+
+// Disable all interactions
+const timelineStatic = new Timeline({
+  settings: { /* settings */ },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.NONE
+    }
+  }
+});
 ```
 
 ### Custom Interaction Handling
