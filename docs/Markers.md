@@ -84,14 +84,116 @@ Each marker in the timeline has the following structure:
 type TimelineMarker = {
   time: number;                    // Timestamp for the marker
   color: string;                   // Color of the marker line
-  width?: number;                  // Optional width of the marker line
-  label?: string;                  // Optional top label text
-  labelBackgroundColor?: string;   // Optional background color for top label
-  labelTextColor?: string;         // Optional text color for top label
-  labelBottom?: string;            // Optional bottom label text
-  labelBottomBackgroundColor?: string; // Optional background color for bottom label
-  labelBottomTextColor?: string;   // Optional text color for bottom label
+  activeColor?: string;            // Color when marker is selected
+  hoverColor?: string;             // Color when marker is hovered
+  lineWidth?: number;              // Optional width of the marker line
+  label?: string;                  // Optional label text
+  labelColor?: string;             // Optional label color
+  renderer?: AbstractMarkerRenderer; // Optional custom renderer
+  nonSelectable?: boolean;         // Whether marker can be selected
+  group?: boolean;                 // Whether marker represents a group
 };
+```
+
+## Marker Grouping and Zoom
+
+The Markers component automatically groups markers that are close together based on the `collapseMinDistance` configuration. When markers are grouped, they appear as a single marker with a count label.
+
+### Group Zoom Functionality
+
+When you click on a grouped marker (showing a number), the timeline automatically zooms to show all individual markers in that group. This feature can be configured through the markers configuration.
+
+#### Configuration Options
+
+```typescript
+type MarkerViewOptions = {
+  // ... other options ...
+  collapseEnabled?: boolean;        // Enable/disable marker grouping
+  collapseMinDistance?: number;     // Distance in pixels for grouping
+  groupZoomEnabled?: boolean;       // Enable/disable group zoom
+  groupZoomPadding?: number;        // Padding ratio around group (0.2 = 20%)
+  groupZoomMaxFactor?: number;      // Maximum zoom factor (0.5 = 50% of current view)
+};
+```
+
+#### Default Values
+
+```typescript
+{
+  collapseEnabled: true,
+  collapseMinDistance: 4,
+  groupZoomEnabled: true,
+  groupZoomPadding: 0.2,
+  groupZoomMaxFactor: 0.5,
+}
+```
+
+#### Group Zoom Events
+
+When a grouped marker is clicked, the following event is emitted:
+
+```typescript
+timeline.on('on-group-marker-click', (event) => {
+  const { groupMarker, originalMarkers, newInterval } = event.detail;
+  
+  console.log('Group clicked:', {
+    groupMarker,           // The grouped marker that was clicked
+    originalMarkers,       // Array of all markers in the group
+    newInterval: {         // New timeline interval
+      start: number,
+      end: number
+    }
+  });
+});
+```
+
+#### Example: Custom Group Zoom Behavior
+
+```typescript
+// Listen for group marker clicks
+timeline.on('on-group-marker-click', (event) => {
+  const { originalMarkers, newInterval } = event.detail;
+  
+  // Custom zoom behavior
+  if (originalMarkers.length > 5) {
+    // For large groups, add extra padding
+    const padding = (newInterval.end - newInterval.start) * 0.5;
+    timeline.api.setRange(
+      newInterval.start - padding,
+      newInterval.end + padding
+    );
+  }
+});
+```
+
+#### Disabling Group Zoom
+
+To disable the group zoom functionality:
+
+```typescript
+const timeline = new Timeline({
+  settings: { /* ... */ },
+  viewConfiguration: {
+    markers: {
+      groupZoomEnabled: false
+    }
+  }
+});
+```
+
+#### Disabling Marker Grouping
+
+To disable marker grouping entirely:
+
+```typescript
+const timeline = new Timeline({
+  settings: { /* ... */ },
+  viewConfiguration: {
+    markers: {
+      collapseEnabled: false
+    }
+  }
+});
 ```
 
 ## Examples
