@@ -19,6 +19,7 @@ export class Markers<
 {
   protected api: CanvasApi<TEvent, TMarker>;
   protected _sortedMarkers: TMarker[] = [];
+  protected _collapsedMarkers: TMarker[] = []; // Store collapsed markers separately
   protected index = new RBush<BBox & { marker: TMarker }>(MAX_INDEX_TREE_WIDTH);
   // Tracks last rendered label positions to prevent overlapping
   protected lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
@@ -38,6 +39,7 @@ export class Markers<
   public setMarkers(markers: TMarker[]) {
     // Sort markers by time for efficient rendering
     this._sortedMarkers = markers.slice().sort((a, b) => a.time - b.time);
+    this._collapsedMarkers = []; // Reset collapsed markers
     this.rebuildIndex();
     this.render();
   }
@@ -96,6 +98,12 @@ export class Markers<
 
     const collapsedMarkers = this.collapseCloseSimilarMarkers(visibleMarkers);
 
+    // Store collapsed markers for later use
+    this._collapsedMarkers = collapsedMarkers;
+
+    // Rebuild index with both original and collapsed markers
+    this.rebuildIndexWithCollapsedMarkers();
+
     for (let i = collapsedMarkers.length - 1; i >= 0; i -= 1) {
       const marker = collapsedMarkers[i];
       const renderer = marker.renderer || new DefaultMarkerRenderer<TMarker>();
@@ -150,6 +158,11 @@ export class Markers<
 
     if (candidates.length) {
       this._selectedMarkers = new Set(times);
+
+      const groupMarker = candidates.find((marker) => Boolean(marker.group));
+      if (groupMarker) {
+        this.handleGroupMarkerClick(groupMarker);
+      }
     } else {
       this._selectedMarkers.clear();
     }
@@ -193,6 +206,37 @@ export class Markers<
   }
 
   /**
+   * Rebuilds the spatial index including both original and collapsed markers
+   */
+  protected rebuildIndexWithCollapsedMarkers(): void {
+    const boxes: (BBox & { marker: TMarker })[] = [];
+
+    // Add original markers
+    for (const marker of this._sortedMarkers) {
+      const minX = marker.time;
+      const maxX = marker.time;
+      const minY = 0;
+      const maxY = this.api.ctx.canvas.height;
+      boxes.push({ minX, maxX, minY, maxY, marker });
+    }
+
+    // Add collapsed markers (they might have different times due to averaging)
+    for (const marker of this._collapsedMarkers) {
+      if (marker.group) {
+        // Only add grouped markers
+        const minX = marker.time;
+        const maxX = marker.time;
+        const minY = 0;
+        const maxY = this.api.ctx.canvas.height;
+        boxes.push({ minX, maxX, minY, maxY, marker });
+      }
+    }
+
+    this.index.clear();
+    this.index.load(boxes);
+  }
+
+  /**
    * Collapses groups of similar markers that are closer than or equal to
    * `viewConfiguration.markers.collapseMinDistance` pixels in the current zoom level.
    *
@@ -205,6 +249,9 @@ export class Markers<
     if (!markers.length) return markers;
 
     const { markers: markersCfg } = this.api.getViewConfiguration();
+
+    if (!markersCfg.collapseEnabled) return markers;
+
     const collapseDistance = markersCfg.collapseMinDistance;
 
     // Early return if collapse distance is 0 or negative (no collapsing)
@@ -230,12 +277,13 @@ export class Markers<
       } else {
         const avgTime = this.calculateAverageTime(currentGroup);
         const template = currentGroup[0];
-        result.push({
+        const groupedMarker = {
           ...template,
           time: avgTime,
           label: `${currentGroup.length}`,
           group: true,
-        });
+        };
+        result.push(groupedMarker);
       }
       currentGroup = [];
     };
@@ -274,5 +322,92 @@ export class Markers<
   private calculateAverageTime(markers: TMarker[]): number {
     const totalTime = markers.reduce((sum, marker) => sum + marker.time, 0);
     return Math.round(totalTime / markers.length);
+  }
+
+  /**
+   * Handles click on a grouped marker by zooming to show all markers in the group
+   * @param groupMarker - The grouped marker that was clicked
+   */
+  private handleGroupMarkerClick(groupMarker: TMarker): void {
+    const { markers: markersCfg } = this.api.getViewConfiguration();
+
+    if (!markersCfg.groupZoomEnabled) return;
+
+    const groupMarkers = this.findMarkersInGroup(groupMarker);
+    if (groupMarkers.length <= 1) return;
+
+    const { start, end } = this.calculateGroupInterval(groupMarkers);
+    this.api.setRange(start, end);
+
+    this.api.emit("on-group-marker-click", {
+      groupMarker,
+      originalMarkers: groupMarkers,
+      newInterval: { start, end },
+    });
+  }
+
+  /**
+   * Finds all original markers that were collapsed into a group
+   * @param groupMarker - The grouped marker to find original markers for
+   * @returns Array of original markers in the group
+   */
+  private findMarkersInGroup(groupMarker: TMarker): TMarker[] {
+    const { markers: markersCfg } = this.api.getViewConfiguration();
+    const collapseDistance = markersCfg.collapseMinDistance;
+
+    if (!collapseDistance || collapseDistance <= 0) return [groupMarker];
+
+    const groupTime = groupMarker.time;
+    const groupPosition = this.api.timeToPosition(groupTime);
+
+    const allMarkers = [...this._sortedMarkers, ...this._collapsedMarkers];
+    const foundMarkers = allMarkers.filter((marker) => {
+      // Skip the group marker itself
+      if (marker.group) return false;
+
+      const markerPosition = this.api.timeToPosition(marker.time);
+      const distance = Math.abs(markerPosition - groupPosition);
+      return distance <= collapseDistance;
+    });
+
+    return foundMarkers;
+  }
+
+  /**
+   * Calculates an optimal interval to show all markers in a group
+   * @param groupMarkers - Array of markers in the group
+   * @returns Object with start and end times for the new interval
+   */
+  private calculateGroupInterval(groupMarkers: TMarker[]): {
+    start: number;
+    end: number;
+  } {
+    const { markers } = this.api.getViewConfiguration();
+    const { start: currentStart, end: currentEnd } = this.api.getInterval();
+    const currentDomain = currentEnd - currentStart;
+
+    const groupTimes = groupMarkers.map((m) => m.time);
+    const minTime = Math.min(...groupTimes);
+    const maxTime = Math.max(...groupTimes);
+
+    const groupDomain = maxTime - minTime;
+
+    const padding = Math.max(groupDomain * markers.groupZoomPadding, 1000);
+
+    let newStart = minTime - padding;
+    let newEnd = maxTime + padding;
+
+    const newDomain = newEnd - newStart;
+    const maxFactor = markers.groupZoomMaxFactor;
+
+    if (newDomain > currentDomain * maxFactor) {
+      // If the new domain is too large, center the group in the current view
+      const center = (minTime + maxTime) / 2;
+      const halfDomain = (currentDomain * maxFactor) / 2;
+      newStart = center - halfDomain;
+      newEnd = center + halfDomain;
+    }
+
+    return { start: Math.round(newStart), end: Math.round(newEnd) };
   }
 }

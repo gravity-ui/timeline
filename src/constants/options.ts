@@ -52,5 +52,9 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     groupColorHover: DEFAULT_GROUP_COLOR_HOVER,
     hitboxPadding: 2,
     collapseMinDistance: 4,
+    collapseEnabled: true,
+    groupZoomEnabled: true,
+    groupZoomPadding: 0.2,
+    groupZoomMaxFactor: 0.5,
   },
 };

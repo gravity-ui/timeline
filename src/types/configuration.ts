@@ -51,6 +51,10 @@ export type MarkerViewOptions = {
   groupColorHover?: string;
   hitboxPadding?: number;
   collapseMinDistance?: number;
+  collapseEnabled?: boolean;
+  groupZoomEnabled?: boolean;
+  groupZoomPadding?: number;
+  groupZoomMaxFactor?: number;
 };
 
 export type ViewConfiguration = {
