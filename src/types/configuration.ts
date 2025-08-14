@@ -1,6 +1,7 @@
 import { TimelineAxis } from "./axis";
 import { TimelineEvent } from "./events";
 import { TimelineMarker } from "./markers";
+import { ZoomMode } from "../enums";
 
 export type RulerViewOptions = {
   spacing?: number;
@@ -57,12 +58,17 @@ export type MarkerViewOptions = {
   groupZoomMaxFactor?: number;
 };
 
+export type CameraViewOptions = {
+  zoom: ZoomMode;
+};
+
 export type ViewConfiguration = {
   ruler?: RulerViewOptions;
   grid?: GridViewOptions;
   axes?: AxesViewOptions;
   events?: EventsViewOptions;
   markers?: MarkerViewOptions;
+  camera?: CameraViewOptions;
   hideRuler?: boolean;
 };
 

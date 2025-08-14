@@ -187,6 +187,7 @@ export class Timeline<
       axes: { ...defaultViewConfig.axes, ...config.axes },
       markers: { ...defaultViewConfig.markers, ...config.markers },
       events: { ...defaultViewConfig.events, ...config.events },
+      camera: { ...defaultViewConfig.camera, ...config.camera },
       hideRuler:
         config.hideRuler === undefined
           ? defaultViewConfig.hideRuler

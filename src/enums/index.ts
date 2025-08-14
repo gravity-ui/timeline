@@ -15,3 +15,9 @@ export enum TimelineState {
   INIT,
   READY,
 }
+
+export enum ZoomMode {
+  NONE = "none",
+  HORIZONTAL = "horizontal",
+  DEFAULT = "default",
+}
