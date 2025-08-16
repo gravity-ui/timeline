@@ -39,26 +39,29 @@ export class DefaultMarkerRenderer<
       color = activeColor;
     }
 
-    // Draw marker line
+    let labelAreaHeight = 0;
+    if (marker.label) {
+      const labelSize = getLabelSize(marker.label);
+      labelAreaHeight = labelSize.height + DEFAULT_LABEL_PADDING * 2;
+
+      this.renderLabel(
+        ctx,
+        color,
+        marker,
+        markerPosition,
+        labelSize,
+        viewConfiguration.markers,
+        lastRenderedLabelPosition,
+      );
+    }
+
     ctx.strokeStyle = color;
     ctx.lineWidth = marker.lineWidth || DEFAULT_LINE_WIDTH;
     ctx.beginPath();
-    ctx.moveTo(markerPosition, 0);
+
+    ctx.moveTo(markerPosition, labelAreaHeight);
     ctx.lineTo(markerPosition, ctx.canvas.height);
     ctx.stroke();
-
-    if (!marker.label) return;
-
-    // Render the top label if present
-    this.renderLabel(
-      ctx,
-      color,
-      marker,
-      markerPosition,
-      viewConfiguration.markers,
-      lastRenderedLabelPosition,
-      getLabelSize,
-    );
   }
 
   protected renderLabel(
@@ -66,11 +69,11 @@ export class DefaultMarkerRenderer<
     color: string,
     marker: TimelineMarker,
     markerPosition: number,
+    labelSize: LabelSize,
     markerConfiguration: ViewConfiguration["markers"],
     lastRenderedLabelPosition: { top: number; bottom: number },
-    getLabelSize: (label: string) => LabelSize,
   ) {
-    const { width, height } = getLabelSize(marker.label);
+    const { width, height } = labelSize;
     const widthWithPadding = width + DEFAULT_LABEL_PADDING * 2;
     const heightWithPadding = height + DEFAULT_LABEL_PADDING * 2;
 
