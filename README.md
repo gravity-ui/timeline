@@ -31,7 +31,7 @@ The timeline component can be used in React applications with the following basi
 import { TimelineCanvas, useTimeline } from '@gravity-ui/timeline/react';
 
 const MyTimelineComponent = () => {
-  const { timeline } = useTimeline({
+  const { timeline, api, start, stop } = useTimeline({
     settings: {
       start: Date.now(),
       end: Date.now() + 3600000, // 1 hour from now
@@ -44,11 +44,35 @@ const MyTimelineComponent = () => {
     }
   });
 
+  // timeline - Timeline instance
+  // api - CanvasApi instance (same as timeline.api)
+  // start - function to initialize timeline with canvas
+  // stop - function to destroy timeline
+
   return (
     <div style={{ width: '100%', height: '100%' }}>
       <TimelineCanvas timeline={timeline} />
     </div>
   );
+};
+```
+
+### Marker Structure
+
+Each marker requires the following structure:
+
+```typescript
+type TimelineMarker = {
+  time: number;           // Timestamp for the marker position
+  color: string;          // Color of the marker line
+  activeColor: string;    // Color when marker is selected (required)
+  hoverColor: string;     // Color when marker is hovered (required)
+  lineWidth?: number;     // Optional width of the marker line
+  label?: string;         // Optional label text
+  labelColor?: string;    // Optional label color
+  renderer?: AbstractMarkerRenderer; // Optional custom renderer
+  nonSelectable?: boolean;// Whether marker can be selected
+  group?: boolean;        // Whether marker represents a group
 };
 ```
 
@@ -66,9 +90,9 @@ const MyTimelineComponent = () => {
       events: [],
       markers: [
         // These markers will be grouped together
-        { time: Date.now(), color: '#ff0000', label: 'Event 1' },
-        { time: Date.now() + 1000, color: '#ff0000', label: 'Event 2' },
-        { time: Date.now() + 2000, color: '#ff0000', label: 'Event 3' },
+        { time: Date.now(), color: '#ff0000', activeColor: '#ff5252', hoverColor: '#ff1744', label: 'Event 1' },
+        { time: Date.now() + 1000, color: '#ff0000', activeColor: '#ff5252', hoverColor: '#ff1744', label: 'Event 2' },
+        { time: Date.now() + 2000, color: '#ff0000', activeColor: '#ff5252', hoverColor: '#ff1744', label: 'Event 3' },
       ]
     },
     viewConfiguration: {
@@ -154,6 +178,23 @@ The component uses custom hooks for timeline management:
 
 The component automatically handles cleanup and destruction of the timeline instance when unmounted.
 
+### Event Structure
+
+Events in the timeline follow this structure:
+
+```typescript
+type TimelineEvent = {
+  id: string;             // Unique identifier
+  from: number;           // Start timestamp
+  to?: number;            // End timestamp (optional for point events)
+  axisId: string;         // ID of the axis this event belongs to
+  trackIndex: number;     // Index in the axis track
+  renderer?: AbstractEventRenderer; // Optional custom renderer
+  color?: string;         // Optional event color
+  selectedColor?: string; // Optional selected state color
+};
+```
+
 ### Direct TypeScript Usage
 
 The Timeline class can be used directly in TypeScript without React. This is useful for integrating with other frameworks or vanilla JavaScript applications:
@@ -178,8 +219,8 @@ const timeline = new Timeline({
     events: [
       {
         id: 'event1',
-        start: timestamp + 1800000, // 30 minutes from now
-        end: timestamp + 2400000,   // 40 minutes from now
+        from: timestamp + 1800000, // 30 minutes from now
+        to: timestamp + 2400000,   // 40 minutes from now
         label: 'Sample Event',
         axisId: 'main'
       }
@@ -189,7 +230,9 @@ const timeline = new Timeline({
         id: 'marker1',
         time: timestamp + 1200000, // 20 minutes from now
         label: 'Important Point',
-        color: '#ff0000'
+        color: '#ff0000',
+        activeColor: '#ff5252',
+        hoverColor: '#ff1744'
       }
     ]
   },
@@ -244,9 +287,11 @@ The Timeline class provides a rich API for managing the timeline:
   timeline.api.setEvents([
     {
       id: 'newEvent',
-      start: Date.now(),
-      end: Date.now() + 3600000,
-      label: 'New Event'
+      from: Date.now(),
+      to: Date.now() + 3600000,
+      label: 'New Event',
+      axisId: 'main',
+      trackIndex: 0
     }
   ]);
 
@@ -265,7 +310,9 @@ The Timeline class provides a rich API for managing the timeline:
       id: 'newMarker',
       time: Date.now(),
       label: 'New Marker',
-      color: '#00ff00'
+      color: '#00ff00',
+      activeColor: '#4caf50',
+      hoverColor: '#2e7d32'
     }
   ]);
   ```

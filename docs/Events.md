@@ -214,11 +214,7 @@ const timeline = new Timeline({
   viewConfiguration: {
     events: {
       font: '12px Arial',
-      hitboxPadding: 4,
-      color: {
-        default: '#333333',
-        selected: '#5469d4'
-      }
+      hitboxPadding: 4
     }
   }
 });

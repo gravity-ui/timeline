@@ -17,9 +17,13 @@ const markers = new Markers(timeline.api);
 | Property | Type | Description | Visibility |
 |----------|------|-------------|------------|
 | `api` | `CanvasApi` | API instance for timeline manipulation | protected |
-| `sortedMarkers` | `TimelineMarker[]` | Array of markers sorted by time | protected |
+| `_sortedMarkers` | `TimelineMarker[]` | Array of markers sorted by time | protected |
+| `_collapsedMarkers` | `TimelineMarker[]` | Array of collapsed/grouped markers | protected |
+| `index` | `RBush` | Spatial index for efficient marker queries | protected |
 | `lastRenderedLabelPosition` | `{ top: number, bottom: number }` | Tracks last rendered label positions to prevent overlapping | protected |
-| `textWidthCache` | `Map<string, number>` | Cache for label text widths | private |
+| `textWidthCache` | `Map<string, LabelSize>` | Cache for label text dimensions | private |
+| `_selectedMarkers` | `Set<number>` | Set of selected marker times | private |
+| `hoveredMarker` | `number` | Currently hovered marker time | private |
 
 ## Methods
 
@@ -45,20 +49,85 @@ markers.setMarkers([
   {
     time: Date.now(),
     color: '#ff0000',
+    activeColor: '#ff5252',
+    hoverColor: '#ff1744',
     label: 'Important Event',
-    width: 2
+    lineWidth: 2
   },
   {
     time: Date.now() + 3600000,
     color: '#00ff00',
-    labelBottom: 'Next Event',
-    labelBottomBackgroundColor: '#e0e0e0'
+    activeColor: '#4caf50',
+    hoverColor: '#2e7d32',
+    label: 'Next Event'
   }
 ]);
 ```
 
 **Parameters:**
 - `markers`: Array of timeline markers to display
+
+### `getMarkersAt(rect: DOMRect): TimelineMarker[]`
+
+Returns markers within the specified rectangular area, useful for selection operations.
+
+```typescript
+// Get markers in a specific area
+const rect = new DOMRect(100, 0, 50, canvas.height);
+const markersInArea = markers.getMarkersAt(rect);
+console.log('Found markers:', markersInArea);
+```
+
+**Parameters:**
+- `rect`: Rectangle area to search for markers
+
+**Returns:** Array of markers within the specified area
+
+### `getMarkersAtPoint(x: number, y: number): TimelineMarker[]`
+
+Returns markers at a specific point, with a small hitbox padding.
+
+```typescript
+// Get markers at specific coordinates
+const markersAtPoint = markers.getMarkersAtPoint(150, 200);
+console.log('Markers at point:', markersAtPoint);
+```
+
+**Parameters:**
+- `x`: X coordinate
+- `y`: Y coordinate
+
+**Returns:** Array of markers at the specified point
+
+### `isSelectedMarker(time: number): boolean`
+
+Checks if a marker at the given time is currently selected.
+
+```typescript
+// Check if marker is selected
+const isSelected = markers.isSelectedMarker(Date.now());
+console.log('Is marker selected:', isSelected);
+```
+
+**Parameters:**
+- `time`: Timestamp of the marker to check
+
+**Returns:** `true` if the marker is selected, `false` otherwise
+
+### `isHoveredMarker(time: number): boolean`
+
+Checks if a marker at the given time is currently hovered.
+
+```typescript
+// Check if marker is hovered
+const isHovered = markers.isHoveredMarker(Date.now());
+console.log('Is marker hovered:', isHovered);
+```
+
+**Parameters:**
+- `time`: Timestamp of the marker to check
+
+**Returns:** `true` if the marker is hovered, `false` otherwise
 
 ### `render()`
 
@@ -72,9 +141,9 @@ markers.render();
 **Rendering Process:**
 1. Applies static transform to the canvas context
 2. Resets label positions for new render pass
-3. Renders markers in reverse order for proper label placement
-4. Handles label collision avoidance
-5. Applies visual configuration (colors, fonts, etc.)
+3. Renders visible markers using spatial indexing for performance
+4. Handles marker grouping/collapsing for dense areas
+5. Manages label collision avoidance
 
 ## Marker Structure
 
@@ -82,10 +151,10 @@ Each marker in the timeline has the following structure:
 
 ```typescript
 type TimelineMarker = {
-  time: number;                    // Timestamp for the marker
+  time: number;                    // Timestamp for the marker position
   color: string;                   // Color of the marker line
-  activeColor?: string;            // Color when marker is selected
-  hoverColor?: string;             // Color when marker is hovered
+  activeColor: string;             // Color when marker is selected (required)
+  hoverColor: string;              // Color when marker is hovered (required)
   lineWidth?: number;              // Optional width of the marker line
   label?: string;                  // Optional label text
   labelColor?: string;             // Optional label color
@@ -216,20 +285,23 @@ const timeline = new Timeline({
       {
         time: Date.now(),
         color: '#ff0000',
+        activeColor: '#ff5252',
+        hoverColor: '#ff1744',
         label: 'Start'
       }
     ]
   },
   viewConfiguration: {
     markers: {
-      markerWidth: 1,
-      labelHeight: 24,
-      labelPadding: 8,
-      labelFont: '12px Arial',
-      textPadding: 16,
-      color: {
-        textColor: '#ffffff'
-      }
+      font: '12px Arial',
+      groupColor: '#fe7f2d',
+      groupColorHover: '#ff0000',
+      hitboxPadding: 2,
+      collapseMinDistance: 4,
+      collapseEnabled: true,
+      groupZoomEnabled: true,
+      groupZoomPadding: 0.2,
+      groupZoomMaxFactor: 0.5
     }
   }
 });
@@ -257,24 +329,26 @@ const timeline = new Timeline({
       {
         time: Date.now(),
         color: '#ff0000',
+        activeColor: '#ff5252',
+        hoverColor: '#ff1744',
         label: 'Custom Marker',
-        width: 2,
-        labelBackgroundColor: '#e0e0e0',
-        labelTextColor: '#000000'
+        lineWidth: 2,
+        labelColor: '#000000'
       }
     ]
   },
   viewConfiguration: {
     markers: {
-      // Customize marker appearance
-      markerWidth: 2,
-      labelHeight: 32,
-      labelPadding: 12,
-      labelFont: '14px Arial',
-      textPadding: 20,
-      color: {
-        textColor: '#000000'
-      }
+      // Customize marker appearance  
+      font: '14px Arial',
+      groupColor: '#fe7f2d',
+      groupColorHover: '#ff0000',
+      hitboxPadding: 4,
+      collapseMinDistance: 8,
+      collapseEnabled: true,
+      groupZoomEnabled: true,
+      groupZoomPadding: 0.3,
+      groupZoomMaxFactor: 0.4
     }
   }
 });
@@ -287,30 +361,22 @@ const timeline = new Timeline({
 The Markers component implements a right-to-left rendering strategy for labels to prevent overlapping:
 
 ```typescript
-protected renderLabel(
-  markerPosition: number,
-  {
-    label,
-    backgroundColor,
-    textColor,
-  }: { label: string; backgroundColor: string; textColor?: string },
-  position: "top" | "bottom",
-) {
-  const { markers } = this.api.getVisualConfiguration();
-  const ctx = this.api.ctx;
-  const labelWidth = this.getLabelWidth(label);
-
-  // Calculate label position with clamping
-  const labelPosition = clamp(
-    markerPosition - labelWidth / 2,
-    0,
-    Math.min(ctx.canvas.width, this.lastRenderedLabelPosition[position]) - labelWidth
-  );
-
-  // Only render if we have space
-  if (markerPosition < this.lastRenderedLabelPosition[position]) {
-    // Draw label background and text
-    // ...
+// Label rendering is handled by the DefaultMarkerRenderer
+// which implements the AbstractMarkerRenderer interface
+class DefaultMarkerRenderer extends AbstractMarkerRenderer {
+  render(data: {
+    ctx: CanvasRenderingContext2D;
+    marker: TimelineMarker;
+    isSelected: boolean;
+    isHovered: boolean;
+    markerPosition: number;
+    viewConfiguration: ViewConfiguration;
+    lastRenderedLabelPosition: { top: number; bottom: number };
+    timeToPosition: (n: number) => number;
+    getLabelSize: (label: string) => LabelSize;
+  }): void {
+    // Render marker line and labels
+    // Implementation handles collision avoidance automatically
   }
 }
 ```
@@ -320,15 +386,25 @@ protected renderLabel(
 The component caches text widths for better performance:
 
 ```typescript
-protected getLabelWidth(text: string) {
+// Text dimension caching is handled internally
+private getLabelSize(text: string): LabelSize {
   if (this.textWidthCache.has(text)) {
     return this.textWidthCache.get(text);
   }
 
-  const { markers } = this.api.getVisualConfiguration();
-  const width = this.api.ctx.measureText(text).width + markers.labelPadding * 2;
-  this.textWidthCache.set(text, width);
-  return width;
+  const { markers } = this.api.getViewConfiguration();
+  this.api.ctx.save();
+  this.api.ctx.font = markers.font;
+  
+  const metrics = this.api.ctx.measureText(text);
+  const size: LabelSize = {
+    width: metrics.width,
+    height: parseInt(markers.font) || 12 // Extract font size
+  };
+  
+  this.textWidthCache.set(text, size);
+  this.api.ctx.restore();
+  return size;
 }
 ```
 
@@ -337,42 +413,108 @@ protected getLabelWidth(text: string) {
 Markers are rendered with support for both top and bottom labels:
 
 ```typescript
-protected renderMarker(marker: TimelineMarker) {
-  const { markers } = this.api.getVisualConfiguration();
-  const ctx = this.api.ctx;
+// Marker rendering is delegated to the renderer
+protected renderMarker(marker: TMarker) {
   const markerPosition = this.api.timeToPosition(marker.time);
-
-  // Draw marker line
-  ctx.strokeStyle = marker.color;
-  ctx.lineWidth = marker.width ?? markers.markerWidth;
-  ctx.beginPath();
-  ctx.moveTo(markerPosition, marker.label ? markers.labelHeight : 0);
-  ctx.lineTo(markerPosition, ctx.canvas.height);
-  ctx.stroke();
-
-  // Render labels if present
-  if (marker.label) {
-    this.renderLabel(/* ... */);
-  }
-  if (marker.labelBottom) {
-    this.renderLabel(/* ... */);
-  }
+  const isSelected = this.isSelectedMarker(marker.time);
+  const isHovered = this.isHoveredMarker(marker.time);
+  
+  const renderer = marker.renderer || new DefaultMarkerRenderer();
+  
+  renderer.render({
+    ctx: this.api.ctx,
+    marker,
+    isSelected,
+    isHovered,
+    markerPosition,
+    viewConfiguration: this.api.getViewConfiguration(),
+    lastRenderedLabelPosition: this.lastRenderedLabelPosition,
+    timeToPosition: (time) => this.api.timeToPosition(time),
+    getLabelSize: (label) => this.getLabelSize(label)
+  });
 }
+```
+
+## Performance Optimizations
+
+### Spatial Indexing
+
+The Markers component uses RBush spatial indexing for efficient marker queries:
+
+```typescript
+// Spatial index automatically handles large numbers of markers
+const index = new RBush<BBox & { marker: TMarker }>(MAX_INDEX_TREE_WIDTH);
+
+// Efficient rectangular queries
+const markersInArea = markers.getMarkersAt(boundingRect);
+```
+
+This enables high-performance rendering and interaction even with thousands of markers.
+
+### Viewport Culling
+
+Only markers visible within the current viewport (plus overscan) are rendered:
+
+```typescript
+// Only render markers that intersect with the visible timerange
+const visibleMarkers = sortedMarkers.filter(marker => 
+  intersects(marker.time, viewStart, viewEnd)
+);
+```
+
+### Text Dimension Caching
+
+Label dimensions are cached to avoid repeated canvas measurements:
+
+```typescript
+// Cache avoids expensive measureText() calls
+const cachedSize = this.textWidthCache.get(labelText);
+```
+
+## Event Integration
+
+### Marker Selection
+
+Markers integrate with the timeline's selection system:
+
+```typescript
+// Listen for marker selection changes
+timeline.on('on-marker-select-change', (event) => {
+  const { markers } = event.detail;
+  console.log('Selected markers:', markers);
+});
+```
+
+### Marker Hover
+
+Hover states are automatically managed:
+
+```typescript
+// Hover events are handled internally
+// Markers will use hoverColor when mouse is over them
 ```
 
 ## Best Practices
 
 1. **Marker Configuration**
-   - Use meaningful labels
+   - Always provide `activeColor` and `hoverColor` (required fields)
+   - Use meaningful labels for accessibility
    - Choose appropriate colors for visibility
-   - Consider marker width based on importance
+   - Consider `lineWidth` based on marker importance
 
 2. **Label Management**
-   - Keep labels concise
-   - Use consistent styling
-   - Consider using bottom labels for dense timelines
+   - Keep labels concise to prevent overcrowding
+   - Use consistent styling across related markers
+   - Consider the grouping threshold when placing dense markers
 
 3. **Performance**
-   - Minimize the number of markers
-   - Use the text width cache effectively
-   - Consider marker density in the viewport 
+   - Leverage spatial indexing for marker queries
+   - Use marker grouping for dense datasets
+   - Consider the viewport when adding/removing markers
+   - Cache expensive operations when implementing custom renderers
+
+4. **Custom Renderers**
+   - Extend `AbstractMarkerRenderer` for custom visualization
+   - Use provided utilities like `getLabelSize()` and `timeToPosition()`
+   - Respect the collision avoidance system
+   - Handle selection and hover states appropriately 
