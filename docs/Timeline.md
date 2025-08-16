@@ -1,6 +1,6 @@
 # Timeline API Reference
 
-The `Timeline` class is the core component of the timeline library. It manages the timeline visualization, interactions, and state. It works in conjunction with [TimelineController](./TimelineController.md) for handling user interactions and [BaseComponentInterface](./BaseComponentInterface.md) for managing visual components.
+The `Timeline` class is the core component of the timeline library. It manages the timeline visualization, interactions, and state. It works in conjunction with [TimelineController](./TimelineController.md) for handling user interactions and component interfaces for managing visual components.
 
 ## Overview
 
@@ -67,6 +67,7 @@ const timeline = new Timeline({
       axes: TimelineAxis[];    // Axis configurations
       events: TimelineEvent[]; // Event configurations
       markers?: TimelineMarker[]; // Optional markers
+      selectedEventIds?: string[]; // Optional selected events
     };
     viewConfiguration?: {  // Optional view settings
       ruler?: RulerViewOptions;
@@ -336,6 +337,8 @@ timeline.api.setMarkers([
   {
     time: Date.now() + 1800000,
     color: '#ff0000',
+    activeColor: '#ff5252',
+    hoverColor: '#ff1744',
     label: 'Important Point'
   }
 ]);

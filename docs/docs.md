@@ -65,6 +65,8 @@ Handles vertical marker lines and labels on the timeline, with support for colli
 timeline.settings.markers = [{
   time: Date.now(),
   color: '#ff0000',
+  activeColor: '#ff5252',
+  hoverColor: '#ff1744',
   label: 'Important Event'
 }];
 ```
@@ -83,37 +85,42 @@ The library provides React components and hooks for easy integration:
 
 ### Components
 - `TimelineCanvas`: React component for rendering the timeline
-- `TimelineProvider`: Context provider for timeline state
 
 ### Hooks
 - `useTimeline`: Hook for managing timeline instance
-- `useTimelineEvents`: Hook for handling timeline events
+- `useTimelineEvent`: Hook for handling timeline events
 
 ## Examples
 
 ### Basic Timeline
 ```typescript
-import { TimelineCanvas } from '@gravity-ui/timeline';
+import { TimelineCanvas, useTimeline } from '@gravity-ui/timeline/react';
 
 function MyTimeline() {
+  const { timeline } = useTimeline({
+    settings: {
+      start: Date.now(),
+      end: Date.now() + 3600000,
+      axes: [{
+        id: 'axis1',
+        tracksCount: 1,
+        top: 0,
+        height: 100
+      }],
+      events: [{
+        id: '1',
+        axisId: 'axis1',
+        trackIndex: 0,
+        from: Date.now(),
+        to: Date.now() + 1800000
+      }]
+    }
+  });
+
   return (
-    <TimelineCanvas
-      settings={{
-        start: Date.now(),
-        end: Date.now() + 3600000,
-        axes: [{
-          id: 'axis1',
-          tracksCount: 1
-        }],
-        events: [{
-          id: '1',
-          axisId: 'axis1',
-          trackIndex: 0,
-          from: Date.now(),
-          to: Date.now() + 1800000
-        }]
-      }}
-    />
+    <div style={{ width: '100%', height: '400px' }}>
+      <TimelineCanvas timeline={timeline} />
+    </div>
   );
 }
 ```
@@ -152,11 +159,25 @@ Visit our [Storybook](https://preview.gravity-ui.com/timeline/) to explore inter
 
 ## Best Practices
 
-   - Use unique IDs for events
-   - Keep event data minimal
-   - Handle selection and interaction through event listeners
-   - Choose appropriate time formats for the ruler
-   - Use the provided React components and hooks
+- **Event Management**
+  - Use unique IDs for events
+  - Keep event data minimal for performance
+  - Always provide required fields: `id`, `from`, `axisId`, `trackIndex`
+
+- **Marker Configuration** 
+  - Always provide `activeColor` and `hoverColor` (required fields)
+  - Use meaningful labels for accessibility
+  - Consider marker grouping for dense datasets
+
+- **Interaction Handling**
+  - Handle selection and interaction through event listeners
+  - Use `useTimelineEvent` hook for React integration
+  - Clean up event listeners to prevent memory leaks
+
+- **Performance**
+  - Choose appropriate time formats for the ruler
+  - Use viewport culling for large datasets
+  - Leverage spatial indexing for marker/event queries
 
 ## API Reference
 
