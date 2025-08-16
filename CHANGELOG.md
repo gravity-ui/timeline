@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.17.1](https://github.com/gravity-ui/timeline/compare/v1.17.0...v1.17.1) (2025-08-16)
+
+
+### Bug Fixes
+
+* **Markers:** marker line is superimposed on the label ([3f987b0](https://github.com/gravity-ui/timeline/commit/3f987b0cd9ab0639e41e1e84b39032bb9a9a0638))
+
 ## [1.17.0](https://github.com/gravity-ui/timeline/compare/v1.16.2...v1.17.0) (2025-08-14)
 
 
