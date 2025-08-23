@@ -82,6 +82,8 @@ export type TimelineSettings<
   events: TEvent[];
   markers?: TMarker[];
   selectedEventIds?: string[];
+  clickEventsCollectionFilter?: (candidates: TEvent[]) => TEvent[];
+  clickMarkerCollectionFilter?: (candidates: TMarker[]) => TMarker[];
 };
 
 export type TimeLineConfig<
