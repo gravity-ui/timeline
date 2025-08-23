@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.0](https://github.com/gravity-ui/timeline/compare/v1.17.1...v1.18.0) (2025-08-23)
+
+
+### Features
+
+* **Settings:** add event and marker click filter ([20e543c](https://github.com/gravity-ui/timeline/commit/20e543cd6bfffcc83aeb43f90a7ef65f6ffc5a94))
+
 ## [1.17.1](https://github.com/gravity-ui/timeline/compare/v1.17.0...v1.17.1) (2025-08-16)
 
 
