@@ -471,6 +471,51 @@ Label dimensions are cached to avoid repeated canvas measurements:
 const cachedSize = this.textWidthCache.get(labelText);
 ```
 
+## Click Filtering
+
+The Markers component supports custom filtering of markers during click interactions through the `clickMarkerCollectionFilter` setting. This allows you to control which markers can be selected when users click on the timeline.
+
+```typescript
+const timeline = new Timeline({
+  settings: {
+    // ... other settings
+    clickMarkerCollectionFilter: (candidates: TimelineMarker[]) => {
+      // Custom filtering logic
+      return candidates.filter(marker => {
+        // Example: Only allow selection of non-selectable markers
+        return !marker.nonSelectable;
+      });
+    }
+  }
+});
+```
+
+**Filter Function Details:**
+- **Input**: Array of markers at the click position (`candidates`)
+- **Output**: Filtered array of markers that should be selectable
+- **When called**: Before marker selection and `on-marker-select-change` event emission
+- **Use cases**: Implement permissions, business rules, or custom selection logic
+
+**Example Use Cases:**
+
+```typescript
+// Only select the first marker (avoid multi-selection)
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.length > 0 ? [candidates[0]] : [];
+
+// Filter based on marker groups
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.filter(marker => !marker.group);
+
+// Filter based on custom properties
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.filter(marker => marker.userCanInteract);
+
+// Select markers with specific labels only
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.filter(marker => marker.label && marker.label.includes('Important'));
+```
+
 ## Event Integration
 
 ### Marker Selection
@@ -480,7 +525,7 @@ Markers integrate with the timeline's selection system:
 ```typescript
 // Listen for marker selection changes
 timeline.on('on-marker-select-change', (event) => {
-  const { markers } = event.detail;
+  const { markers } = event.detail;  // Markers after filtering
   console.log('Selected markers:', markers);
 });
 ```

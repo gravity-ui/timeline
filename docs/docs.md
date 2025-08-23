@@ -173,6 +173,8 @@ Visit our [Storybook](https://preview.gravity-ui.com/timeline/) to explore inter
   - Handle selection and interaction through event listeners
   - Use `useTimelineEvent` hook for React integration
   - Clean up event listeners to prevent memory leaks
+  - Use `clickEventsCollectionFilter` and `clickMarkerCollectionFilter` to customize click behavior
+  - Implement permission-based filtering for secure interactions
 
 - **Performance**
   - Choose appropriate time formats for the ruler
