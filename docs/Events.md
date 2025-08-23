@@ -273,6 +273,47 @@ const event = {
 };
 ```
 
+## Click Filtering
+
+The Events component supports custom filtering of events during click interactions through the `clickEventsCollectionFilter` setting. This allows you to control which events can be selected when users click on the timeline.
+
+```typescript
+const timeline = new Timeline({
+  settings: {
+    // ... other settings
+    clickEventsCollectionFilter: (candidates: TimelineEvent[]) => {
+      // Custom filtering logic
+      return candidates.filter(event => {
+        // Example: Only allow selection of events with specific status
+        return event.status === 'active';
+      });
+    }
+  }
+});
+```
+
+**Filter Function Details:**
+- **Input**: Array of events at the click position (`candidates`)
+- **Output**: Filtered array of events that should be selectable
+- **When called**: Before event selection and `on-click` event emission
+- **Use cases**: Implement permissions, business rules, or custom selection logic
+
+**Example Use Cases:**
+
+```typescript
+// Only select events from specific axes
+clickEventsCollectionFilter: (candidates) => 
+  candidates.filter(event => ['axis1', 'axis2'].includes(event.axisId));
+
+// Select only the topmost event
+clickEventsCollectionFilter: (candidates) => 
+  candidates.length > 0 ? [candidates[0]] : [];
+
+// Filter based on custom properties
+clickEventsCollectionFilter: (candidates) => 
+  candidates.filter(event => event.userCanEdit);
+```
+
 ## Event Handling
 
 The Events component emits the following events:
@@ -280,7 +321,7 @@ The Events component emits the following events:
 1. `on-click`: Emitted when clicking on the canvas
    ```typescript
    {
-     events: TimelineEvent[];  // Events at click position
+     events: TimelineEvent[];  // Events at click position (after filtering)
      time: number;            // Click timestamp
      relativeX: number;       // Click X coordinate
      relativeY: number;       // Click Y coordinate

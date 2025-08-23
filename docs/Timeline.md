@@ -68,6 +68,8 @@ const timeline = new Timeline({
       events: TimelineEvent[]; // Event configurations
       markers?: TimelineMarker[]; // Optional markers
       selectedEventIds?: string[]; // Optional selected events
+      clickEventsCollectionFilter?: (candidates: Event[]) => Event[]; // Optional event click filter
+      clickMarkerCollectionFilter?: (candidates: Marker[]) => Marker[]; // Optional marker click filter
     };
     viewConfiguration?: {  // Optional view settings
       ruler?: RulerViewOptions;
@@ -156,6 +158,32 @@ timeline.emit('eventClick', { eventId: '123', time: Date.now() });
 - The created CustomEvent instance
 
 ## Configuration Options
+
+### Click Collection Filters
+
+The `clickEventsCollectionFilter` and `clickMarkerCollectionFilter` options allow you to customize which events or markers are selected when users click on the timeline.
+
+```typescript
+const timeline = new Timeline({
+  settings: {
+    // ... other settings
+    clickEventsCollectionFilter: (candidates) => {
+      // Only allow selection of events with priority "high"
+      return candidates.filter(event => event.priority === 'high');
+    },
+    clickMarkerCollectionFilter: (candidates) => {
+      // Only select the first marker at the click position
+      return candidates.slice(0, 1);
+    }
+  }
+});
+```
+
+**Use Cases:**
+- Filter events based on user permissions or roles
+- Implement custom selection logic (e.g., select only the topmost event)
+- Prevent selection of certain types of events or markers
+- Apply business rules to click interactions
 
 ### Camera Configuration
 
