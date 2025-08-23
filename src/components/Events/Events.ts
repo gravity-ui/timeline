@@ -176,7 +176,7 @@ export class Events<
       const y = axesComponent.getAxisTrackPosition(axis, event.trackIndex);
       const eventTo = event.to || end;
 
-      // Check if event is within time range and vertical camera view
+      // Check if the event is within time range and vertical camera view
       if (
         axis &&
         rangeToRangeIntersect(start, end, event.from, eventTo) &&
@@ -268,7 +268,13 @@ export class Events<
   }
 
   protected handleCanvasMouseup = (event: MouseEvent) => {
-    const candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
+    const { clickEventsCollectionFilter } = this.api.getTimelineSettings();
+    let candidates = this.getEventsAtPoint(event.offsetX, event.offsetY);
+
+    if (clickEventsCollectionFilter) {
+      candidates = clickEventsCollectionFilter(candidates);
+    }
+
     this.api.emit("on-click", {
       events: candidates,
       time: this.api.positionToTime(event.offsetX),

@@ -147,7 +147,12 @@ export class Markers<
   }
 
   protected handleCanvasMouseup = (event: MouseEvent) => {
-    const candidates = this.getMarkersAtPoint(event.offsetX, event.offsetY);
+    const { clickMarkerCollectionFilter } = this.api.getTimelineSettings();
+    let candidates = this.getMarkersAtPoint(event.offsetX, event.offsetY);
+
+    if (clickMarkerCollectionFilter) {
+      candidates = clickMarkerCollectionFilter(candidates);
+    }
 
     const times = candidates.map((marker) => marker.time);
     const arraysAreEqual =
