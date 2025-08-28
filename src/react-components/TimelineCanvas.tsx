@@ -1,4 +1,4 @@
-import React, { FC, useEffect, useRef } from "react";
+import React, { useEffect, useRef } from "react";
 import { Timeline } from "../Timeline";
 import { TimelineEvent, TimelineMarker } from "../types";
 
@@ -10,7 +10,13 @@ type Props<
   timeline: Timeline<TEvent, TMarker>;
 };
 
-export const TimelineCanvas: FC<Props> = ({ timeline, className }) => {
+export const TimelineCanvas = <
+  TEvent extends TimelineEvent,
+  TMarker extends TimelineMarker,
+>({
+  timeline,
+  className,
+}: Props<TEvent, TMarker>) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {
