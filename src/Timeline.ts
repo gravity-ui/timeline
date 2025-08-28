@@ -203,10 +203,16 @@ export class Timeline<
   private initComponents() {
     this.api.addComponent(ComponentType.Grid, new Grid(this.api));
     this.api.addComponent(ComponentType.Axes, new Axes(this.api));
-    this.api.addComponent(ComponentType.Events, new Events(this.api));
+    this.api.addComponent(
+      ComponentType.Events,
+      new Events<TEvent, TMarker>(this.api),
+    );
     if (!this.viewConfiguration.hideRuler) {
       this.api.addComponent(ComponentType.Ruler, new Ruler(this.api));
     }
-    this.api.addComponent(ComponentType.Markers, new Markers(this.api));
+    this.api.addComponent(
+      ComponentType.Markers,
+      new Markers<TEvent, TMarker>(this.api),
+    );
   }
 }

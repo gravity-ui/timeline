@@ -82,22 +82,25 @@ export class CanvasApi<
     axes.setAxes(newAxes);
   }
 
-  public setEvents<Event extends TimelineEvent>(
-    newEvents: Event[],
-    selectedIds?: string[],
-  ) {
-    const events = this.getComponent<Events<Event>>(ComponentType.Events);
+  public setEvents(newEvents: TEvent[], selectedIds?: string[]) {
+    const events = this.getComponent<Events<TEvent, TMarker>>(
+      ComponentType.Events,
+    );
     events.setEvents(newEvents, selectedIds);
     this.rerender();
   }
 
   public setSelectedEvents(ids: string[]) {
-    const events = this.getComponent<Events>(ComponentType.Events);
+    const events = this.getComponent<Events<TEvent, TMarker>>(
+      ComponentType.Events,
+    );
     events.setSelectedEvents(ids);
   }
 
-  public setMarkers(newMarkers: TimelineMarker[]) {
-    const markers = this.getComponent<Markers>(ComponentType.Markers);
+  public setMarkers(newMarkers: TMarker[]) {
+    const markers = this.getComponent<Markers<TEvent, TMarker>>(
+      ComponentType.Markers,
+    );
     markers.setMarkers(newMarkers);
   }
 
@@ -124,7 +127,9 @@ export class CanvasApi<
   }
 
   public getSelectedEvents(): TEvent[] {
-    const events = this.getComponent<Events<TEvent>>(ComponentType.Events);
+    const events = this.getComponent<Events<TEvent, TMarker>>(
+      ComponentType.Events,
+    );
     return events.getSelectedEvents();
   }
 
