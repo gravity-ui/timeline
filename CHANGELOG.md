@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.1](https://github.com/gravity-ui/timeline/compare/v1.18.0...v1.18.1) (2025-08-28)
+
+
+### Bug Fixes
+
+* **Timeline:** correct Event and Marker types ([f4e965a](https://github.com/gravity-ui/timeline/commit/f4e965a7e3c5c612c3619ca1b9e3df53647fb35c))
+
 ## [1.18.0](https://github.com/gravity-ui/timeline/compare/v1.17.1...v1.18.0) (2025-08-23)
 
 
