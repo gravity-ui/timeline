@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.2](https://github.com/gravity-ui/timeline/compare/v1.18.1...v1.18.2) (2025-08-28)
+
+
+### Bug Fixes
+
+* **TimelineCanvas:** correct types ([4f0bc54](https://github.com/gravity-ui/timeline/commit/4f0bc548c961e9daf03c0d7a31660c784bad333d))
+
 ## [1.18.1](https://github.com/gravity-ui/timeline/compare/v1.18.0...v1.18.1) (2025-08-28)
 
 
