@@ -16,12 +16,12 @@ export function useTimelineEvent<
   timeline: Timeline<TEvent, TMarker> | null,
   event: Event,
   cb: (
-    data: UnwrapTimelineEventsDetail<Event, TEvent>,
-    event: UnwrapTimelineEvents<Event, TEvent>,
+    data: UnwrapTimelineEventsDetail<Event, TEvent, TMarker>,
+    event: UnwrapTimelineEvents<Event, TEvent, TMarker>,
   ) => void,
 ) {
   const onEvent = useCallback(
-    (e: UnwrapTimelineEvents<Event, TEvent>) => {
+    (e: UnwrapTimelineEvents<Event, TEvent, TMarker>) => {
       cb(e.detail, e);
     },
     [cb],
