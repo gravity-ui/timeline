@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.18.3](https://github.com/gravity-ui/timeline/compare/v1.18.2...v1.18.3) (2025-09-01)
+
+
+### Bug Fixes
+
+* **ReactComponents:** wrong marker type in useTimelineEvent ([d313bec](https://github.com/gravity-ui/timeline/commit/d313becbb82995fc2adeeaf6c2e8c0df7f572b9a))
+
 ## [1.18.2](https://github.com/gravity-ui/timeline/compare/v1.18.1...v1.18.2) (2025-08-28)
 
 
