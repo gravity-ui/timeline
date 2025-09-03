@@ -104,20 +104,54 @@ export class Markers<
     // Rebuild index with both original and collapsed markers
     this.rebuildIndexWithCollapsedMarkers();
 
-    for (let i = collapsedMarkers.length - 1; i >= 0; i -= 1) {
-      const marker = collapsedMarkers[i];
+    // Render in z-index order: normal -> selected -> hovered (last = on top)
+    const renderMarker = (
+      marker: TMarker,
+      isSelected: boolean,
+      isHovered: boolean,
+    ) => {
       const renderer = marker.renderer || new DefaultMarkerRenderer<TMarker>();
       renderer.render({
         ctx: this.api.ctx,
         marker,
-        isSelected: this.isSelectedMarker(marker.time),
-        isHovered: this.isHoveredMarker(marker.time),
+        isSelected,
+        isHovered,
         markerPosition: this.api.timeToPosition(marker.time),
         viewConfiguration: this.api.getViewConfiguration(),
         lastRenderedLabelPosition: this.lastRenderedLabelPosition,
         timeToPosition: this.api.timeToPosition,
         getLabelSize: this.getLabelSize.bind(this),
       });
+    };
+
+    // First pass: render normal markers (neither selected nor hovered)
+    for (let i = collapsedMarkers.length - 1; i >= 0; i -= 1) {
+      const marker = collapsedMarkers[i];
+      if (
+        !this.isSelectedMarker(marker.time) &&
+        !this.isHoveredMarker(marker.time)
+      ) {
+        renderMarker(marker, false, false);
+      }
+    }
+
+    // Second pass: render selected markers (on top of normal)
+    for (let i = collapsedMarkers.length - 1; i >= 0; i -= 1) {
+      const marker = collapsedMarkers[i];
+      if (
+        this.isSelectedMarker(marker.time) &&
+        !this.isHoveredMarker(marker.time)
+      ) {
+        renderMarker(marker, true, false);
+      }
+    }
+
+    // Third pass: render hovered markers (on top of all)
+    for (let i = collapsedMarkers.length - 1; i >= 0; i -= 1) {
+      const marker = collapsedMarkers[i];
+      if (this.isHoveredMarker(marker.time)) {
+        renderMarker(marker, false, true);
+      }
     }
   }
 

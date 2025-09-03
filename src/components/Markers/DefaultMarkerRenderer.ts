@@ -47,6 +47,8 @@ export class DefaultMarkerRenderer<
       this.renderLabel(
         ctx,
         color,
+        isSelected,
+        isHovered,
         marker,
         markerPosition,
         labelSize,
@@ -67,6 +69,8 @@ export class DefaultMarkerRenderer<
   protected renderLabel(
     ctx: CanvasRenderingContext2D,
     color: string,
+    isSelected: boolean,
+    isHovered: boolean,
     marker: TimelineMarker,
     markerPosition: number,
     labelSize: LabelSize,
@@ -77,28 +81,60 @@ export class DefaultMarkerRenderer<
     const widthWithPadding = width + DEFAULT_LABEL_PADDING * 2;
     const heightWithPadding = height + DEFAULT_LABEL_PADDING * 2;
 
-    const labelPosition = clamp(
-      markerPosition - widthWithPadding / 2, // Center label on marker
-      0, // Don't go past the left edge
-      Math.min(ctx.canvas.width, lastRenderedLabelPosition["top"]) -
-        widthWithPadding, // Don't overlap previous labels
+    const isActive = isSelected || isHovered;
+    const labelPosition = this.calculateSelectedLabelPosition(
+      markerPosition,
+      widthWithPadding,
+      isActive
+        ? ctx.canvas.width
+        : Math.min(ctx.canvas.width, lastRenderedLabelPosition["top"]),
     );
 
-    // Only render if we have space (right-to-left rendering)
-    if (markerPosition < lastRenderedLabelPosition["top"]) {
-      // if (markerPosition > lastRenderedLabelPosition["top"]) {
-      lastRenderedLabelPosition["top"] = labelPosition;
-      ctx.font = markerConfiguration.font;
-      ctx.fillStyle = color;
-      ctx.fillRect(labelPosition, 0, widthWithPadding, heightWithPadding);
-
-      //Draw label text
-      ctx.fillStyle = marker.labelColor || DEFAULT_TEXT_COLOR;
-      ctx.fillText(
-        marker.label,
-        labelPosition + DEFAULT_LABEL_PADDING,
-        height + DEFAULT_LABEL_PADDING,
+    if (markerPosition < lastRenderedLabelPosition["top"] || isActive) {
+      if (isActive) lastRenderedLabelPosition["top"] = labelPosition;
+      this.drawLabelContent(
+        ctx,
+        color,
+        marker,
+        labelPosition,
+        widthWithPadding,
+        heightWithPadding,
+        height,
+        markerConfiguration,
       );
     }
+  }
+
+  private calculateSelectedLabelPosition(
+    markerPosition: number,
+    widthWithPadding: number,
+    width: number,
+  ): number {
+    return clamp(
+      markerPosition - widthWithPadding / 2,
+      0,
+      width - widthWithPadding,
+    );
+  }
+
+  private drawLabelContent(
+    ctx: CanvasRenderingContext2D,
+    color: string,
+    marker: TimelineMarker,
+    labelPosition: number,
+    widthWithPadding: number,
+    heightWithPadding: number,
+    height: number,
+    markerConfiguration: ViewConfiguration["markers"],
+  ): void {
+    ctx.font = markerConfiguration.font;
+    ctx.fillStyle = color;
+    ctx.fillRect(labelPosition, 0, widthWithPadding, heightWithPadding);
+    ctx.fillStyle = marker.labelColor || DEFAULT_TEXT_COLOR;
+    ctx.fillText(
+      marker.label,
+      labelPosition + DEFAULT_LABEL_PADDING,
+      height + DEFAULT_LABEL_PADDING,
+    );
   }
 }
