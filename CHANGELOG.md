@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.19.0](https://github.com/gravity-ui/timeline/compare/v1.18.3...v1.19.0) (2025-09-03)
+
+
+### Features
+
+* **Markers:** add markers render priority ([3d1e676](https://github.com/gravity-ui/timeline/commit/3d1e676551ca3c013742d8ae33eb5cb36212c22a))
+
 ## [1.18.3](https://github.com/gravity-ui/timeline/compare/v1.18.2...v1.18.3) (2025-09-01)
 
 
