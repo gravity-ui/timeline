@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.1](https://github.com/gravity-ui/timeline/compare/v1.21.0...v1.21.1) (2025-09-04)
+
+
+### Bug Fixes
+
+* **Markers:** wrong select change event ([ef7d77f](https://github.com/gravity-ui/timeline/commit/ef7d77f86795488a7ca6269479a8d46c4f9ad2a5))
+
 ## [1.21.0](https://github.com/gravity-ui/timeline/compare/v1.20.0...v1.21.0) (2025-09-04)
 
 
