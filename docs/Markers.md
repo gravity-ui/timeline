@@ -356,9 +356,13 @@ const timeline = new Timeline({
 
 ## Implementation Details
 
-### Label Collision Avoidance
+### Label Collision Avoidance and Render Priority
 
-The Markers component implements a right-to-left rendering strategy for labels to prevent overlapping:
+The Markers component implements a right-to-left rendering strategy for labels to prevent overlapping. Additionally, selected and hovered markers have render priority, meaning their labels will always be displayed even if they would overlap with other labels:
+
+- **Standard Labels**: Rendered right-to-left with collision avoidance
+- **Priority Labels**: Selected and hovered markers bypass collision detection
+- **Render Order**: Priority labels are positioned optimally without considering other labels
 
 ```typescript
 // Label rendering is handled by the DefaultMarkerRenderer
@@ -376,10 +380,44 @@ class DefaultMarkerRenderer extends AbstractMarkerRenderer {
     getLabelSize: (label: string) => LabelSize;
   }): void {
     // Render marker line and labels
-    // Implementation handles collision avoidance automatically
+    // Selected and hovered markers get render priority
+    // Standard markers follow collision avoidance rules
+    const isActive = isSelected || isHovered;
+    if (isActive || canRenderWithoutCollision()) {
+      renderLabel();
+    }
   }
 }
 ```
+
+### Marker State Priority
+
+The render priority system ensures that important markers are always visible:
+
+```typescript
+// Priority rendering logic
+const isActive = isSelected || isHovered;
+
+if (isActive) {
+  // Active markers always render their labels
+  // Position is calculated to fit optimally within canvas bounds
+  const labelPosition = this.calculateSelectedLabelPosition(
+    markerPosition,
+    widthWithPadding, 
+    ctx.canvas.width
+  );
+  this.drawLabelContent(ctx, color, marker, labelPosition, ...);
+} else if (canRenderWithoutCollision()) {
+  // Standard markers only render if they don't overlap
+  this.drawLabelContent(ctx, color, marker, labelPosition, ...);
+}
+```
+
+**Priority Benefits:**
+- Selected markers are always clearly visible
+- Hovered markers provide immediate visual feedback
+- Important context is never hidden by collision avoidance
+- Maintains clean visual hierarchy
 
 ### Text Width Caching
 

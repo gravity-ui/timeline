@@ -161,29 +161,95 @@ timeline.emit('eventClick', { eventId: '123', time: Date.now() });
 
 ### Click Collection Filters
 
-The `clickEventsCollectionFilter` and `clickMarkerCollectionFilter` options allow you to customize which events or markers are selected when users click on the timeline.
+The `clickEventsCollectionFilter` and `clickMarkerCollectionFilter` options provide powerful filtering capabilities for controlling which events or markers can be selected when users interact with the timeline. These filters are called whenever the user clicks on the timeline, allowing you to implement custom business logic and selection rules.
+
+#### Configuration
+
+Both filters accept an array of candidate items at the click position and return a filtered array:
 
 ```typescript
 const timeline = new Timeline({
   settings: {
     // ... other settings
-    clickEventsCollectionFilter: (candidates) => {
-      // Only allow selection of events with priority "high"
-      return candidates.filter(event => event.priority === 'high');
-    },
-    clickMarkerCollectionFilter: (candidates) => {
-      // Only select the first marker at the click position
-      return candidates.slice(0, 1);
-    }
+    clickEventsCollectionFilter?: (candidates: TimelineEvent[]) => TimelineEvent[];
+    clickMarkerCollectionFilter?: (candidates: TimelineMarker[]) => TimelineMarker[];
   }
 });
 ```
 
-**Use Cases:**
-- Filter events based on user permissions or roles
-- Implement custom selection logic (e.g., select only the topmost event)
-- Prevent selection of certain types of events or markers
-- Apply business rules to click interactions
+#### Event Filter Examples
+
+```typescript
+// Filter based on event properties
+clickEventsCollectionFilter: (candidates) => {
+  // Only allow selection of events with priority "high"
+  return candidates.filter(event => event.priority === 'high');
+},
+
+// Only select events from specific axes
+clickEventsCollectionFilter: (candidates) => 
+  candidates.filter(event => ['axis1', 'axis2'].includes(event.axisId)),
+
+// Select only the topmost event (first in array)
+clickEventsCollectionFilter: (candidates) => 
+  candidates.length > 0 ? [candidates[0]] : [],
+
+// Filter based on user permissions
+clickEventsCollectionFilter: (candidates) => 
+  candidates.filter(event => event.userCanEdit),
+
+// Apply complex business logic
+clickEventsCollectionFilter: (candidates) => {
+  return candidates.filter(event => {
+    return event.status === 'active' && 
+           !event.locked && 
+           event.department === getCurrentUserDepartment();
+  });
+}
+```
+
+#### Marker Filter Examples
+
+```typescript
+// Only select the first marker (avoid multi-selection)
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.length > 0 ? [candidates[0]] : [],
+
+// Filter based on marker groups
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.filter(marker => !marker.group),
+
+// Filter based on custom properties
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.filter(marker => marker.userCanInteract),
+
+// Select markers with specific labels only
+clickMarkerCollectionFilter: (candidates) => 
+  candidates.filter(marker => marker.label && marker.label.includes('Important')),
+
+// Filter non-selectable markers
+clickMarkerCollectionFilter: (candidates) => {
+  return candidates.filter(marker => !marker.nonSelectable);
+}
+```
+
+#### Common Use Cases
+
+- **Permission-based filtering**: Filter events/markers based on user roles or permissions
+- **Single-selection enforcement**: Always return only one item to prevent multi-selection
+- **Type-based filtering**: Filter by event/marker types, categories, or custom properties
+- **Interactive state control**: Prevent selection of locked, disabled, or read-only items
+- **Business rule enforcement**: Apply domain-specific rules to selection behavior
+- **UI/UX optimization**: Implement selection logic that improves user experience
+
+#### Filter Execution Order
+
+When both events and markers exist at a click position:
+1. Events are filtered using `clickEventsCollectionFilter` (if provided)
+2. Markers are filtered using `clickMarkerCollectionFilter` (if provided)  
+3. The filtered results are used for selection and event emission
+
+> **Note:** For detailed documentation on event and marker filtering, see [Events.md](./Events.md#click-filtering) and [Markers.md](./Markers.md#click-filtering) respectively.
 
 ### Camera Configuration
 
@@ -213,10 +279,8 @@ The timeline emits the following events:
 Triggered when clicking on the timeline.
 ```typescript
 {
-  events: TimelineEvent[];
-  time: number;
-  relativeX: number;
-  relativeY: number;
+  events: TimelineEvent[];  // Events at click position (after filtering)
+  markers: TimelineMarker[]; // Markers at click position (after filtering)
 }
 ```
 
@@ -301,10 +365,94 @@ if (canvas instanceof HTMLCanvasElement) {
 // Add event listeners
 timeline.on('on-click', (data) => {
   console.log('Clicked events:', data.events);
+  console.log('Clicked markers:', data.markers);
 });
 
 // Clean up
 timeline.destroy();
+```
+
+### Timeline with Click Filters
+
+```typescript
+import { Timeline, ZoomMode } from '@gravity-ui/timeline';
+
+// Create timeline with custom click filtering
+const timeline = new Timeline({
+  settings: {
+    start: Date.now(),
+    end: Date.now() + 3600000,
+    axes: [{
+      id: 'main',
+      tracksCount: 3,
+      top: 0,
+      height: 100
+    }],
+    events: [
+      {
+        id: 'event1',
+        from: Date.now() + 1800000,
+        to: Date.now() + 2400000,
+        label: 'High Priority Event',
+        axisId: 'main',
+        trackIndex: 0,
+        priority: 'high',
+        userCanEdit: true
+      },
+      {
+        id: 'event2',
+        from: Date.now() + 900000,
+        to: Date.now() + 1800000,
+        label: 'Low Priority Event',
+        axisId: 'main',
+        trackIndex: 1,
+        priority: 'low',
+        userCanEdit: false
+      }
+    ],
+    markers: [
+      {
+        time: Date.now() + 2100000,
+        label: 'Important Deadline',
+        color: '#ff0000',
+        nonSelectable: false
+      },
+      {
+        time: Date.now() + 2700000,
+        label: 'Internal Note',
+        color: '#cccccc',
+        nonSelectable: true
+      }
+    ],
+    // Filter events: only allow high-priority, editable events
+    clickEventsCollectionFilter: (candidates) => {
+      return candidates.filter(event => 
+        event.priority === 'high' && event.userCanEdit
+      );
+    },
+    // Filter markers: exclude non-selectable markers
+    clickMarkerCollectionFilter: (candidates) => {
+      return candidates.filter(marker => !marker.nonSelectable);
+    }
+  },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.DEFAULT
+    }
+  }
+});
+
+// Initialize and handle filtered clicks
+const canvas = document.querySelector('canvas');
+if (canvas instanceof HTMLCanvasElement) {
+  timeline.init(canvas);
+}
+
+timeline.on('on-click', (data) => {
+  // Only filtered events/markers will be in the data
+  console.log('Selectable events:', data.events); // Only high-priority, editable events
+  console.log('Selectable markers:', data.markers); // Only selectable markers
+});
 ```
 
 ### Event Handling
@@ -313,6 +461,7 @@ timeline.destroy();
 // Add multiple event listeners
 timeline.on('on-click', (data) => {
   console.log('Clicked events:', data.events);
+  console.log('Clicked markers:', data.markers);
 });
 
 timeline.on('on-select-change', (data) => {
