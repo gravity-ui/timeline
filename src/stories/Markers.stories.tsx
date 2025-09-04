@@ -15,7 +15,7 @@ import {
   TimelineSettings,
   ViewConfiguration,
 } from "../types";
-import { ZoomMode } from "../enums";
+import { MarkerDeselectionMode, ZoomMode } from "../enums";
 
 type ViewConfigurationControls = {
   [K in keyof ViewConfiguration as `viewConfiguration.${K}`]: ViewConfiguration[K];
@@ -88,6 +88,24 @@ const meta = {
         type: {
           summary: "TimelineMarker[]",
           detail: JSON.stringify(markersBaseConfig.settings.markers, null, 2),
+        },
+      },
+    },
+    "settings.markerDeselectionMode": {
+      control: {
+        type: "select",
+      },
+      options: Object.values(MarkerDeselectionMode),
+      description: "Marker deselection behavior mode",
+      table: {
+        category: "settings",
+        type: {
+          summary: "MarkerDeselectionMode",
+          detail: `Available modes:\n${Object.entries(MarkerDeselectionMode)
+            .map(([key, value]) => `- ${key}: "${value}"`)
+            .join(
+              "\n",
+            )}\n\nDefault: ${MarkerDeselectionMode.ON_CLICK_ANYWHERE}`,
         },
       },
     },
@@ -213,6 +231,7 @@ export const Basic: Story = {
     "settings.axes": markersBaseConfig.settings.axes,
     "settings.events": markersBaseConfig.settings.events,
     "settings.markers": markersBaseConfig.settings.markers,
+    "settings.markerDeselectionMode": MarkerDeselectionMode.ON_CLICK_ANYWHERE,
     ...defaultViewConfigArgs,
   },
   parameters: {
@@ -232,6 +251,7 @@ export const WithCollapse: Story = {
     "settings.axes": collapsedBaseConfig.settings.axes,
     "settings.events": collapsedBaseConfig.settings.events,
     "settings.markers": collapsedBaseConfig.settings.markers,
+    "settings.markerDeselectionMode": MarkerDeselectionMode.ON_CLICK_ANYWHERE,
     ...defaultViewConfigArgs,
   },
   parameters: {
@@ -251,6 +271,7 @@ export const WithLabels: Story = {
     "settings.axes": markersWithLabelsConfig.settings.axes,
     "settings.events": markersWithLabelsConfig.settings.events,
     "settings.markers": markersWithLabelsConfig.settings.markers,
+    "settings.markerDeselectionMode": MarkerDeselectionMode.ON_CLICK_ANYWHERE,
     ...defaultViewConfigArgs,
   },
   parameters: {
@@ -271,6 +292,7 @@ export const CustomRenderer: Story = {
     "settings.events": markersCustomRenderer.settings.events,
     "settings.markers": markersCustomRenderer.settings.markers,
     "settings.selectedEventIds": baseTimelineConfig.settings.selectedEventIds,
+    "settings.markerDeselectionMode": MarkerDeselectionMode.ON_CLICK_ANYWHERE,
     ...defaultViewConfigArgs,
   },
   parameters: {
@@ -313,6 +335,7 @@ export const GroupZoomDemo: StoryObj<StoryProps> = {
         label: "Another Distant",
       },
     ],
+    "settings.markerDeselectionMode": MarkerDeselectionMode.ON_CLICK_ANYWHERE,
     "viewConfiguration.markers": {
       ...defaultViewConfig.markers,
       collapseMinDistance: 8, // Larger distance for better grouping
@@ -326,6 +349,28 @@ export const GroupZoomDemo: StoryObj<StoryProps> = {
       description: {
         story:
           "This story demonstrates the group zoom functionality. When you click on a grouped marker (showing a number), the timeline will zoom to show all individual markers in that group. Try clicking on the grouped markers to see the zoom effect.",
+      },
+    },
+  },
+};
+
+export const MarkerOnlyDeselection: Story = {
+  args: {
+    "settings.start": markersBaseConfig.settings.start,
+    "settings.end": markersBaseConfig.settings.end,
+    "settings.axes": markersBaseConfig.settings.axes,
+    "settings.events": markersBaseConfig.settings.events,
+    "settings.markers": markersBaseConfig.settings.markers,
+    "settings.markerDeselectionMode":
+      MarkerDeselectionMode.ON_MARKER_CLICK_ONLY,
+    ...defaultViewConfigArgs,
+  },
+  parameters: {
+    storyKey: "marker-only-deselection",
+    docs: {
+      description: {
+        story:
+          "Demonstration of marker deselection mode where clicking on already selected marker deselects it, clicking on different marker switches selection, and clicking empty space preserves selection.",
       },
     },
   },
