@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.0](https://github.com/gravity-ui/timeline/compare/v1.20.0...v1.21.0) (2025-09-04)
+
+
+### Features
+
+* **Markers:** add deselection mode ([add4ff8](https://github.com/gravity-ui/timeline/commit/add4ff879a7128f964d59f9eb0c30a6439f244e0))
+
 ## [1.20.0](https://github.com/gravity-ui/timeline/compare/v1.19.0...v1.20.0) (2025-09-04)
 
 
