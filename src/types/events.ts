@@ -22,8 +22,12 @@ export type EventParams<T extends CustomEvent> = T extends CustomEvent
   ? T["detail"]
   : never;
 
-export type ClickEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+export type ClickEvent<
+  TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+> = {
   events: TEvent[];
+  markers: TMarker[];
 } & BaseEventData;
 export type SelectEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   events: TEvent[];
@@ -53,7 +57,7 @@ export type ApiEvent<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
 > = {
-  "on-click": (event: CustomEvent<ClickEvent<TEvent>>) => void;
+  "on-click": (event: CustomEvent<ClickEvent<TEvent, TMarker>>) => void;
   "on-context-click": (event: CustomEvent<ContextEvent<TEvent>>) => void;
   "on-select-change": (event: CustomEvent<SelectEvent<TEvent>>) => void;
   "on-hover": (events: CustomEvent<HoverEvent<TEvent>>) => void;
