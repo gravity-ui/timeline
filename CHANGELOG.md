@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.20.0](https://github.com/gravity-ui/timeline/compare/v1.19.0...v1.20.0) (2025-09-04)
+
+
+### Features
+
+* **TimelineController:** general click event ([0fc8d33](https://github.com/gravity-ui/timeline/commit/0fc8d3311140f2b7ac1d2a465a18ca565d86289a))
+
 ## [1.19.0](https://github.com/gravity-ui/timeline/compare/v1.18.3...v1.19.0) (2025-09-03)
 
 
