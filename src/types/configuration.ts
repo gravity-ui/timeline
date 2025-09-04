@@ -1,7 +1,7 @@
 import { TimelineAxis } from "./axis";
 import { TimelineEvent } from "./events";
 import { TimelineMarker } from "./markers";
-import { ZoomMode } from "../enums";
+import { MarkerDeselectionMode, ZoomMode } from "../enums";
 
 export type RulerViewOptions = {
   spacing?: number;
@@ -82,6 +82,7 @@ export type TimelineSettings<
   events: TEvent[];
   markers?: TMarker[];
   selectedEventIds?: string[];
+  markerDeselectionMode?: MarkerDeselectionMode;
   clickEventsCollectionFilter?: (candidates: TEvent[]) => TEvent[];
   clickMarkerCollectionFilter?: (candidates: TMarker[]) => TMarker[];
 };

@@ -21,3 +21,8 @@ export enum ZoomMode {
   HORIZONTAL = "horizontal",
   DEFAULT = "default",
 }
+
+export enum MarkerDeselectionMode {
+  ON_CLICK_ANYWHERE = "on_click_anywhere",
+  ON_MARKER_CLICK_ONLY = "on_marker_click_only",
+}

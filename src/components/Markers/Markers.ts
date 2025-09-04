@@ -4,6 +4,7 @@ import { LabelSize, TimelineMarker } from "../../types/markers";
 import { CanvasApi } from "../../CanvasApi";
 import { TimelineEvent } from "../../types";
 import { DefaultMarkerRenderer } from "./DefaultMarkerRenderer";
+import { MarkerDeselectionMode } from "../../enums";
 import RBush, { BBox } from "rbush";
 
 const MAX_INDEX_TREE_WIDTH = 16;
@@ -181,7 +182,10 @@ export class Markers<
   }
 
   protected handleCanvasMouseup = (event: MouseEvent) => {
-    const { clickMarkerCollectionFilter } = this.api.getTimelineSettings();
+    const {
+      clickMarkerCollectionFilter,
+      markerDeselectionMode = MarkerDeselectionMode.ON_CLICK_ANYWHERE,
+    } = this.api.getTimelineSettings();
     let candidates = this.getMarkersAtPoint(event.offsetX, event.offsetY);
 
     if (clickMarkerCollectionFilter) {
@@ -193,7 +197,22 @@ export class Markers<
       times.length === this._selectedMarkers.size &&
       times.every((num) => this._selectedMarkers.has(num));
 
-    if (arraysAreEqual) return;
+    // In ON_MARKER_CLICK_ONLY mode, clicking on the already selected marker should deselect it
+    if (arraysAreEqual) {
+      if (
+        markerDeselectionMode === MarkerDeselectionMode.ON_MARKER_CLICK_ONLY
+      ) {
+        this._selectedMarkers.clear();
+        this.api.emit("on-marker-select-change", {
+          markers: [],
+          time: this.api.positionToTime(event.offsetX),
+          relativeX: event.clientX,
+          relativeY: event.clientY,
+        });
+        this.api.rerender();
+      }
+      return;
+    }
 
     if (candidates.length) {
       this._selectedMarkers = new Set(times);
@@ -202,7 +221,10 @@ export class Markers<
       if (groupMarker) {
         this.handleGroupMarkerClick(groupMarker);
       }
-    } else {
+    } else if (
+      markerDeselectionMode === MarkerDeselectionMode.ON_CLICK_ANYWHERE
+    ) {
+      // Only clear selection if mode allows deselection on click anywhere
       this._selectedMarkers.clear();
     }
 
