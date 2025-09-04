@@ -275,13 +275,6 @@ export class Events<
       candidates = clickEventsCollectionFilter(candidates);
     }
 
-    this.api.emit("on-click", {
-      events: candidates,
-      time: this.api.positionToTime(event.offsetX),
-      relativeX: event.clientX,
-      relativeY: event.clientY,
-    });
-
     if (candidates.length > 0) {
       this.selectEvents(candidates, {
         append: checkControlCommandKey(event),

@@ -3,7 +3,9 @@ import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
 import debounce_ from "lodash/debounce";
 import { TimelineEvent, TimelineMarker } from "./types";
-import { ZoomMode } from "./enums";
+import { ComponentType, ZoomMode } from "./enums";
+import { Events } from "./components/Events";
+import { Markers } from "./components/Markers";
 
 const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
@@ -40,6 +42,7 @@ export class TimelineController<
   public init() {
     window.addEventListener("resize", this.updateCanvasSize);
     this.api.canvas.addEventListener("wheel", this.handleCanvasWheel);
+    this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
   }
 
   /**
@@ -48,6 +51,7 @@ export class TimelineController<
   public destroy() {
     window.removeEventListener("resize", this.updateCanvasSize);
     this.api.canvas.removeEventListener("wheel", this.handleCanvasWheel);
+    this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
   }
 
   /**
@@ -128,5 +132,39 @@ export class TimelineController<
       this.api.setRange(newStart, newEnd);
       this.emitCameraChange(newStart, newEnd);
     }
+  };
+
+  /**
+   * Handles mouse up events on the canvas
+   * Returns both events and markers at the click point
+   * @param event - MouseEvent from canvas
+   * @private
+   */
+  private handleCanvasMouseup = (event: MouseEvent): void => {
+    const { clickEventsCollectionFilter, clickMarkerCollectionFilter } =
+      this.api.getTimelineSettings();
+
+    const eventsComponent = this.api.getComponent<Events<TEvent, TMarker>>(
+      ComponentType.Events,
+    );
+    const markersComponent = this.api.getComponent<Markers<TEvent, TMarker>>(
+      ComponentType.Markers,
+    );
+
+    const events = eventsComponent
+      ? eventsComponent.getEventsAtPoint(event.offsetX, event.offsetY)
+      : [];
+    const markers = markersComponent
+      ? markersComponent.getMarkersAtPoint(event.offsetX, event.offsetY)
+      : [];
+
+    this.api.emit("on-click", {
+      events: clickEventsCollectionFilter
+        ? clickEventsCollectionFilter(events)
+        : events,
+      markers: clickMarkerCollectionFilter
+        ? clickMarkerCollectionFilter(markers)
+        : markers,
+    });
   };
 }
