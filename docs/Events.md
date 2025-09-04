@@ -295,7 +295,7 @@ const timeline = new Timeline({
 **Filter Function Details:**
 - **Input**: Array of events at the click position (`candidates`)
 - **Output**: Filtered array of events that should be selectable
-- **When called**: Before event selection and `on-click` event emission
+- **When called**: Before event selection and before including events in the `on-click` event emission
 - **Use cases**: Implement permissions, business rules, or custom selection logic
 
 **Example Use Cases:**
@@ -322,9 +322,7 @@ The Events component emits the following events:
    ```typescript
    {
      events: TimelineEvent[];  // Events at click position (after filtering)
-     time: number;            // Click timestamp
-     relativeX: number;       // Click X coordinate
-     relativeY: number;       // Click Y coordinate
+     markers: TimelineMarker[]; // Markers at click position (after filtering)
    }
    ```
 

@@ -34,7 +34,7 @@ const controller = new TimelineController(timeline.api);
 
 ### `init()`
 
-Initializes event listeners for window resize and canvas wheel events. This method is called automatically by the constructor.
+Initializes event listeners for window resize, canvas wheel events, and mouse interactions. This method is called automatically by the constructor.
 
 ```typescript
 // This is handled internally
@@ -44,6 +44,7 @@ controller.init();
 **Sets up listeners for:**
 - Window resize events
 - Canvas wheel events for zoom and pan
+- Canvas mouse events for click handling
 
 ### `destroy()`
 
@@ -57,6 +58,15 @@ controller.destroy();
 ## Interaction Features
 
 The TimelineController provides the following interaction capabilities:
+
+### Click Handling
+
+The TimelineController handles general click events on the canvas and emits unified `on-click` events containing both events and markers at the click position:
+
+- **Mouse Up Events**: Captures mouse up events to detect clicks
+- **Multi-Component Click**: Returns both events and markers at the click position
+- **Filter Support**: Applies `clickEventsCollectionFilter` and `clickMarkerCollectionFilter` if configured
+- **Event Structure**: Emits `on-click` event with `{events: TimelineEvent[], markers: TimelineMarker[]}` structure
 
 ### Zoom
 
