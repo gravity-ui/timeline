@@ -197,20 +197,27 @@ export class Markers<
       times.length === this._selectedMarkers.size &&
       times.every((num) => this._selectedMarkers.has(num));
 
-    // In ON_MARKER_CLICK_ONLY mode, clicking on the already selected marker should deselect it
+    const isMarkerOnlyMode =
+      markerDeselectionMode === MarkerDeselectionMode.ON_MARKER_CLICK_ONLY;
+
+    const emitAndRender = (markers: TMarker[]) => {
+      this.api.emit("on-marker-select-change", {
+        markers,
+        time: this.api.positionToTime(event.offsetX),
+        relativeX: event.clientX,
+        relativeY: event.clientY,
+      });
+      this.api.rerender();
+    };
+
+    if (isMarkerOnlyMode && !candidates.length) return;
+
     if (arraysAreEqual) {
-      if (
-        markerDeselectionMode === MarkerDeselectionMode.ON_MARKER_CLICK_ONLY
-      ) {
-        this._selectedMarkers.clear();
-        this.api.emit("on-marker-select-change", {
-          markers: [],
-          time: this.api.positionToTime(event.offsetX),
-          relativeX: event.clientX,
-          relativeY: event.clientY,
-        });
-        this.api.rerender();
-      }
+      if (!isMarkerOnlyMode) return;
+
+      // In ON_MARKER_CLICK_ONLY mode, clicking on the already selected marker should deselect it
+      this._selectedMarkers.clear();
+      emitAndRender([]);
       return;
     }
 
@@ -221,20 +228,15 @@ export class Markers<
       if (groupMarker) {
         this.handleGroupMarkerClick(groupMarker);
       }
-    } else if (
-      markerDeselectionMode === MarkerDeselectionMode.ON_CLICK_ANYWHERE
-    ) {
-      // Only clear selection if mode allows deselection on click anywhere
-      this._selectedMarkers.clear();
+
+      emitAndRender(candidates);
+      return;
     }
 
-    this.api.emit("on-marker-select-change", {
-      markers: candidates,
-      time: this.api.positionToTime(event.offsetX),
-      relativeX: event.clientX,
-      relativeY: event.clientY,
-    });
-    this.api.rerender();
+    if (!isMarkerOnlyMode) {
+      this._selectedMarkers.clear();
+      emitAndRender([]);
+    }
   };
 
   protected handleCanvasMousemove = (event: MouseEvent) => {
