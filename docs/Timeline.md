@@ -68,6 +68,7 @@ const timeline = new Timeline({
       events: TimelineEvent[]; // Event configurations
       markers?: TimelineMarker[]; // Optional markers
       selectedEventIds?: string[]; // Optional selected events
+      markerDeselectionMode?: MarkerDeselectionMode; // Optional marker deselection behavior
       clickEventsCollectionFilter?: (candidates: Event[]) => Event[]; // Optional event click filter
       clickMarkerCollectionFilter?: (candidates: Marker[]) => Marker[]; // Optional marker click filter
     };
@@ -250,6 +251,56 @@ When both events and markers exist at a click position:
 3. The filtered results are used for selection and event emission
 
 > **Note:** For detailed documentation on event and marker filtering, see [Events.md](./Events.md#click-filtering) and [Markers.md](./Markers.md#click-filtering) respectively.
+
+### Marker Deselection Behavior
+
+The `markerDeselectionMode` setting controls when and how marker selections are cleared. This provides fine-grained control over user interaction behavior.
+
+#### Configuration
+
+```typescript
+import { MarkerDeselectionMode } from '@gravity-ui/timeline';
+
+const timeline = new Timeline({
+  settings: {
+    // ... other settings
+    markerDeselectionMode: MarkerDeselectionMode.ON_CLICK_ANYWHERE // default
+  }
+});
+```
+
+#### Available Modes
+
+- **`ON_CLICK_ANYWHERE`** (default): Marker selection is cleared when clicking anywhere on the timeline except on the currently selected markers
+- **`ON_MARKER_CLICK_ONLY`**: Marker selection behaves as follows:
+  - Clicking on an already selected marker deselects it
+  - Clicking on a different marker switches selection to it
+  - Clicking on empty space preserves the current selection
+
+#### Examples
+
+```typescript
+// Default behavior - deselect on any click
+const timeline1 = new Timeline({
+  settings: {
+    markerDeselectionMode: MarkerDeselectionMode.ON_CLICK_ANYWHERE,
+    // ... other settings
+  }
+});
+
+// Sticky selection - only deselect on marker click
+const timeline2 = new Timeline({
+  settings: {
+    markerDeselectionMode: MarkerDeselectionMode.ON_MARKER_CLICK_ONLY,
+    // ... other settings
+  }
+});
+```
+
+#### Use Cases
+
+- **`ON_CLICK_ANYWHERE`**: Best for general use where you want quick deselection
+- **`ON_MARKER_CLICK_ONLY`**: Useful when you want to preserve marker selection for longer periods, such as when building selection-persistent interfaces or when markers trigger external UI elements
 
 ### Camera Configuration
 
