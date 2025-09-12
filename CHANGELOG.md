@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.2](https://github.com/gravity-ui/timeline/compare/v1.21.1...v1.21.2) (2025-09-12)
+
+
+### Bug Fixes
+
+* **Api:** rebuild index in rerender ([f13296c](https://github.com/gravity-ui/timeline/commit/f13296cc2115df5fe0893c01aa8f5a94655f4474))
+
 ## [1.21.1](https://github.com/gravity-ui/timeline/compare/v1.21.0...v1.21.1) (2025-09-04)
 
 
