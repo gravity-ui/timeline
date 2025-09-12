@@ -52,6 +52,7 @@ export class CanvasApi<
 
     this.ctx.save();
     this.components.forEach((component) => {
+      component.rebuildIndex?.();
       component.render();
     });
     this.ctx.restore();
