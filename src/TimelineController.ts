@@ -20,6 +20,7 @@ export class TimelineController<
   TMarker extends TimelineMarker = TimelineMarker,
 > {
   api: CanvasApi<TEvent, TMarker>;
+  private resizeObserver?: ResizeObserver;
 
   private emitCameraChange = debounce_((newStart: number, newEnd: number) => {
     this.api.emit("on-camera-change", { from: newStart, to: newEnd });
@@ -37,10 +38,13 @@ export class TimelineController<
   }
 
   /**
-   * Initializes event listeners for window resize and canvas-wheel events
+   * Initializes event listeners for canvas resize and wheel events
    */
   public init() {
-    window.addEventListener("resize", this.updateCanvasSize);
+    this.resizeObserver = new ResizeObserver(() => {
+      this.updateCanvasSize();
+    });
+    this.resizeObserver.observe(this.api.canvas);
     this.api.canvas.addEventListener("wheel", this.handleCanvasWheel);
     this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
   }
@@ -49,7 +53,8 @@ export class TimelineController<
    * Cleans up event listeners when the controller is destroyed
    */
   public destroy() {
-    window.removeEventListener("resize", this.updateCanvasSize);
+    this.resizeObserver?.disconnect();
+    this.resizeObserver = undefined;
     this.api.canvas.removeEventListener("wheel", this.handleCanvasWheel);
     this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
   }
@@ -61,12 +66,12 @@ export class TimelineController<
    */
   private updateCanvasSize = () => {
     const pixelRatio = window.devicePixelRatio || 1;
-    this.api.canvas.width = Math.floor(
-      this.api.canvas.offsetWidth * pixelRatio,
-    );
-    this.api.canvas.height = Math.floor(
-      this.api.canvas.offsetHeight * pixelRatio,
-    );
+    const logicalWidth = this.api.canvas.offsetWidth;
+    const logicalHeight = this.api.canvas.offsetHeight;
+
+    // Set internal canvas size (physical pixels)
+    this.api.canvas.width = Math.floor(logicalWidth * pixelRatio);
+    this.api.canvas.height = Math.floor(logicalHeight * pixelRatio);
 
     this.api.rerender();
   };
@@ -105,12 +110,12 @@ export class TimelineController<
         const factor = event.deltaY > 0 ? 1.15 : 0.9;
         const newDomain = clamp(oldDomain * factor, ZOOM_MIN, ZOOM_MAX);
 
-        // Check if the cursor is inside the canvas
+        // Check if the cursor is inside the canvas (using logical pixels)
         if (
           event.offsetX >= 0 &&
-          event.offsetX <= this.api.canvas.width &&
+          event.offsetX <= this.api.canvas.offsetWidth &&
           event.offsetY >= 0 &&
-          event.offsetY <= this.api.canvas.height
+          event.offsetY <= this.api.canvas.offsetHeight
         ) {
           // Center zoom around the cursor position
           const cursorTime = this.api.positionToTime(event.offsetX);
