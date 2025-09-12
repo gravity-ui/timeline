@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.21.3](https://github.com/gravity-ui/timeline/compare/v1.21.2...v1.21.3) (2025-09-12)
+
+
+### Bug Fixes
+
+* **TimelineController:** click position error on resize ([4436a23](https://github.com/gravity-ui/timeline/commit/4436a238d4b293f1d8c842331e60c06dd784e54f))
+
 ## [1.21.2](https://github.com/gravity-ui/timeline/compare/v1.21.1...v1.21.2) (2025-09-12)
 
 
