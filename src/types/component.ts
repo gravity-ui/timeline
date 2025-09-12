@@ -3,5 +3,6 @@
  */
 export interface BaseComponentInterface {
   render(): void;
+  rebuildIndex?(): void;
   destroy?(): void;
 }

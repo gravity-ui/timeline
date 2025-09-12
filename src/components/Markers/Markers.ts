@@ -164,6 +164,20 @@ export class Markers<
     );
   }
 
+  public rebuildIndex(): void {
+    const boxes = this._sortedMarkers.map(
+      (marker): BBox & { marker: TMarker } => {
+        const minX = marker.time;
+        const maxX = marker.time;
+        const minY = 0;
+        const maxY = this.api.ctx.canvas.height;
+        return { minX, maxX, minY, maxY, marker };
+      },
+    );
+    this.index.clear();
+    this.index.load(boxes);
+  }
+
   protected getLabelSize(text: string): LabelSize {
     if (this.textWidthCache.has(text)) {
       return this.textWidthCache.get(text);
@@ -252,20 +266,6 @@ export class Markers<
   protected addEventListeners() {
     this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
     this.api.canvas.addEventListener("mousemove", this.handleCanvasMousemove);
-  }
-
-  protected rebuildIndex(): void {
-    const boxes = this._sortedMarkers.map(
-      (marker): BBox & { marker: TMarker } => {
-        const minX = marker.time;
-        const maxX = marker.time;
-        const minY = 0;
-        const maxY = this.api.ctx.canvas.height;
-        return { minX, maxX, minY, maxY, marker };
-      },
-    );
-    this.index.clear();
-    this.index.load(boxes);
   }
 
   /**

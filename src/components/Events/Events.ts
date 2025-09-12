@@ -216,6 +216,34 @@ export class Events<
   }
 
   /**
+   * Rebuilds the spatial index for efficient event lookup
+   * Updates the RBush tree with current event positions
+   */
+  public rebuildIndex(): void {
+    const { end } = this.api.getInterval();
+    const { axes } = this.api.getViewConfiguration();
+
+    const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
+    const axesById = axesComponent.getAxesById();
+
+    const boxes = this._events.map((event): BBox & { event: Event } => {
+      const axis = axesById[event.axisId];
+      const eventTrackY = axesComponent.getAxisTrackPosition(
+        axis,
+        event.trackIndex,
+      );
+
+      const minX = event.from;
+      const maxX = event.to ? event.to : end;
+      const minY = eventTrackY - axes.lineHeight / 2;
+      const maxY = eventTrackY + axes.lineHeight / 2;
+      return { minX, maxX, minY, maxY, event };
+    });
+    this.index.clear();
+    this.index.load(boxes);
+  }
+
+  /**
    * Adds necessary event listeners for mouse interactions
    */
   protected addEventListeners() {
@@ -329,34 +357,6 @@ export class Events<
       relativeY: event.clientY,
     });
   };
-
-  /**
-   * Rebuilds the spatial index for efficient event lookup
-   * Updates the RBush tree with current event positions
-   */
-  protected rebuildIndex(): void {
-    const { end } = this.api.getInterval();
-    const { axes } = this.api.getViewConfiguration();
-
-    const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
-    const axesById = axesComponent.getAxesById();
-
-    const boxes = this._events.map((event): BBox & { event: Event } => {
-      const axis = axesById[event.axisId];
-      const eventTrackY = axesComponent.getAxisTrackPosition(
-        axis,
-        event.trackIndex,
-      );
-
-      const minX = event.from;
-      const maxX = event.to ? event.to : end;
-      const minY = eventTrackY - axes.lineHeight / 2;
-      const maxY = eventTrackY + axes.lineHeight / 2;
-      return { minX, maxX, minY, maxY, event };
-    });
-    this.index.clear();
-    this.index.load(boxes);
-  }
 }
 
 export type SelectOptions = {
