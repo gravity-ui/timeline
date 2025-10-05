@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.22.0](https://github.com/gravity-ui/timeline/compare/v1.21.3...v1.22.0) (2025-10-05)
+
+
+### Features
+
+* **Sections:** new section component ([a2b75a1](https://github.com/gravity-ui/timeline/commit/a2b75a1a7125585aef04cf0b5747ac2f82ac4e75))
+
 ## [1.21.3](https://github.com/gravity-ui/timeline/compare/v1.21.2...v1.21.3) (2025-09-12)
 
 
