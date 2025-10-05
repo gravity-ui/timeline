@@ -71,6 +71,20 @@ timeline.settings.markers = [{
 }];
 ```
 
+### [Sections](./Sections.md)
+Renders background sections on the timeline to provide visual organization and highlight time periods.
+
+```typescript
+// Add sections to the timeline
+timeline.settings.sections = [{
+  id: 'phase1',
+  from: Date.now(),
+  to: Date.now() + 3600000,
+  color: 'rgba(255, 235, 59, 0.3)',
+  hoverColor: 'rgba(255, 235, 59, 0.4)'
+}];
+```
+
 ### [CanvasApi](./CanvasApi.md)
 Provides the low-level canvas API for timeline manipulation and rendering.
 
@@ -187,6 +201,7 @@ Visit our [Storybook](https://preview.gravity-ui.com/timeline/) to explore inter
 - [Events API](./Events.md)
 - [Ruler API](./Ruler.md)
 - [Markers API](./Markers.md)
+- [Sections API](./Sections.md)
 - [CanvasApi API](./CanvasApi.md)
 
 ## Contributing
