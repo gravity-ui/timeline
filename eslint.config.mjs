@@ -4,6 +4,16 @@ import reactConfig from "@gravity-ui/eslint-config/react";
 import typescriptEslint from "@typescript-eslint/eslint-plugin";
 
 export default [
+  {
+    ignores: [
+      "build/**",
+      "storybook-static/**",
+      "node_modules/**",
+      "dist/**",
+      "*.config.cjs",
+      "*.config.js",
+    ],
+  },
   ...baseConfig,
   ...prettierConfig,
   ...reactConfig,
@@ -32,6 +42,22 @@ export default [
     files: ["src/stories/**/*.{ts,tsx}"],
     rules: {
       "import/no-extraneous-dependencies": "off",
+    },
+  },
+  {
+    files: ["src/stories/StoryWrapper.tsx"],
+    rules: {
+      "no-param-reassign": "off",
+    },
+  },
+  {
+    files: [
+      "src/components/**/Default*Renderer.ts",
+      "src/stories/My*Renderer.ts",
+      "src/components/**/Abstract*Renderer.ts",
+    ],
+    rules: {
+      "no-param-reassign": ["error", { props: false }],
     },
   },
 ];

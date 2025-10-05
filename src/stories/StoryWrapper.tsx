@@ -62,7 +62,7 @@ export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
         timeline.destroy();
       }
     };
-  }, []);
+  }, [timeline]);
 
   useTimelineEvent(timeline, "on-click", (data) => {
     action("on-click")(data);

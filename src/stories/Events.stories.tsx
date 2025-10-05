@@ -25,7 +25,11 @@ type SettingsControls = {
     TimelineEvent,
     TimelineMarker,
     TimelineSection
-  > as `settings.${K}`]: TimelineSettings<TimelineEvent, TimelineMarker, TimelineSection>[K];
+  > as `settings.${K}`]: TimelineSettings<
+    TimelineEvent,
+    TimelineMarker,
+    TimelineSection
+  >[K];
 };
 
 type StoryProps = SettingsControls & ViewConfigurationControls;
