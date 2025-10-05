@@ -10,7 +10,8 @@ For details see [Documentation](./docs/docs.md).
 
 - Canvas-based rendering for high performance
 - Interactive timeline with zoom and pan capabilities
-- Support for events, markers, axes, and grid
+- Support for events, markers, sections, axes, and grid
+- Background sections for visual organization and time period highlighting
 - Smart marker grouping with automatic zoom to group - Click on grouped markers to zoom into their individual components
 - Virtualized rendering for improved performance with large datasets (only active when timeline content exceeds the viewport)
 - Customizable appearance and behavior
@@ -37,7 +38,8 @@ const MyTimelineComponent = () => {
       end: Date.now() + 3600000, // 1 hour from now
       axes: [],
       events: [],
-      markers: []
+      markers: [],
+      sections: []
     },
     viewConfiguration: {
       // Optional view configuration
@@ -54,6 +56,60 @@ const MyTimelineComponent = () => {
       <TimelineCanvas timeline={timeline} />
     </div>
   );
+};
+```
+
+### Section Structure
+
+Each section requires the following structure:
+
+```typescript
+type TimelineSection = {
+  id: string;               // Unique section identifier
+  from: number;             // Start timestamp
+  to?: number;              // Optional end timestamp (defaults to timeline end)
+  color: string;            // Background color of the section
+  hoverColor?: string;      // Optional color when section is hovered
+  renderer?: AbstractSectionRenderer; // Optional custom renderer
+};
+```
+
+Sections provide background coloring for time periods and help organize timeline content visually:
+
+```tsx
+const MyTimelineComponent = () => {
+  const { timeline } = useTimeline({
+    settings: {
+      start: Date.now(),
+      end: Date.now() + 3600000,
+      axes: [],
+      events: [],
+      markers: [],
+      sections: [
+        {
+          id: 'morning',
+          from: Date.now(),
+          to: Date.now() + 1800000, // 30 minutes
+          color: 'rgba(255, 235, 59, 0.3)', // Semi-transparent yellow
+          hoverColor: 'rgba(255, 235, 59, 0.4)'
+        },
+        {
+          id: 'afternoon',
+          from: Date.now() + 1800000,
+          // No 'to' specified - extends to timeline end
+          color: 'rgba(76, 175, 80, 0.2)', // Semi-transparent green
+          hoverColor: 'rgba(76, 175, 80, 0.3)'
+        }
+      ]
+    },
+    viewConfiguration: {
+      sections: {
+        hitboxPadding: 2 // Hover detection padding
+      }
+    }
+  });
+
+  return <TimelineCanvas timeline={timeline} />;
 };
 ```
 
@@ -125,9 +181,10 @@ The timeline is implemented as a React component that can be configured through 
 1. **TimelineSettings**: Controls the core timeline behavior and appearance
    - `start`: Start time of the timeline
    - `end`: End time of the timeline
-   - `axes`: Array of axis configurations
-   - `events`: Array of event configurations
-   - `markers`: Array of marker configurations
+  - `axes`: Array of axis configurations
+  - `events`: Array of event configurations
+  - `markers`: Array of marker configurations
+  - `sections`: Array of section configurations
 
 2. **ViewConfiguration**: Manages the visual representation and interaction settings
    - Controls appearance, zoom levels, and interaction behavior
@@ -234,6 +291,15 @@ const timeline = new Timeline({
         activeColor: '#ff5252',
         hoverColor: '#ff1744'
       }
+    ],
+    sections: [
+      {
+        id: 'section1',
+        from: timestamp,
+        to: timestamp + 1800000, // First 30 minutes
+        color: 'rgba(33, 150, 243, 0.2)', // Light blue background
+        hoverColor: 'rgba(33, 150, 243, 0.3)'
+      }
     ]
   },
   viewConfiguration: {
@@ -313,6 +379,17 @@ The Timeline class provides a rich API for managing the timeline:
       color: '#00ff00',
       activeColor: '#4caf50',
       hoverColor: '#2e7d32'
+    }
+  ]);
+
+  // Update sections
+  timeline.api.setSections([
+    {
+      id: 'newSection',
+      from: Date.now(),
+      to: Date.now() + 1800000,
+      color: 'rgba(255, 193, 7, 0.2)', // Light amber background
+      hoverColor: 'rgba(255, 193, 7, 0.3)'
     }
   ]);
   ```
