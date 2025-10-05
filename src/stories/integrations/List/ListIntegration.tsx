@@ -37,6 +37,31 @@ const config: TimeLineConfig<TimelineEvent, TimelineMarker, TimelineSection> = {
         color: i % 2 ? "rgb(161, 193, 129)" : "rgb(254, 127, 45)",
       };
     }),
+    sections: [
+      {
+        id: "morning-shift",
+        from: commonConfig.start,
+        to: commonConfig.start + (commonConfig.end - commonConfig.start) * 0.33,
+        color: "rgba(255, 235, 59, 0.15)", // Light yellow
+        hoverColor: "rgba(255, 235, 59, 0.25)",
+      },
+      {
+        id: "afternoon-shift",
+        from:
+          commonConfig.start + (commonConfig.end - commonConfig.start) * 0.33,
+        to: commonConfig.start + (commonConfig.end - commonConfig.start) * 0.66,
+        color: "rgba(33, 150, 243, 0.15)", // Light blue
+        hoverColor: "rgba(33, 150, 243, 0.25)",
+      },
+      {
+        id: "evening-shift",
+        from:
+          commonConfig.start + (commonConfig.end - commonConfig.start) * 0.66,
+        // Extends to end
+        color: "rgba(156, 39, 176, 0.15)", // Light purple
+        hoverColor: "rgba(156, 39, 176, 0.25)",
+      },
+    ],
   },
   viewConfiguration: { ...defaultViewConfig, hideRuler: true },
 };
