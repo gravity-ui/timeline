@@ -1,4 +1,4 @@
-import { TimelineAxis } from "../types/axis";
+import { TimelineAxis } from "../types";
 
 /**
  * Utility function to compare two arrays for equality

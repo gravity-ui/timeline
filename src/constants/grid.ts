@@ -1,7 +1,6 @@
 import { DAY, HOUR, MONTH, YEAR } from "./timeConstants";
 import dayjs from "dayjs";
-import { TGridLevel } from "../types/grid";
-import { ViewConfigurationDefault } from "../types/configuration";
+import { TGridLevel, ViewConfigurationDefault } from "../types";
 
 const getGridColorForTimeUnitMultiple = (
   n: number,

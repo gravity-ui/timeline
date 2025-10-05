@@ -1,8 +1,12 @@
 import { pointToRangeIntersect } from "../../helpers/math";
-import { BaseComponentInterface } from "../../types/component";
-import { LabelSize, TimelineMarker } from "../../types/markers";
 import { CanvasApi } from "../../CanvasApi";
-import { TimelineEvent } from "../../types";
+import {
+  BaseComponentInterface,
+  LabelSize,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../../types";
 import { DefaultMarkerRenderer } from "./DefaultMarkerRenderer";
 import { MarkerDeselectionMode } from "../../enums";
 import RBush, { BBox } from "rbush";
@@ -16,9 +20,10 @@ const MAX_INDEX_TREE_WIDTH = 16;
 export class Markers<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > implements BaseComponentInterface
 {
-  protected api: CanvasApi<TEvent, TMarker>;
+  protected api: CanvasApi<TEvent, TMarker, TSection>;
   protected _sortedMarkers: TMarker[] = [];
   protected _collapsedMarkers: TMarker[] = []; // Store collapsed markers separately
   protected index = new RBush<BBox & { marker: TMarker }>(MAX_INDEX_TREE_WIDTH);
@@ -28,7 +33,7 @@ export class Markers<
   private _selectedMarkers = new Set<number>();
   private hoveredMarker: number = undefined;
 
-  constructor(api: CanvasApi<TEvent, TMarker>) {
+  constructor(api: CanvasApi<TEvent, TMarker, TSection>) {
     this.api = api;
     this.addEventListeners();
   }

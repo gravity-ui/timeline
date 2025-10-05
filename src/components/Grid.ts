@@ -1,10 +1,14 @@
 import { convertDomain } from "../helpers/math";
-import { TGridLevel } from "../types/grid";
 import dayjs from "dayjs";
 import { getGridLevels } from "../constants/grid";
-import { BaseComponentInterface } from "../types/component";
 import { CanvasApi } from "../CanvasApi";
-import { TimelineEvent, TimelineMarker } from "../types";
+import {
+  BaseComponentInterface,
+  TGridLevel,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../types";
 
 /**
  * Grid component responsible for rendering vertical grid lines on the timeline
@@ -12,12 +16,13 @@ import { TimelineEvent, TimelineMarker } from "../types";
 export class Grid<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > implements BaseComponentInterface
 {
-  private api: CanvasApi<TEvent, TMarker>;
+  private api: CanvasApi<TEvent, TMarker, TSection>;
   private levels: TGridLevel[];
 
-  constructor(api: CanvasApi<TEvent, TMarker>) {
+  constructor(api: CanvasApi<TEvent, TMarker, TSection>) {
     this.api = api;
     this.levels = getGridLevels(this.api.getViewConfiguration().grid);
   }

@@ -1,8 +1,17 @@
-import { TimeLineConfig, TimelineEvent, TimelineMarker } from "../../types";
+import {
+  TimeLineConfig,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../../types";
 import { baseTimelineConfig } from "../configs/events";
 import { defaultViewConfig } from "../../constants/options";
 
-export const config: TimeLineConfig<TimelineEvent, TimelineMarker> = {
+export const config: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection
+> = {
   settings: {
     start: baseTimelineConfig.settings.start,
     end: baseTimelineConfig.settings.end,

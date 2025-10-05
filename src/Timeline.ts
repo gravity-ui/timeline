@@ -1,8 +1,3 @@
-import {
-  TimeLineConfig,
-  TimelineSettings,
-  ViewConfigurationDefault,
-} from "./types/configuration";
 import { Axes } from "./components/Axes";
 import { Ruler } from "./components/Ruler";
 import { Grid } from "./components/Grid";
@@ -12,8 +7,17 @@ import { CanvasApi } from "./CanvasApi";
 import { TimelineController } from "./TimelineController";
 import { ComponentType, TimelineState } from "./enums";
 import { Markers } from "./components/Markers";
-import { ApiEvent, EventParams, TimelineEvent } from "./types/events";
-import { TimelineMarker } from "./types";
+import {
+  ApiEvent,
+  EventParams,
+  TimeLineConfig,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+  TimelineSettings,
+  ViewConfigurationDefault,
+} from "./types";
+import { Sections } from "./components/Sections";
 
 /**
  * The main Timeline class that manages the timeline visualization and interactions
@@ -22,11 +26,12 @@ import { TimelineMarker } from "./types";
 export class Timeline<
   TEvent extends TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > {
   public canvasScrollTop: number;
-  public settings: TimelineSettings<TEvent, TMarker>;
+  public settings: TimelineSettings<TEvent, TMarker, TSection>;
   public viewConfiguration: ViewConfigurationDefault;
-  public api: CanvasApi<TEvent, TMarker>;
+  public api: CanvasApi<TEvent, TMarker, TSection>;
   public eventEmitter = new EventTarget();
   public canvas: HTMLCanvasElement;
   public state = TimelineState.INIT;
@@ -47,7 +52,7 @@ export class Timeline<
    *   }
    * });
    */
-  constructor(config: TimeLineConfig<TEvent, TMarker>) {
+  constructor(config: TimeLineConfig<TEvent, TMarker, TSection>) {
     this.viewConfiguration = this.getViewConfig(config.viewConfiguration);
     this.settings = config.settings;
   }
@@ -77,6 +82,7 @@ export class Timeline<
     this.api.setAxes(this.settings.axes);
     this.api.setEvents(this.settings.events);
     this.api.setMarkers(this.settings.markers || []);
+    this.api.setSections(this.settings.sections || []);
     this.api.setSelectedEvents(this.settings.selectedEventIds || []);
 
     this.controller = new TimelineController(this.api);
@@ -177,13 +183,14 @@ export class Timeline<
    * @private
    */
   private getViewConfig(
-    config?: TimeLineConfig<TEvent, TMarker>["viewConfiguration"],
+    config?: TimeLineConfig<TEvent, TMarker, TSection>["viewConfiguration"],
   ): ViewConfigurationDefault {
     if (!config) return defaultViewConfig;
 
     return {
       ruler: { ...defaultViewConfig.ruler, ...config.ruler },
       grid: { ...defaultViewConfig.grid, ...config.grid },
+      sections: { ...defaultViewConfig.sections, ...config.sections },
       axes: { ...defaultViewConfig.axes, ...config.axes },
       markers: { ...defaultViewConfig.markers, ...config.markers },
       events: { ...defaultViewConfig.events, ...config.events },
@@ -203,6 +210,7 @@ export class Timeline<
   private initComponents() {
     this.api.addComponent(ComponentType.Grid, new Grid(this.api));
     this.api.addComponent(ComponentType.Axes, new Axes(this.api));
+    this.api.addComponent(ComponentType.Sections, new Sections(this.api));
     this.api.addComponent(
       ComponentType.Events,
       new Events<TEvent, TMarker>(this.api),

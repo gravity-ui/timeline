@@ -2,10 +2,11 @@ import { clamp } from "./helpers/math";
 import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
 import debounce_ from "lodash/debounce";
-import { TimelineEvent, TimelineMarker } from "./types";
+import { TimelineEvent, TimelineMarker, TimelineSection } from "./types";
 import { ComponentType, ZoomMode } from "./enums";
 import { Events } from "./components/Events";
 import { Markers } from "./components/Markers";
+import { Sections } from "./components/Sections";
 
 const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
@@ -18,8 +19,9 @@ const ZOOM_MAX = MONTH * 2;
 export class TimelineController<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > {
-  api: CanvasApi<TEvent, TMarker>;
+  api: CanvasApi<TEvent, TMarker, TSection>;
   private resizeObserver?: ResizeObserver;
 
   private emitCameraChange = debounce_((newStart: number, newEnd: number) => {
@@ -30,7 +32,7 @@ export class TimelineController<
    * Creates a new TimelineController instance
    * @param api - CanvasApi instance for timeline manipulation
    */
-  constructor(api: CanvasApi<TEvent, TMarker>) {
+  constructor(api: CanvasApi<TEvent, TMarker, TSection>) {
     this.api = api;
 
     this.updateCanvasSize();
@@ -149,12 +151,15 @@ export class TimelineController<
     const { clickEventsCollectionFilter, clickMarkerCollectionFilter } =
       this.api.getTimelineSettings();
 
-    const eventsComponent = this.api.getComponent<Events<TEvent, TMarker>>(
-      ComponentType.Events,
-    );
-    const markersComponent = this.api.getComponent<Markers<TEvent, TMarker>>(
-      ComponentType.Markers,
-    );
+    const eventsComponent = this.api.getComponent<
+      Events<TEvent, TMarker, TSection>
+    >(ComponentType.Events);
+    const markersComponent = this.api.getComponent<
+      Markers<TEvent, TMarker, TSection>
+    >(ComponentType.Markers);
+    const sectionsComponent = this.api.getComponent<
+      Sections<TEvent, TMarker, TSection>
+    >(ComponentType.Sections);
 
     const events = eventsComponent
       ? eventsComponent.getEventsAtPoint(event.offsetX, event.offsetY)
@@ -162,6 +167,10 @@ export class TimelineController<
     const markers = markersComponent
       ? markersComponent.getMarkersAtPoint(event.offsetX, event.offsetY)
       : [];
+    const sections = sectionsComponent.getSectionsAtPoint(
+      event.offsetX,
+      event.offsetY,
+    );
 
     this.api.emit("on-click", {
       events: clickEventsCollectionFilter
@@ -170,6 +179,7 @@ export class TimelineController<
       markers: clickMarkerCollectionFilter
         ? clickMarkerCollectionFilter(markers)
         : markers,
+      sections,
     });
   };
 }

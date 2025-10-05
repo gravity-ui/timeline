@@ -1,26 +1,31 @@
 import { alignNumber, convertDomain } from "./helpers/math";
 import { SECOND } from "./constants/timeConstants";
 import { Timeline } from "./Timeline";
-import { BaseComponentInterface } from "./types/component";
 import { ComponentType } from "./enums";
 import { Events } from "./components/Events";
 import { Axes } from "./components/Axes";
-import { TimelineAxis } from "./types/axis";
-import { TimelineEvent } from "./types/events";
 import { Markers } from "./components/Markers";
-import { TimelineMarker } from "./types/markers";
+import {
+  BaseComponentInterface,
+  TimelineAxis,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "./types";
+import { Sections } from "./components/Sections";
 
 export class CanvasApi<
   TEvent extends TimelineEvent,
   TMarker extends TimelineMarker,
+  TSection extends TimelineSection,
 > {
   public readonly canvas: HTMLCanvasElement;
   public readonly ctx: CanvasRenderingContext2D;
 
   protected components: Map<string, BaseComponentInterface>;
-  protected timeline: Timeline<TEvent, TMarker>;
+  protected timeline: Timeline<TEvent, TMarker, TSection>;
 
-  constructor(timeline: Timeline<TEvent, TMarker>) {
+  constructor(timeline: Timeline<TEvent, TMarker, TSection>) {
     this.timeline = timeline;
     this.canvas = this.timeline.canvas;
     this.components = new Map<string, BaseComponentInterface>();
@@ -88,6 +93,14 @@ export class CanvasApi<
       ComponentType.Events,
     );
     events.setEvents(newEvents, selectedIds);
+    this.rerender();
+  }
+
+  public setSections(newSections: TSection[]) {
+    const sections = this.getComponent<Sections<TEvent, TMarker, TSection>>(
+      ComponentType.Sections,
+    );
+    sections.setSections(newSections);
     this.rerender();
   }
 

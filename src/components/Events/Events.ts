@@ -5,9 +5,12 @@ import { checkControlCommandKey } from "../../lib/utils";
 import { DefaultEventRenderer } from "./DefaultEventRenderer";
 import { CanvasApi } from "../../CanvasApi";
 import { ComponentType } from "../../enums";
-import { BaseComponentInterface } from "../../types/component";
-import { TimelineEvent } from "../../types/events";
-import { TimelineMarker, ViewConfiguration } from "../../types";
+import {
+  BaseComponentInterface,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../../types";
 
 const MAX_INDEX_TREE_WIDTH = 16;
 
@@ -19,17 +22,18 @@ const MAX_INDEX_TREE_WIDTH = 16;
 export class Events<
   Event extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > implements BaseComponentInterface
 {
   public allowMultipleSelection = true;
   public activeEvents: TimelineEvent[] | null = null;
   protected index = new RBush<BBox & { event: Event }>(MAX_INDEX_TREE_WIDTH);
 
-  private api: CanvasApi<Event, TMarker>;
+  private api: CanvasApi<Event, TMarker, TSection>;
   private _selectedEvents = new Set<string>();
   private _events: Event[] = [];
 
-  constructor(api: CanvasApi<Event, TMarker>) {
+  constructor(api: CanvasApi<Event, TMarker, TSection>) {
     this.api = api;
 
     this.addEventListeners();
@@ -185,7 +189,12 @@ export class Events<
       ) {
         const x0 = this.api.timeToPosition(event.from);
         const x1 = this.api.timeToPosition(eventTo);
-        this.runRenderer(
+
+        if (!event.renderer) {
+          event.renderer = new DefaultEventRenderer();
+        }
+
+        event.renderer.render(
           ctx,
           event,
           this.isSelectedEvent(event),
@@ -253,46 +262,6 @@ export class Events<
       this.handleCanvasContextMenu,
     );
     this.api.canvas.addEventListener("mousemove", this.handleCanvasMousemove);
-  }
-
-  /**
-   * Renders an event using its renderer or the default renderer
-   * @param ctx - Canvas rendering context
-   * @param event - Event to render
-   * @param isSelected - Whether the event is selected
-   * @param x0 - Start X coordinate
-   * @param x1 - End X coordinate
-   * @param y - Y coordinate
-   * @param h - Height of the event
-   * @param viewConfiguration - Timeline view configuration
-   * @param timeToPosition - Optional function to convert time to position
-   */
-  protected runRenderer(
-    ctx: CanvasRenderingContext2D,
-    event: Event,
-    isSelected: boolean,
-    x0: number,
-    x1: number,
-    y: number,
-    h: number,
-    viewConfiguration: ViewConfiguration,
-    timeToPosition?: (n: number) => number,
-  ) {
-    if (!event.renderer) {
-      event.renderer = new DefaultEventRenderer();
-    }
-
-    event.renderer.render(
-      ctx,
-      event,
-      isSelected,
-      x0,
-      x1,
-      y,
-      h,
-      viewConfiguration,
-      timeToPosition,
-    );
   }
 
   protected handleCanvasMouseup = (event: MouseEvent) => {

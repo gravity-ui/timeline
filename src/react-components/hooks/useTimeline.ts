@@ -1,13 +1,18 @@
 import { useMemo } from "react";
 import { Timeline } from "../../Timeline";
-import { TimeLineConfig } from "../../types/configuration";
-import { TimelineEvent, TimelineMarker } from "../../types";
+import {
+  TimeLineConfig,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../../types";
 
 export const useTimeline = <
   TEvent extends TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 >(
-  config: TimeLineConfig<TEvent, TMarker>,
+  config: TimeLineConfig<TEvent, TMarker, TSection>,
 ) => {
   const timeline = useMemo(() => {
     return new Timeline(config);

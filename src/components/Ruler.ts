@@ -1,10 +1,15 @@
-import { RulerLevel, RulerSupLevel } from "../types/ruler";
 import { getLabelLevels } from "../constants/ruler";
 import dayjs from "dayjs";
 import { clamp, convertDomain } from "../helpers/math";
-import { BaseComponentInterface } from "../types/component";
+import {
+  BaseComponentInterface,
+  RulerLevel,
+  RulerSupLevel,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../types";
 import { CanvasApi } from "../CanvasApi";
-import { TimelineEvent, TimelineMarker } from "../types";
 
 /**
  * Ruler component responsible for rendering timescale and labels on the timeline
@@ -13,13 +18,14 @@ import { TimelineEvent, TimelineMarker } from "../types";
 export class Ruler<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > implements BaseComponentInterface
 {
-  private api: CanvasApi<TEvent, TMarker>;
+  private api: CanvasApi<TEvent, TMarker, TSection>;
   private levelCache = new Map<RulerLevel, number>();
   private labelLevels: RulerLevel[];
 
-  constructor(api: CanvasApi<TEvent, TMarker>) {
+  constructor(api: CanvasApi<TEvent, TMarker, TSection>) {
     this.api = api;
     this.labelLevels = getLabelLevels(this.api.getViewConfiguration().ruler);
   }

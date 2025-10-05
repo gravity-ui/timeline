@@ -1,10 +1,16 @@
-import { TimeLineConfig, TimelineEvent, TimelineMarker } from "../../types";
+import {
+  TimeLineConfig,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../../types";
 import { commonConfig } from "./common";
 import { MyMarker, MyMarkerRenderer } from "../MyMarkerRenderer";
 
 const events: TimeLineConfig<
   TimelineEvent,
-  TimelineMarker
+  TimelineMarker,
+  TimelineSection
 >["settings"]["events"] = [
   {
     id: "test4",
@@ -21,31 +27,35 @@ const colors: Pick<MyMarker, "hoverColor" | "activeColor"> = {
   activeColor: "rgb(255,198,2)",
 };
 
-export const markersBaseConfig: TimeLineConfig<TimelineEvent, TimelineMarker> =
-  {
-    settings: {
-      ...commonConfig,
-      events,
-      markers: [
-        {
-          time: 1739537150000,
-          color: "rgb(254, 127, 45)",
-          ...colors,
-          lineWidth: 1,
-        },
-        {
-          time: 1739537170000,
-          color: "rgb(11, 180, 193)",
-          ...colors,
-          lineWidth: 3,
-        },
-      ],
-    },
-  };
+export const markersBaseConfig: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection
+> = {
+  settings: {
+    ...commonConfig,
+    events,
+    markers: [
+      {
+        time: 1739537150000,
+        color: "rgb(254, 127, 45)",
+        ...colors,
+        lineWidth: 1,
+      },
+      {
+        time: 1739537170000,
+        color: "rgb(11, 180, 193)",
+        ...colors,
+        lineWidth: 3,
+      },
+    ],
+  },
+};
 
 export const collapsedBaseConfig: TimeLineConfig<
   TimelineEvent,
-  TimelineMarker
+  TimelineMarker,
+  TimelineSection
 > = {
   settings: {
     ...commonConfig,
@@ -81,7 +91,8 @@ export const collapsedBaseConfig: TimeLineConfig<
 
 export const markersWithLabelsConfig: TimeLineConfig<
   TimelineEvent,
-  TimelineMarker
+  TimelineMarker,
+  TimelineSection
 > = {
   settings: {
     ...commonConfig,
@@ -119,7 +130,11 @@ const commonCustomConfig: Pick<
   renderer: new MyMarkerRenderer(),
 };
 
-export const markersCustomRenderer: TimeLineConfig<TimelineEvent, MyMarker> = {
+export const markersCustomRenderer: TimeLineConfig<
+  TimelineEvent,
+  MyMarker,
+  TimelineSection
+> = {
   settings: {
     ...commonConfig,
     events,

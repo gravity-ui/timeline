@@ -1,7 +1,6 @@
 import dayjs from "dayjs";
 import { DAY, HOUR, MINUTE, MONTH, SECOND, YEAR } from "./timeConstants";
-import { RulerLevel, RulerSupLevel } from "../types/ruler";
-import { ViewConfigurationDefault } from "../types/configuration";
+import { RulerLevel, RulerSupLevel, ViewConfigurationDefault } from "../types";
 
 const minuteSupLabel: RulerSupLevel = {
   start(t) {

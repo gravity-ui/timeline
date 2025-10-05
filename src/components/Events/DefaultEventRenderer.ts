@@ -1,5 +1,5 @@
 import { AbstractEventRenderer, Hitbox } from "./AbstractEventRenderer";
-import { TimelineEvent } from "../../types/events";
+import { TimelineEvent } from "../../types";
 
 const DEFAULT_COLOR = "#333";
 const DEFAULT_SELECTED_COLOR = "#546";
