@@ -2,6 +2,7 @@ import { TimelineAxis } from "./axis";
 import { TimelineEvent } from "./events";
 import { TimelineMarker } from "./markers";
 import { MarkerDeselectionMode, ZoomMode } from "../enums";
+import { TimelineSection } from "./sections";
 
 export type RulerViewOptions = {
   spacing?: number;
@@ -41,6 +42,10 @@ export type AxesViewOptions = {
   solidLinePattern?: [number, number];
 };
 
+export type SectionViewOptions = {
+  hitboxPadding?: number;
+};
+
 export type EventsViewOptions = {
   font?: string;
   hitboxPadding?: number;
@@ -66,6 +71,7 @@ export type ViewConfiguration = {
   ruler?: RulerViewOptions;
   grid?: GridViewOptions;
   axes?: AxesViewOptions;
+  sections?: SectionViewOptions;
   events?: EventsViewOptions;
   markers?: MarkerViewOptions;
   camera?: CameraViewOptions;
@@ -75,12 +81,14 @@ export type ViewConfiguration = {
 export type TimelineSettings<
   TEvent extends TimelineEvent,
   TMarker extends TimelineMarker,
+  TSection extends TimelineSection,
 > = {
   start: number;
   end: number;
   axes: TimelineAxis[];
   events: TEvent[];
   markers?: TMarker[];
+  sections?: TSection[];
   selectedEventIds?: string[];
   markerDeselectionMode?: MarkerDeselectionMode;
   clickEventsCollectionFilter?: (candidates: TEvent[]) => TEvent[];
@@ -90,8 +98,9 @@ export type TimelineSettings<
 export type TimeLineConfig<
   TEvent extends TimelineEvent,
   TMarker extends TimelineMarker,
+  TSection extends TimelineSection,
 > = {
-  settings: TimelineSettings<TEvent, TMarker>;
+  settings: TimelineSettings<TEvent, TMarker, TSection>;
   viewConfiguration?: ViewConfiguration;
 };
 

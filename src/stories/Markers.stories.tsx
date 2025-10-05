@@ -12,6 +12,7 @@ import { StoryWrapper } from "./StoryWrapper";
 import {
   TimelineEvent,
   TimelineMarker,
+  TimelineSection,
   TimelineSettings,
   ViewConfiguration,
 } from "../types";
@@ -24,8 +25,13 @@ type ViewConfigurationControls = {
 type SettingsControls = {
   [K in keyof TimelineSettings<
     TimelineEvent,
-    TimelineMarker
-  > as `settings.${K}`]: TimelineSettings<TimelineEvent, TimelineMarker>[K];
+    TimelineMarker,
+    TimelineSection
+  > as `settings.${K}`]: TimelineSettings<
+    TimelineEvent,
+    TimelineMarker,
+    TimelineSection
+  >[K];
 };
 
 type StoryProps = SettingsControls & ViewConfigurationControls;

@@ -6,6 +6,7 @@ import { TimelineCanvas } from "../react-components/TimelineCanvas";
 import {
   TimelineEvent,
   TimelineMarker,
+  TimelineSection,
   TimelineSettings,
   ViewConfiguration,
 } from "../types";
@@ -17,8 +18,13 @@ type ViewConfigurationControls = {
 type SettingsControls = {
   [K in keyof TimelineSettings<
     TimelineEvent,
-    TimelineMarker
-  > as `settings.${K}`]: TimelineSettings<TimelineEvent, TimelineMarker>[K];
+    TimelineMarker,
+    TimelineSection
+  > as `settings.${K}`]: TimelineSettings<
+    TimelineEvent,
+    TimelineMarker,
+    TimelineSection
+  >[K];
 };
 
 type TimelineStoryProps = SettingsControls & ViewConfigurationControls;
@@ -33,7 +39,7 @@ export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
       }
       return acc;
     },
-    {} as TimelineSettings<TimelineEvent, TimelineMarker>,
+    {} as TimelineSettings<TimelineEvent, TimelineMarker, TimelineSection>,
   );
 
   // Reconstruct viewConfiguration object from flattened props

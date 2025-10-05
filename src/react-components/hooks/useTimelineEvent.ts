@@ -3,6 +3,7 @@ import {
   ApiEvent,
   TimelineEvent,
   TimelineMarker,
+  TimelineSection,
   UnwrapTimelineEvents,
   UnwrapTimelineEventsDetail,
 } from "../../types";
@@ -12,16 +13,17 @@ export function useTimelineEvent<
   Event extends keyof ApiEvent,
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 >(
   timeline: Timeline<TEvent, TMarker> | null,
   event: Event,
   cb: (
-    data: UnwrapTimelineEventsDetail<Event, TEvent, TMarker>,
-    event: UnwrapTimelineEvents<Event, TEvent, TMarker>,
+    data: UnwrapTimelineEventsDetail<Event, TEvent, TMarker, TSection>,
+    event: UnwrapTimelineEvents<Event, TEvent, TMarker, TSection>,
   ) => void,
 ) {
   const onEvent = useCallback(
-    (e: UnwrapTimelineEvents<Event, TEvent, TMarker>) => {
+    (e: UnwrapTimelineEvents<Event, TEvent, TMarker, TSection>) => {
       cb(e.detail, e);
     },
     [cb],

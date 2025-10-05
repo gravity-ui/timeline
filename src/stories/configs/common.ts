@@ -1,8 +1,13 @@
-import { TimeLineConfig, TimelineEvent, TimelineMarker } from "../../types";
+import {
+  TimeLineConfig,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../../types";
 import { MarkerDeselectionMode } from "../../enums";
 
 export const commonConfig: Pick<
-  TimeLineConfig<TimelineEvent, TimelineMarker>["settings"],
+  TimeLineConfig<TimelineEvent, TimelineMarker, TimelineSection>["settings"],
   "start" | "end" | "axes" | "selectedEventIds" | "markerDeselectionMode"
 > = {
   start: 1739537126347,

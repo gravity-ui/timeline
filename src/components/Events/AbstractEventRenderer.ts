@@ -1,5 +1,4 @@
-import { TimelineEvent } from "../../types/events";
-import { ViewConfiguration } from "../../types";
+import { TimelineEvent, ViewConfiguration } from "../../types";
 
 export type Hitbox = {
   top: number;

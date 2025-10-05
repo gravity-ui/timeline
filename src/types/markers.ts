@@ -1,4 +1,4 @@
-import { AbstractMarkerRenderer } from "../components/Markers/AbstractMarkerRenderer";
+import { AbstractMarkerRenderer } from "../components/Markers";
 
 export type TimelineMarker = {
   time: number;

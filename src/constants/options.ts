@@ -1,4 +1,4 @@
-import { ViewConfigurationDefault } from "../types/configuration";
+import { ViewConfigurationDefault } from "../types";
 import { defaultPalette } from "./colors";
 import { ZoomMode } from "../enums";
 
@@ -42,6 +42,9 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     lineWidth: 1,
     dashedLinePattern: [5, 3],
     solidLinePattern: [0, 0],
+  },
+  sections: {
+    hitboxPadding: 2,
   },
   events: {
     font: DEFAULT_FONT,

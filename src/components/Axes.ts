@@ -1,10 +1,14 @@
 import { clamp, rangeToRangeIntersect } from "../helpers/math";
 import { AxesIndex } from "../lib/AxesIndex";
-import { BaseComponentInterface } from "../types/component";
 import { CanvasApi } from "../CanvasApi";
-import { TimelineAxis } from "../types/axis";
 import { StrokeMode } from "../enums";
-import { TimelineEvent, TimelineMarker } from "../types";
+import {
+  BaseComponentInterface,
+  TimelineAxis,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../types";
 
 /**
  * Axes component responsible for managing and rendering timeline axes
@@ -15,13 +19,14 @@ export class Axes<
   Axis extends TimelineAxis = TimelineAxis,
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > implements BaseComponentInterface
 {
   public strokeMode = StrokeMode.STRAIGHT;
-  private api: CanvasApi<TEvent, TMarker>;
+  private api: CanvasApi<TEvent, TMarker, TSection>;
   private axesIndex!: AxesIndex<Axis>;
 
-  constructor(api: CanvasApi<TEvent, TMarker>) {
+  constructor(api: CanvasApi<TEvent, TMarker, TSection>) {
     this.api = api;
 
     this.axesIndex = new AxesIndex<Axis>([], {
