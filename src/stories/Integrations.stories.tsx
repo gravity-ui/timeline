@@ -5,7 +5,7 @@ import { TimelineWithPopup } from "./integrations/Popup";
 import { ListIntegration } from "./integrations/List";
 
 const meta = {
-  title: "Timeline/Integrations",
+  title: "Integrations/gravity-ui",
   component: null,
   decorators: [
     (Story) => (
