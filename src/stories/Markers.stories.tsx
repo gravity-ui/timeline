@@ -38,6 +38,196 @@ type StoryProps = SettingsControls & ViewConfigurationControls;
 const meta = {
   title: "Timeline/Markers",
   component: StoryWrapper as React.ComponentType<StoryProps>,
+  tags: ["autodocs"],
+  parameters: {
+    docs: {
+      description: {
+        component: `
+
+The Markers component is responsible for rendering timeline markers on the canvas. It handles vertical marker lines, labels, and their positioning with collision avoidance.
+
+## Key Features
+
+- **Vertical Markers**: Display temporal points on the timeline
+- **Marker Labels**: Text labels with automatic collision avoidance
+- **Marker Grouping**: Automatic grouping of closely positioned markers
+- **Group Zoom**: Click on marker groups for detailed view
+- **Selection and Hover**: Interactive marker states
+- **Custom Renderers**: Ability to customize appearance
+
+## Marker Structure
+
+Each marker in the timeline has the following structure:
+
+\`\`\`typescript
+type TimelineMarker = {
+  time: number;                    // Timestamp for marker position
+  color: string;                   // Marker line color
+  activeColor: string;             // Color when marker is selected (required)
+  hoverColor: string;              // Color when marker is hovered (required)
+  lineWidth?: number;              // Optional marker line width
+  label?: string;                  // Optional label text
+  labelColor?: string;             // Optional label color
+  renderer?: AbstractMarkerRenderer; // Optional custom renderer
+  nonSelectable?: boolean;         // Whether marker can be selected
+  group?: boolean;                 // Whether marker represents a group
+};
+\`\`\`
+
+## Marker Configuration
+
+### Basic Settings
+
+\`\`\`typescript
+const timeline = new Timeline({
+  settings: {
+    markers: [
+      {
+        time: Date.now(),
+        color: '#ff0000',
+        activeColor: '#ff5252',
+        hoverColor: '#ff1744',
+        label: 'Important Event',
+        lineWidth: 2
+      }
+    ]
+  }
+});
+\`\`\`
+
+### Display Settings
+
+\`\`\`typescript
+viewConfiguration: {
+  markers: {
+    font: '12px Arial',              // Font for labels
+    groupColor: '#fe7f2d',          // Color for grouped markers
+    groupColorHover: '#ff0000',     // Color when hovering over group
+    hitboxPadding: 2,               // Padding for click area
+    collapseMinDistance: 4,         // Minimum distance for grouping
+    collapseEnabled: true,          // Enable grouping
+    groupZoomEnabled: true,         // Enable group zoom
+    groupZoomPadding: 0.2,          // Padding around group (20%)
+    groupZoomMaxFactor: 0.5         // Maximum zoom factor
+  }
+}
+\`\`\`
+
+## Grouping and Zoom
+
+### Automatic Grouping
+
+Markers are automatically grouped when they are positioned closer than \`collapseMinDistance\` pixels. Grouped markers are displayed as a single marker with a number showing the count of markers in the group.
+
+### Group Zoom
+
+When clicking on a grouped marker, the timeline automatically zooms to display all individual markers in that group.
+
+#### Group Zoom Events
+
+\`\`\`typescript
+timeline.on('on-group-marker-click', (event) => {
+  const { groupMarker, originalMarkers, newInterval } = event.detail;
+  
+  console.log('Group clicked:', {
+    groupMarker,           // The grouped marker that was clicked
+    originalMarkers,       // Array of all markers in the group
+    newInterval: {          // New timeline interval
+      start: number,
+      end: number
+    }
+  });
+});
+\`\`\`
+
+## Render Priority
+
+The Markers component implements a right-to-left rendering strategy for labels to prevent overlapping. Additionally, selected and hovered markers have render priority, meaning their labels will always be displayed even if they overlap with other labels:
+
+- **Standard Labels**: Rendered right-to-left with collision avoidance
+- **Priority Labels**: Selected and hovered markers bypass collision detection
+- **Render Order**: Priority labels are positioned optimally without considering other labels
+
+## Performance
+
+### Spatial Indexing
+
+The Markers component uses RBush spatial indexing for efficient marker queries:
+
+\`\`\`typescript
+// Spatial index automatically handles large numbers of markers
+const index = new RBush<BBox & { marker: TMarker }>(MAX_INDEX_TREE_WIDTH);
+
+// Efficient rectangular queries
+const markers = timeline.api.getComponent('Markers');
+const markersInArea = markers.getMarkersAt(boundingRect);
+\`\`\`
+
+This ensures high-performance rendering and interaction even with thousands of markers.
+
+### Viewport Culling
+
+Only markers visible within the current viewport (plus overscan) are rendered:
+
+\`\`\`typescript
+// Only render markers that intersect with the visible time range
+const visibleMarkers = sortedMarkers.filter(marker => 
+  intersects(marker.time, viewStart, viewEnd)
+);
+\`\`\`
+
+### Text Dimension Caching
+
+Label dimensions are cached to avoid repeated canvas measurements:
+
+\`\`\`typescript
+// Cache avoids expensive measureText() calls
+const cachedSize = this.textWidthCache.get(labelText);
+\`\`\`
+
+## Custom Marker Renderers
+
+Create custom renderers for specialized marker visualization:
+
+\`\`\`typescript
+import { AbstractMarkerRenderer } from '@gravity-ui/timeline';
+
+class CustomMarkerRenderer extends AbstractMarkerRenderer {
+  render(data: {
+    ctx: CanvasRenderingContext2D;
+    marker: TimelineMarker;
+    isSelected: boolean;
+    isHovered: boolean;
+    markerPosition: number;
+    viewConfiguration: ViewConfiguration;
+    lastRenderedLabelPosition: { top: number; bottom: number };
+    timeToPosition: (n: number) => number;
+    getLabelSize: (label: string) => LabelSize;
+  }) {
+    const { ctx, marker, isSelected, isHovered, markerPosition } = data;
+    
+    // Custom marker line rendering
+    ctx.beginPath();
+    ctx.strokeStyle = isSelected ? marker.activeColor : 
+                     isHovered ? marker.hoverColor : marker.color;
+    ctx.lineWidth = marker.lineWidth || 2;
+    ctx.moveTo(markerPosition, 0);
+    ctx.lineTo(markerPosition, 200);
+    ctx.stroke();
+    
+    // Custom label rendering
+    if (marker.label) {
+      ctx.fillStyle = marker.labelColor || '#333333';
+      ctx.font = '12px Arial';
+      ctx.textAlign = 'center';
+      ctx.fillText(marker.label, markerPosition, 20);
+    }
+  }
+}
+\`\`\``,
+      },
+    },
+  },
   argTypes: {
     "settings.start": {
       control: {
@@ -227,6 +417,27 @@ const defaultViewConfigArgs: ViewConfigurationControls = {
   "viewConfiguration.events": defaultViewConfig.events,
   "viewConfiguration.markers": defaultViewConfig.markers,
   "viewConfiguration.camera": defaultViewConfig.camera,
+};
+
+export const Overview: Story = {
+  args: {
+    "settings.start": markersBaseConfig.settings.start,
+    "settings.end": markersBaseConfig.settings.end,
+    "settings.axes": markersBaseConfig.settings.axes,
+    "settings.events": markersBaseConfig.settings.events,
+    "settings.markers": markersBaseConfig.settings.markers,
+    "settings.markerDeselectionMode": MarkerDeselectionMode.ON_CLICK_ANYWHERE,
+    ...defaultViewConfigArgs,
+  },
+  parameters: {
+    storyKey: "overview",
+    docs: {
+      description: {
+        story:
+          "Overview of the Markers component with basic configuration and usage examples",
+      },
+    },
+  },
 };
 
 export const Basic: Story = {
