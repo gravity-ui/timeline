@@ -36,7 +36,7 @@ type SettingsControls = {
 type StoryProps = SettingsControls & ViewConfigurationControls;
 
 const meta = {
-  title: "Timeline/Markers",
+  title: "Components/Markers",
   component: StoryWrapper as React.ComponentType<StoryProps>,
   tags: ["autodocs"],
   parameters: {
