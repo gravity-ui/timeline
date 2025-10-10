@@ -2,7 +2,6 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import { baseTimelineConfig } from "./configs/events";
 import {
-  collapsedBaseConfig,
   markersBaseConfig,
   markersCustomRenderer,
   markersWithLabelsConfig,
@@ -250,26 +249,6 @@ export const Basic: Story = {
   },
 };
 
-export const WithCollapse: Story = {
-  args: {
-    "settings.start": collapsedBaseConfig.settings.start,
-    "settings.end": collapsedBaseConfig.settings.end,
-    "settings.axes": collapsedBaseConfig.settings.axes,
-    "settings.events": collapsedBaseConfig.settings.events,
-    "settings.markers": collapsedBaseConfig.settings.markers,
-    "settings.markerDeselectionMode": MarkerDeselectionMode.ON_CLICK_ANYWHERE,
-    ...defaultViewConfigArgs,
-  },
-  parameters: {
-    storyKey: "withCollapse",
-    docs: {
-      description: {
-        story: "Basic timeline configuration with markers",
-      },
-    },
-  },
-};
-
 export const WithLabels: Story = {
   args: {
     "settings.start": markersWithLabelsConfig.settings.start,
@@ -355,28 +334,6 @@ export const GroupZoomDemo: StoryObj<StoryProps> = {
       description: {
         story:
           "This story demonstrates the group zoom functionality. When you click on a grouped marker (showing a number), the timeline will zoom to show all individual markers in that group. Try clicking on the grouped markers to see the zoom effect.",
-      },
-    },
-  },
-};
-
-export const MarkerOnlyDeselection: Story = {
-  args: {
-    "settings.start": markersBaseConfig.settings.start,
-    "settings.end": markersBaseConfig.settings.end,
-    "settings.axes": markersBaseConfig.settings.axes,
-    "settings.events": markersBaseConfig.settings.events,
-    "settings.markers": markersBaseConfig.settings.markers,
-    "settings.markerDeselectionMode":
-      MarkerDeselectionMode.ON_MARKER_CLICK_ONLY,
-    ...defaultViewConfigArgs,
-  },
-  parameters: {
-    storyKey: "marker-only-deselection",
-    docs: {
-      description: {
-        story:
-          "Demonstration of marker deselection mode where clicking on already selected marker deselects it, clicking on different marker switches selection, and clicking empty space preserves selection.",
       },
     },
   },
