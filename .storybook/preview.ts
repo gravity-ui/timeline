@@ -10,12 +10,15 @@ const preview: Preview = {
         date: /Date$/i,
       },
     },
+    // Open Canvas (story) by default instead of Docs
+    viewMode: "story",
     docs: {
       toc: true,
     },
     options: {
+      // Ensure Playground/Default is first in the sidebar
       storySort: {
-        order: ["Intro", "Components", "*"],
+        order: ["Playground", ["Default", "*"], "Intro", "Components", "*"],
       },
     },
   },
