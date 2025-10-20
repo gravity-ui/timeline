@@ -3,6 +3,7 @@ import { TimelineEvent } from "./events";
 import { TimelineMarker } from "./markers";
 import { MarkerDeselectionMode, ZoomMode } from "../enums";
 import { TimelineSection } from "./sections";
+import { RulerLevel } from "./ruler";
 
 export type RulerViewOptions = {
   spacing?: number;
@@ -91,6 +92,9 @@ export type TimelineSettings<
   sections?: TSection[];
   selectedEventIds?: string[];
   markerDeselectionMode?: MarkerDeselectionMode;
+  customLevelLabels?: (
+    config: ViewConfigurationDefault["ruler"],
+  ) => RulerLevel[];
   clickEventsCollectionFilter?: (candidates: TEvent[]) => TEvent[];
   clickMarkerCollectionFilter?: (candidates: TMarker[]) => TMarker[];
 };

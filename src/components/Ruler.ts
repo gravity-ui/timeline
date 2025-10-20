@@ -27,7 +27,10 @@ export class Ruler<
 
   constructor(api: CanvasApi<TEvent, TMarker, TSection>) {
     this.api = api;
-    this.labelLevels = getLabelLevels(this.api.getViewConfiguration().ruler);
+
+    const { customLevelLabels } = this.api.getTimelineSettings();
+    const levels = customLevelLabels || getLabelLevels;
+    this.labelLevels = levels(this.api.getViewConfiguration().ruler);
   }
 
   /**
