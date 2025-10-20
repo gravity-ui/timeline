@@ -140,6 +140,70 @@ const timeline = new Timeline({
 });
 ```
 
+### Custom Level Labels
+
+You can provide custom label levels to override the default time marking behavior. This allows you to define your own time granularity and formatting logic:
+
+```typescript
+import dayjs from 'dayjs';
+
+const timeline = new Timeline({
+  settings: {
+    start: Date.now(),
+    end: Date.now() + 3600000,
+    axes: [],
+    events: [],
+    // Provide custom function to generate ruler levels
+    customLevelLabels: (rulerConfig) => {
+      return [
+        {
+          domain: 1000 * 60 * 60 * 24 * 365, // 1 year
+          format: 'YYYY',
+          step: (t) => t.add(1, 'year'),
+          start: (t) => dayjs(t).startOf('year'),
+          sup: {
+            format: 'MMM',
+            step: (t) => t.add(1, 'month'),
+            start: (t) => dayjs(t).startOf('month'),
+          }
+        },
+        {
+          domain: 1000 * 60 * 60 * 24 * 30, // 1 month
+          format: 'MMM DD',
+          step: (t) => t.add(1, 'day'),
+          start: (t) => dayjs(t).startOf('day'),
+        },
+        {
+          domain: 1000 * 60 * 60, // 1 hour
+          format: 'HH:mm',
+          step: (t) => t.add(15, 'minute'),
+          start: (t) => dayjs(t).startOf('hour'),
+        },
+      ];
+    }
+  },
+  viewConfiguration: {
+    ruler: {
+      height: 32,
+      font: '12px Arial',
+      spacing: 100,
+      position: 24,
+      subPosition: 12,
+    }
+  }
+});
+```
+
+**Custom Level Labels Parameters:**
+- `customLevelLabels`: A function that receives the ruler configuration and returns an array of `RulerLevel` objects
+- Each `RulerLevel` must have:
+  - `domain`: Maximum time domain in milliseconds for this level
+  - `format`: Date format string (uses dayjs format)
+  - `step`: Function to step to the next time point
+  - `start`: Function to get the start time for a given timestamp
+  - `color` (optional): Function to dynamically set label color
+  - `sup` (optional): Secondary level for additional granularity
+
 ## Implementation Details
 
 ### Level Selection
