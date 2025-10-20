@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.23.0](https://github.com/gravity-ui/timeline/compare/v1.22.0...v1.23.0) (2025-10-20)
+
+
+### Features
+
+* **Ruler:** add custom label levels ([083eac5](https://github.com/gravity-ui/timeline/commit/083eac5b597e453436090ca8f1588b05dc0b8b66))
+* **Storybook:** add documentation ([46edb15](https://github.com/gravity-ui/timeline/commit/46edb15db7f7a842ae3751c7cd5a13ce3b2dadc0))
+
+
+### Bug Fixes
+
+* **Ruler/Config:** transparent ruler ([738e98b](https://github.com/gravity-ui/timeline/commit/738e98bb14b86d5f555cc5dbfaac723eaca6eec6))
+
 ## [1.22.0](https://github.com/gravity-ui/timeline/compare/v1.21.3...v1.22.0) (2025-10-05)
 
 
