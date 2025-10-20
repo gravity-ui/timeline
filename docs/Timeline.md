@@ -69,6 +69,7 @@ const timeline = new Timeline({
       markers?: TimelineMarker[]; // Optional markers
       selectedEventIds?: string[]; // Optional selected events
       markerDeselectionMode?: MarkerDeselectionMode; // Optional marker deselection behavior
+      customLevelLabels?: (config: ViewConfigurationDefault['ruler']) => RulerLevel[]; // Optional custom ruler level labels
       clickEventsCollectionFilter?: (candidates: Event[]) => Event[]; // Optional event click filter
       clickMarkerCollectionFilter?: (candidates: Marker[]) => Marker[]; // Optional marker click filter
     };
@@ -301,6 +302,69 @@ const timeline2 = new Timeline({
 
 - **`ON_CLICK_ANYWHERE`**: Best for general use where you want quick deselection
 - **`ON_MARKER_CLICK_ONLY`**: Useful when you want to preserve marker selection for longer periods, such as when building selection-persistent interfaces or when markers trigger external UI elements
+
+### Custom Ruler Level Labels
+
+The `customLevelLabels` setting allows you to define custom time marking levels for the ruler, overriding the default time granularity and formatting. This is useful when you need specific time scales or custom formatting for your timeline.
+
+#### Configuration
+
+```typescript
+import dayjs from 'dayjs';
+
+const timeline = new Timeline({
+  settings: {
+    // ... other settings
+    customLevelLabels: (rulerConfig) => {
+      return [
+        {
+          domain: 1000 * 60 * 60 * 24 * 365, // 1 year
+          format: 'YYYY',
+          step: (t) => t.add(1, 'year'),
+          start: (t) => dayjs(t).startOf('year'),
+          sup: {
+            format: 'MMM',
+            step: (t) => t.add(1, 'month'),
+            start: (t) => dayjs(t).startOf('month'),
+          }
+        },
+        {
+          domain: 1000 * 60 * 60 * 24 * 30, // 1 month
+          format: 'MMM DD',
+          step: (t) => t.add(1, 'day'),
+          start: (t) => dayjs(t).startOf('day'),
+        },
+        {
+          domain: 1000 * 60 * 60, // 1 hour
+          format: 'HH:mm',
+          step: (t) => t.add(15, 'minute'),
+          start: (t) => dayjs(t).startOf('hour'),
+        },
+      ];
+    }
+  }
+});
+```
+
+#### Parameters
+
+- **`customLevelLabels`**: A function that receives the ruler configuration object and returns an array of `RulerLevel` objects
+- Each `RulerLevel` object must include:
+  - **`domain`**: Maximum time domain in milliseconds for this level to be active
+  - **`format`**: Date format string (uses dayjs format syntax)
+  - **`step`**: Function that takes a dayjs object and returns the next time point
+  - **`start`**: Function that takes a timestamp and returns the starting dayjs object
+  - **`color`** (optional): Function to dynamically set label color based on time
+  - **`sup`** (optional): Secondary level (`RulerSupLevel`) for additional time granularity
+
+#### Use Cases
+
+- **Custom time scales**: Define business-specific time periods (quarters, fiscal years, sprints)
+- **Custom formatting**: Apply region-specific date formats or custom labels
+- **Dynamic coloring**: Highlight specific time periods with different colors
+- **Fine-grained control**: Adjust time marking density for specific zoom levels
+
+For more details and examples, see the [Ruler documentation](./Ruler.md#custom-level-labels).
 
 ### Camera Configuration
 

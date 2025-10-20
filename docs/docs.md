@@ -46,7 +46,7 @@ timeline.settings.events = [{
 ```
 
 ### [Ruler](./Ruler.md)
-Renders the time scale and labels on the timeline, handling time intervals and grid lines.
+Renders the time scale and labels on the timeline, handling time intervals and grid lines. Supports custom level labels for defining custom time granularity and formatting.
 
 ```typescript
 // Ruler configuration through viewConfiguration
@@ -54,6 +54,18 @@ timeline.viewConfiguration.ruler = {
   height: 32,
   font: '12px Arial',
   spacing: 100
+};
+
+// Custom ruler level labels (optional)
+timeline.settings.customLevelLabels = (rulerConfig) => {
+  return [
+    {
+      domain: 1000 * 60 * 60 * 24 * 365,
+      format: 'YYYY',
+      step: (t) => t.add(1, 'year'),
+      start: (t) => dayjs(t).startOf('year')
+    }
+  ];
 };
 ```
 
@@ -190,10 +202,16 @@ Visit our [Storybook](https://preview.gravity-ui.com/timeline/) to explore inter
   - Use `clickEventsCollectionFilter` and `clickMarkerCollectionFilter` to customize click behavior
   - Implement permission-based filtering for secure interactions
 
-- **Performance**
+- **Ruler Configuration**
   - Choose appropriate time formats for the ruler
+  - Use `customLevelLabels` to define business-specific time scales (quarters, fiscal years, sprints)
+  - Consider the density of labels at different zoom levels
+  - Leverage custom color functions to highlight specific time periods
+
+- **Performance**
   - Use viewport culling for large datasets
   - Leverage spatial indexing for marker/event queries
+  - Minimize the number of custom ruler levels for better performance
 
 ## API Reference
 
