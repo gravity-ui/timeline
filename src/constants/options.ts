@@ -15,7 +15,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     height: 41,
     font: DEFAULT_FONT,
     color: {
-      background: defaultPalette.white,
+      background: "transparent",
       primaryLevel: defaultPalette.gray1,
       secondaryLevel: defaultPalette.gray7,
       textOutlineColor: defaultPalette.white,
