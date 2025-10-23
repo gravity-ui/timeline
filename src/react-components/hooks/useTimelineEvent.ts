@@ -15,7 +15,7 @@ export function useTimelineEvent<
   TMarker extends TimelineMarker = TimelineMarker,
   TSection extends TimelineSection = TimelineSection,
 >(
-  timeline: Timeline<TEvent, TMarker> | null,
+  timeline: Timeline<TEvent, TMarker, TSection> | null,
   event: Event,
   cb: (
     data: UnwrapTimelineEventsDetail<Event, TEvent, TMarker, TSection>,

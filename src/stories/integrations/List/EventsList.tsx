@@ -2,11 +2,15 @@ import React, { UIEvent, useMemo } from "react";
 import { Flex } from "@gravity-ui/uikit";
 import cn from "bem-cn-lite";
 import "./EventsList.scss";
-import { TimelineEvent, TimelineMarker } from "../../../types";
+import { TimelineEvent, TimelineMarker, TimelineSection } from "../../../types";
 import { Timeline } from "../../../Timeline";
 
-type Props<TEvent extends TimelineEvent, TMarker extends TimelineMarker> = {
-  timeline: Timeline<TEvent, TMarker>;
+type Props<
+  TEvent extends TimelineEvent,
+  TMarker extends TimelineMarker,
+  TSection extends TimelineSection,
+> = {
+  timeline: Timeline<TEvent, TMarker, TSection>;
   items: string[];
   itemHeight: number;
 };
@@ -16,11 +20,12 @@ const block = cn("event-list-container");
 export const EventsList = <
   TEvent extends TimelineEvent,
   TMarker extends TimelineMarker,
+  TSection extends TimelineSection,
 >({
   items,
   itemHeight,
   timeline,
-}: Props<TEvent, TMarker>) => {
+}: Props<TEvent, TMarker, TSection>) => {
   const handleScroll = (e: UIEvent<HTMLDivElement>) => {
     const { scrollTop } = e.currentTarget;
     timeline.api.setCanvasScrollTop(scrollTop);
