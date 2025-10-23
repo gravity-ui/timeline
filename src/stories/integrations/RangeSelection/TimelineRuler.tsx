@@ -1,6 +1,6 @@
 import React, { FC, useState } from "react";
 import { Timeline } from "../../../Timeline";
-import { TimelineEvent, TimelineMarker } from "../../../types";
+import { TimelineEvent, TimelineMarker, TimelineSection } from "../../../types";
 import { DateTime, dateTimeParse } from "@gravity-ui/date-utils";
 import { RangeDateSelection, RangeValue } from "@gravity-ui/date-components";
 import { useTimelineEvent } from "../../../react-components";
@@ -10,8 +10,9 @@ type Interval = { start: number; end: number };
 type Props<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
 > = {
-  timeline: Timeline<TEvent, TMarker>;
+  timeline: Timeline<TEvent, TMarker, TSection>;
   initialInterval: Interval;
 };
 

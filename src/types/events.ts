@@ -78,11 +78,11 @@ export type ApiEvent<
 };
 
 export type UnwrapTimelineEvents<
-  Key extends keyof ApiEvent<TEvent>,
+  Key extends keyof ApiEvent<TEvent, TMarker, TSection>,
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
   TSection extends TimelineSection = TimelineSection,
-  U extends ApiEvent<TEvent, TMarker>[Key] = ApiEvent<
+  U extends ApiEvent<TEvent, TMarker, TSection>[Key] = ApiEvent<
     TEvent,
     TMarker,
     TSection
@@ -91,10 +91,14 @@ export type UnwrapTimelineEvents<
 > = P extends CustomEvent ? P : never;
 
 export type UnwrapTimelineEventsDetail<
-  Key extends keyof ApiEvent<TEvent, TMarker>,
+  Key extends keyof ApiEvent<TEvent, TMarker, TSection>,
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
   TSection extends TimelineSection = TimelineSection,
-  U extends ApiEvent<TEvent, TMarker>[Key] = ApiEvent<TEvent, TMarker>[Key],
+  U extends ApiEvent<TEvent, TMarker, TSection>[Key] = ApiEvent<
+    TEvent,
+    TMarker,
+    TSection
+  >[Key],
   P extends Parameters<U>[0] = Parameters<U>[0],
 > = UnwrapTimelineEvents<Key, TEvent, TMarker, TSection, U, P>["detail"];

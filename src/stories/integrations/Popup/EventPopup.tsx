@@ -1,13 +1,18 @@
 import React, { ReactNode, useCallback, useState } from "react";
 import { Timeline } from "../../../Timeline";
-import { HoverEvent, TimelineEvent, TimelineMarker } from "../../../types";
+import {
+  HoverEvent,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "../../../types";
 import { Popup } from "@gravity-ui/uikit";
 import { useTimelineEvent } from "../../../react-components";
 
 type Position = { x0: number; x1: number; y0: number; h: number };
 
 type Props<TEvent extends TimelineEvent> = {
-  timeline: Timeline<TimelineEvent, TimelineMarker>;
+  timeline: Timeline<TimelineEvent, TimelineMarker, TimelineSection>;
   content: (event: TEvent) => ReactNode;
 };
 
