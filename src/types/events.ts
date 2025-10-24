@@ -38,11 +38,23 @@ export type SelectEvent<TEvent extends TimelineEvent = TimelineEvent> = {
 export type ContextEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   event?: TEvent;
 } & BaseEventData;
-export type HoverEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+export type HoverEvent<
+  TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
+> = {
   events: TEvent[];
+  markers: TMarker[];
+  sections: TSection[];
 } & BaseEventData;
-export type LeaveEvent<TEvent extends TimelineEvent = TimelineEvent> = {
+export type LeaveEvent<
+  TEvent extends TimelineEvent = TimelineEvent,
+  TMarker extends TimelineMarker = TimelineMarker,
+  TSection extends TimelineSection = TimelineSection,
+> = {
   events: TEvent[];
+  markers: TMarker[];
+  sections: TSection[];
 };
 export type CameraEvent = { from: number; to: number };
 export type MarkerSelectEvent<TMarker extends TimelineMarker = TimelineMarker> =
@@ -66,8 +78,12 @@ export type ApiEvent<
   ) => void;
   "on-context-click": (event: CustomEvent<ContextEvent<TEvent>>) => void;
   "on-select-change": (event: CustomEvent<SelectEvent<TEvent>>) => void;
-  "on-hover": (events: CustomEvent<HoverEvent<TEvent>>) => void;
-  "on-leave": (events: CustomEvent<LeaveEvent<TEvent>>) => void;
+  "on-hover": (
+    events: CustomEvent<HoverEvent<TEvent, TMarker, TSection>>,
+  ) => void;
+  "on-leave": (
+    events: CustomEvent<LeaveEvent<TEvent, TMarker, TSection>>,
+  ) => void;
   "on-camera-change": (event: CustomEvent<CameraEvent>) => void;
   "on-marker-select-change": (
     markers: CustomEvent<MarkerSelectEvent<TMarker>>,
