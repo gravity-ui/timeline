@@ -60,12 +60,13 @@ export class Sections<
 
   public rebuildIndex(): void {
     const { end } = this.api.getInterval();
+    const rulerHeight = this.api.getRulerHeight();
 
     const boxes = this._sections.map(
       (section): BBox & { section: TSection } => {
         const minX = section.from;
         const maxX = section.to || end;
-        const minY = 0;
+        const minY = rulerHeight;
         const maxY = this.api.ctx.canvas.height;
         return { minX, maxX, minY, maxY, section };
       },
@@ -79,6 +80,8 @@ export class Sections<
     const viewConfiguration = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
     const ctx = this.api.ctx;
+    const rulerHeight = this.api.getRulerHeight();
+    const contentHeight = ctx.canvas.height - rulerHeight;
 
     for (let i = 0, len = this._sections.length; i < len; i += 1) {
       const section = this._sections[i];
@@ -97,8 +100,8 @@ export class Sections<
           section,
           x0,
           x1,
-          y0: 0,
-          h: this.api.ctx.canvas.height,
+          y0: rulerHeight,
+          h: contentHeight,
           isHovered: this.isHoveredSection(section.id),
           viewConfiguration,
           timeToPosition: this.api.timeToPosition,

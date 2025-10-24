@@ -28,7 +28,7 @@ export class DefaultSectionRenderer<
 
     ctx.beginPath();
     ctx.fillStyle = isHovered ? hoverColor : section.color;
-    ctx.rect(x0, y0 - h / 2, x1 - x0, h);
+    ctx.rect(x0, y0, x1 - x0, h);
     ctx.fill();
   }
 
