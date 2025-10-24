@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.24.0](https://github.com/gravity-ui/timeline/compare/v1.23.0...v1.24.0) (2025-10-24)
+
+
+### Features
+
+* **TimelineController:** general hover and leave events ([149583e](https://github.com/gravity-ui/timeline/commit/149583e0d5ef6bef3212b3275d08255f626024ff))
+
+
+### Bug Fixes
+
+* **Sections:** the section is located on Ruler ([d8b99d1](https://github.com/gravity-ui/timeline/commit/d8b99d1e761a5f8452211530c43984cfdaa906b7))
+* **Sections:** type errors ([027c842](https://github.com/gravity-ui/timeline/commit/027c84207a31e3661e9c4febdfaa10af19ed72fb))
+
 ## [1.23.0](https://github.com/gravity-ui/timeline/compare/v1.22.0...v1.23.0) (2025-10-20)
 
 
