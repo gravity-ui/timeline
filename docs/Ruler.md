@@ -204,6 +204,96 @@ const timeline = new Timeline({
   - `color` (optional): Function to dynamically set label color
   - `sup` (optional): Secondary level for additional granularity
 
+### Localized Labels
+
+To display localized date/time labels, import the desired dayjs locale and apply it in the `start` function:
+
+```typescript
+import dayjs from 'dayjs';
+import 'dayjs/locale/ru';  // Import Russian locale
+
+const timeline = new Timeline({
+  settings: {
+    start: Date.now(),
+    end: Date.now() + 3600000 * 24 * 365,
+    axes: [],
+    events: [],
+    customLevelLabels: () => [
+      {
+        domain: 1000 * 60 * 60 * 24 * 365, // 1 year
+        format: 'MMMM YYYY',              // Will display as "Январь 2024"
+        step: (t) => t.add(1, 'month'),
+        start: (t) => dayjs(t).locale('ru').startOf('month'),  // Apply locale
+        sup: {
+          format: 'YYYY',
+          step: (t) => t.add(1, 'year'),
+          start: (t) => dayjs(t).locale('ru').startOf('year')   // Apply locale
+        } 
+      },
+      {
+        domain: 1000 * 60 * 60 * 24 * 30, // 1 month
+        format: 'D MMMM',                  // Will display as "15 Января"
+        step: (t) => t.add(1, 'day'),
+        start: (t) => dayjs(t).locale('ru').startOf('day')
+      }
+    ]
+  }
+});
+```
+
+**Important:** The locale is preserved throughout the rendering process. The dayjs object returned from `start` maintains its locale when formatting labels.
+
+### Dynamic Locale Switching
+
+For applications that need to change the locale at runtime (e.g., user preference switching), use the global dayjs locale:
+
+```typescript
+import dayjs from 'dayjs';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/en';
+import 'dayjs/locale/de';
+
+// Create levels WITHOUT .locale() calls
+const timeline = new Timeline({
+  settings: {
+    start: Date.now(),
+    end: Date.now() + 3600000 * 24 * 365,
+    axes: [],
+    events: [],
+    customLevelLabels: () => [
+      {
+        domain: 1000 * 60 * 60 * 24 * 365,
+        format: 'MMMM YYYY',
+        step: (t) => t.add(1, 'month'),
+        start: (t) => dayjs(t).startOf('month'),  // No .locale() call
+      }
+    ]
+  }
+});
+
+// Function to switch locale dynamically
+function switchLocale(locale: string) {
+  dayjs.locale(locale);  // Set global locale
+  timeline.render();     // Re-render with new locale
+}
+
+// Initial render with English (default)
+timeline.init(canvas);
+
+// Switch to Russian
+switchLocale('ru');  // All labels will be in Russian
+
+// Switch to German
+switchLocale('de');  // All labels will be in German
+```
+
+**Approach Comparison:**
+
+| Approach | Use Case | Pros | Cons |
+|----------|----------|------|------|
+| **Per-level locale** (`start: (t) => dayjs(t).locale('ru')...`) | Fixed locale per timeline instance | Explicit, multiple timelines with different locales | Cannot change dynamically |
+| **Global locale** (`dayjs.locale('ru')`) | Dynamic locale switching | Simple, works across all timelines | Global state affects all dayjs usage |
+
 ## Implementation Details
 
 ### Level Selection
@@ -256,7 +346,7 @@ private renderLevel(
 
   // Render fully visible labels
   for (let t = t0; Number(t) < end; t = level.step(t)) {
-    const label = dayjs(t).format(level.format);
+    const label = t.format(level.format);  // Preserves locale from level.start()
     const x = this.timeToPosition(t);
 
     if (x > 10 && x < width) {

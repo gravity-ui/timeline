@@ -161,7 +161,7 @@ export class Ruler<
 
     // Render fully visible labels
     for (let t = t0; Number(t) < end; t = level.step(t)) {
-      const label = dayjs(t).format(level.format);
+      const label = t.format(level.format);
       const x = this.timeToPosition(t);
 
       if (x > 10 && x < width) {
@@ -177,7 +177,7 @@ export class Ruler<
   }
 
   /**
-   * Renders partially visible label at the edge of visible area
+   * Renders partially visible label at the edge of the visible area
    */
   private renderEdgeLabel(
     level: RulerLevel | RulerSupLevel,
@@ -187,7 +187,8 @@ export class Ruler<
   ) {
     const { ctx } = this.api;
     const firstLabelTimestamp = this.positionToTime(10);
-    const firstLabel = dayjs(firstLabelTimestamp).format(level.format);
+    const firstLabelDayjs = level.start(firstLabelTimestamp);
+    const firstLabel = firstLabelDayjs.format(level.format);
 
     const firstMark = clamp(
       10,

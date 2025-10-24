@@ -1,6 +1,12 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react";
 import dayjs from "dayjs";
+import "dayjs/locale/ru";
+import "dayjs/locale/de";
+import "dayjs/locale/fr";
+import "dayjs/locale/es";
+import "dayjs/locale/ja";
+import "dayjs/locale/zh-cn";
 import { baseTimelineConfig } from "./configs/events";
 import { defaultViewConfig } from "../constants/options";
 import { StoryWrapper } from "./StoryWrapper";
@@ -111,6 +117,57 @@ settings: {
     ];
   }
 }
+\`\`\`
+
+### Localization
+
+To use localized date/time labels, import the desired dayjs locale and apply it in the \`start\` function:
+
+\`\`\`typescript
+import dayjs from 'dayjs';
+import 'dayjs/locale/ru';  // Import Russian locale
+
+settings: {
+  customLevelLabels: () => [
+    {
+      domain: YEAR,
+      format: 'MMMM YYYY',              // Will display as "Январь 2024"
+      step: (t) => t.add(1, 'month'),
+      start: (t) => dayjs(t).locale('ru').startOf('month')  // Apply locale here
+    }
+  ]
+}
+\`\`\`
+
+The locale is preserved throughout the rendering process, ensuring all labels use the specified locale.
+
+### Dynamic Locale Switching
+
+For applications that need to change locale at runtime, use global dayjs locale without \`.locale()\` calls in \`start\`:
+
+\`\`\`typescript
+import dayjs from 'dayjs';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/en';
+
+// Don't call .locale() in start functions
+settings: {
+  customLevelLabels: () => [
+    {
+      domain: YEAR,
+      format: 'MMMM YYYY',
+      step: (t) => t.add(1, 'month'),
+      start: (t) => dayjs(t).startOf('month')  // No .locale() call
+    }
+  ]
+}
+
+// Switch locale dynamically
+dayjs.locale('ru');
+timeline.render();  // Russian labels
+
+dayjs.locale('en');
+timeline.render();  // English labels
 \`\`\`
 
 ## RulerLevel Structure
@@ -396,6 +453,213 @@ export const SprintLevels: Story = {
       description: {
         story:
           "Demonstration of sprint-based time levels with 2-week sprints. Each sprint is labeled and alternately colored (green for even sprints, orange for odd sprints). Weekends are shown in gray. This is useful for agile project management and development planning.",
+      },
+    },
+  },
+};
+
+// Helper to create localized levels (Russian)
+const createLocalizedLevels = (locale: string): RulerLevel[] => {
+  return [
+    {
+      domain: DAY,
+      format: "HH",
+      step: (t) => t.add(1, "hour"),
+      start: (t) => dayjs(t).locale(locale).startOf("hour"),
+      sup: {
+        format: "D MMMM",
+        step: (t) => t.add(1, "day"),
+        start: (t) => dayjs(t).locale(locale).startOf("day"),
+      },
+    },
+    {
+      domain: MONTH,
+      format: "D",
+      step: (t) => t.add(1, "day"),
+      start: (t) => dayjs(t).locale(locale).startOf("day"),
+      color: (t) => {
+        const weekday = dayjs(t).day();
+        return weekday === 6 || weekday === 0 ? "#E0E0E0" : null;
+      },
+      sup: {
+        format: "MMMM",
+        step: (t) => t.add(1, "month"),
+        start: (t) => dayjs(t).locale(locale).startOf("month"),
+      },
+    },
+    {
+      domain: YEAR,
+      format: "MMMM",
+      step: (t) => t.add(1, "month"),
+      start: (t) => dayjs(t).locale(locale).startOf("month"),
+      sup: {
+        format: "YYYY",
+        step: (t) => t.add(1, "year"),
+        start: (t) => dayjs(t).locale(locale).startOf("year"),
+      },
+    },
+    {
+      domain: Infinity,
+      format: "YYYY",
+      step: (t) => t.add(1, "year"),
+      start: (t) => dayjs(t).locale(locale).startOf("year"),
+    },
+  ];
+};
+
+export const LocalizedRussian: Story = {
+  args: {
+    "settings.start": now - 60 * DAY, // 2 months ago
+    "settings.end": now + 60 * DAY, // 2 months from now
+    "settings.axes": baseTimelineConfig.settings.axes,
+    "settings.events": baseTimelineConfig.settings.events,
+    "settings.customLevelLabels": () => createLocalizedLevels("ru"),
+    ...defaultViewConfigArgs,
+  },
+  parameters: {
+    storyKey: "localized-ru",
+    docs: {
+      description: {
+        story:
+          "Demonstration of localized ruler with Russian locale. Month and day names are displayed in Russian. To use localization, import the desired locale from dayjs (e.g., `import 'dayjs/locale/ru'`) and apply it in the `start` function using `.locale('ru')`. The fix ensures that the locale is preserved throughout the rendering process.",
+      },
+    },
+  },
+};
+
+// Helper to create levels that use global dayjs locale
+const createGlobalLocaleLevels = (): RulerLevel[] => {
+  return [
+    {
+      domain: DAY,
+      format: "HH",
+      step: (t) => t.add(1, "hour"),
+      start: (t) => dayjs(t).startOf("hour"),
+      sup: {
+        format: "D MMMM",
+        step: (t) => t.add(1, "day"),
+        start: (t) => dayjs(t).startOf("day"),
+      },
+    },
+    {
+      domain: MONTH,
+      format: "D",
+      step: (t) => t.add(1, "day"),
+      start: (t) => dayjs(t).startOf("day"),
+      color: (t) => {
+        const weekday = dayjs(t).day();
+        return weekday === 6 || weekday === 0 ? "#E0E0E0" : null;
+      },
+      sup: {
+        format: "MMMM",
+        step: (t) => t.add(1, "month"),
+        start: (t) => dayjs(t).startOf("month"),
+      },
+    },
+    {
+      domain: YEAR,
+      format: "MMMM",
+      step: (t) => t.add(1, "month"),
+      start: (t) => dayjs(t).startOf("month"),
+      sup: {
+        format: "YYYY",
+        step: (t) => t.add(1, "year"),
+        start: (t) => dayjs(t).startOf("year"),
+      },
+    },
+    {
+      domain: Infinity,
+      format: "YYYY",
+      step: (t) => t.add(1, "year"),
+      start: (t) => dayjs(t).startOf("year"),
+    },
+  ];
+};
+
+type DynamicLocaleStoryProps = StoryProps & {
+  locale: string;
+};
+
+export const DynamicLocale: StoryObj<DynamicLocaleStoryProps> = {
+  args: {
+    "settings.start": now - 60 * DAY, // 2 months ago
+    "settings.end": now + 60 * DAY, // 2 months from now
+    "settings.axes": baseTimelineConfig.settings.axes,
+    "settings.events": baseTimelineConfig.settings.events,
+    "settings.customLevelLabels": createGlobalLocaleLevels,
+    ...defaultViewConfigArgs,
+    locale: "en",
+  },
+  argTypes: {
+    locale: {
+      control: {
+        type: "select",
+      },
+      options: ["en", "ru", "de", "fr", "es", "ja", "zh-cn"],
+      description: "Select locale to dynamically change ruler labels language",
+      table: {
+        category: "Localization",
+        defaultValue: { summary: "en" },
+      },
+    },
+  },
+  render: (args) => {
+    // Set global dayjs locale based on selected value
+    dayjs.locale(args.locale);
+
+    const { locale, ...storyWrapperProps } = args;
+    return <StoryWrapper {...storyWrapperProps} key={locale} />;
+  },
+  parameters: {
+    storyKey: "dynamic-locale",
+    docs: {
+      description: {
+        story: `
+Demonstration of dynamic locale switching using global dayjs locale. Use the **locale** selector above to switch between different languages and see the ruler labels change in real-time.
+
+### Supported Locales:
+- **en** - English (default)
+- **ru** - Russian (Русский)
+- **de** - German (Deutsch)
+- **fr** - French (Français)
+- **es** - Spanish (Español)
+- **ja** - Japanese (日本語)
+- **zh-cn** - Chinese Simplified (简体中文)
+
+### How It Works:
+
+This approach uses global dayjs locale without \`.locale()\` calls in the level \`start\` functions:
+
+\`\`\`typescript
+import dayjs from 'dayjs';
+import 'dayjs/locale/ru';
+import 'dayjs/locale/en';
+
+// Create levels WITHOUT .locale() calls in start functions
+const levels: RulerLevel[] = [
+  {
+    domain: YEAR,
+    format: 'MMMM YYYY',
+    step: (t) => t.add(1, 'month'),
+    start: (t) => dayjs(t).startOf('month'),  // No .locale() here
+  }
+];
+
+// Change locale dynamically
+function switchLocale(locale: string) {
+  dayjs.locale(locale);  // Set global locale
+  timeline.render();     // Re-render to apply changes
+}
+
+switchLocale('ru');  // → Январь 2024
+switchLocale('en');  // → January 2024
+\`\`\`
+
+### When to Use This Approach:
+- Applications with user language preferences
+- Multi-language dashboards
+- Any scenario requiring runtime locale switching
+        `,
       },
     },
   },
