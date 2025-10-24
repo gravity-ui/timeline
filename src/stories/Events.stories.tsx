@@ -301,12 +301,28 @@ timeline.on('on-context-click', (event) => {
 
 ### Hover Events
 
-Track event hover states:
+Track hover states for events, markers, and sections:
 
 \`\`\`typescript
 timeline.on('on-hover', (event) => {
-  const { event: hoveredEvent, time, relativeX, relativeY } = event.detail;
-  console.log('Hovered event:', hoveredEvent);
+  const { events, markers, sections, time, relativeX, relativeY } = event.detail;
+  console.log('Hovered events:', events);
+  console.log('Hovered markers:', markers);
+  console.log('Hovered sections:', sections);
+  console.log('Hover position:', { time, x: relativeX, y: relativeY });
+});
+\`\`\`
+
+### Leave Events
+
+Track when mouse leaves events, markers, and sections:
+
+\`\`\`typescript
+timeline.on('on-leave', (event) => {
+  const { events, markers, sections } = event.detail;
+  console.log('Left events:', events);
+  console.log('Left markers:', markers);
+  console.log('Left sections:', sections);
 });
 \`\`\``,
       },

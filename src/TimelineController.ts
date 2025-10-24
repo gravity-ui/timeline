@@ -23,6 +23,11 @@ export class TimelineController<
 > {
   api: CanvasApi<TEvent, TMarker, TSection>;
   private resizeObserver?: ResizeObserver;
+  private activeElements: {
+    events: TEvent[];
+    markers: TMarker[];
+    sections: TSection[];
+  } | null = null;
 
   private emitCameraChange = debounce_((newStart: number, newEnd: number) => {
     this.api.emit("on-camera-change", { from: newStart, to: newEnd });
@@ -49,6 +54,7 @@ export class TimelineController<
     this.resizeObserver.observe(this.api.canvas);
     this.api.canvas.addEventListener("wheel", this.handleCanvasWheel);
     this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
+    this.api.canvas.addEventListener("mousemove", this.handleCanvasMouseMove);
   }
 
   /**
@@ -59,6 +65,10 @@ export class TimelineController<
     this.resizeObserver = undefined;
     this.api.canvas.removeEventListener("wheel", this.handleCanvasWheel);
     this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
+    this.api.canvas.removeEventListener(
+      "mousemove",
+      this.handleCanvasMouseMove,
+    );
   }
 
   /**
@@ -181,5 +191,85 @@ export class TimelineController<
         : markers,
       sections,
     });
+  };
+
+  /**
+   * Handles mouse move events on the canvas
+   * Emits hover and leave events for events, markers, and sections
+   * @param event - MouseEvent from canvas
+   * @private
+   */
+  private handleCanvasMouseMove = (event: MouseEvent): void => {
+    const eventsComponent = this.api.getComponent<
+      Events<TEvent, TMarker, TSection>
+    >(ComponentType.Events);
+    const markersComponent = this.api.getComponent<
+      Markers<TEvent, TMarker, TSection>
+    >(ComponentType.Markers);
+    const sectionsComponent = this.api.getComponent<
+      Sections<TEvent, TMarker, TSection>
+    >(ComponentType.Sections);
+
+    const events = eventsComponent
+      ? eventsComponent.getEventsAtPoint(event.offsetX, event.offsetY)
+      : [];
+    const markers = markersComponent
+      ? markersComponent.getMarkersAtPoint(event.offsetX, event.offsetY)
+      : [];
+    const sections = sectionsComponent
+      ? sectionsComponent.getSectionsAtPoint(event.offsetX, event.offsetY)
+      : [];
+
+    const currentElements = { events, markers, sections };
+
+    const isEqual =
+      JSON.stringify(this.activeElements) === JSON.stringify(currentElements);
+
+    if (isEqual) return;
+
+    if (
+      this.activeElements &&
+      (this.activeElements.events.length > 0 ||
+        this.activeElements.markers.length > 0 ||
+        this.activeElements.sections.length > 0)
+    ) {
+      const currentEventIds = new Set(events.map(({ id }) => id));
+      const currentMarkerTimes = new Set(markers.map(({ time }) => time));
+      const currentSectionIds = new Set(sections.map(({ id }) => id));
+
+      const leftEvents = this.activeElements.events.filter(
+        ({ id }) => !currentEventIds.has(id),
+      );
+      const leftMarkers = this.activeElements.markers.filter(
+        ({ time }) => !currentMarkerTimes.has(time),
+      );
+      const leftSections = this.activeElements.sections.filter(
+        ({ id }) => !currentSectionIds.has(id),
+      );
+
+      if (
+        leftEvents.length > 0 ||
+        leftMarkers.length > 0 ||
+        leftSections.length > 0
+      ) {
+        this.api.emit("on-leave", {
+          events: leftEvents,
+          markers: leftMarkers,
+          sections: leftSections,
+        });
+      }
+    }
+
+    this.activeElements = currentElements;
+    if (events.length > 0 || markers.length > 0 || sections.length > 0) {
+      this.api.emit("on-hover", {
+        events,
+        markers,
+        sections,
+        time: this.api.positionToTime(event.offsetX),
+        relativeX: event.clientX,
+        relativeY: event.clientY,
+      });
+    }
   };
 }
