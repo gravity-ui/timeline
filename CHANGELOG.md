@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.25.0](https://github.com/gravity-ui/timeline/compare/v1.24.0...v1.25.0) (2025-12-02)
+
+
+### Features
+
+* **Api:** add view configuration set ([98e627a](https://github.com/gravity-ui/timeline/commit/98e627a0cbb820bf77719e3d7da7f18895bc3b8d))
+
 ## [1.24.0](https://github.com/gravity-ui/timeline/compare/v1.23.0...v1.24.0) (2025-10-24)
 
 
