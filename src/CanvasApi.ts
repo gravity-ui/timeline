@@ -11,8 +11,11 @@ import {
   TimelineEvent,
   TimelineMarker,
   TimelineSection,
+  ViewConfiguration,
+  ViewConfigurationDefault,
 } from "./types";
 import { Sections } from "./components/Sections";
+import { defaultViewConfig } from "./constants/options";
 
 export class CanvasApi<
   TEvent extends TimelineEvent,
@@ -120,6 +123,14 @@ export class CanvasApi<
 
   public setCanvasScrollTop(newScrollTop: number) {
     this.timeline.canvasScrollTop = newScrollTop;
+    this.rerender();
+  }
+
+  public setViewConfiguration(viewConfiguration: ViewConfiguration) {
+    this.timeline.viewConfiguration = {
+      ...defaultViewConfig,
+      ...viewConfiguration,
+    } as ViewConfigurationDefault;
     this.rerender();
   }
 
