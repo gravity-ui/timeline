@@ -16,6 +16,7 @@ import {
 } from "./types";
 import { Sections } from "./components/Sections";
 import { defaultViewConfig } from "./constants/options";
+import { deepMerge } from "./lib/utils";
 
 export class CanvasApi<
   TEvent extends TimelineEvent,
@@ -127,10 +128,10 @@ export class CanvasApi<
   }
 
   public setViewConfiguration(viewConfiguration: ViewConfiguration) {
-    this.timeline.viewConfiguration = {
-      ...defaultViewConfig,
-      ...viewConfiguration,
-    } as ViewConfigurationDefault;
+    this.timeline.viewConfiguration = deepMerge(
+      defaultViewConfig,
+      viewConfiguration,
+    ) as ViewConfigurationDefault;
     this.rerender();
   }
 
