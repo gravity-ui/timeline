@@ -1,18 +1,13 @@
 import React, { ReactNode, useCallback, useState } from "react";
 import { Timeline } from "../../../Timeline";
-import {
-  HoverEvent,
-  TimelineEvent,
-  TimelineMarker,
-  TimelineSection,
-} from "../../../types";
+import { HoverEvent, TimelineEvent } from "../../../types";
 import { Popup } from "@gravity-ui/uikit";
 import { useTimelineEvent } from "../../../react-components";
 
 type Position = { x0: number; x1: number; y0: number; h: number };
 
 type Props<TEvent extends TimelineEvent> = {
-  timeline: Timeline<TimelineEvent, TimelineMarker, TimelineSection>;
+  timeline: Timeline<TimelineEvent>;
   content: (event: TEvent) => ReactNode;
 };
 
@@ -27,6 +22,11 @@ export const EventPopup = <TEvent extends TimelineEvent>({
 
   const handleEventsHover = useCallback(
     ({ events }: HoverEvent<TEvent>) => {
+      if (!events.length) {
+        setEventData(undefined);
+        return;
+      }
+
       const event = events[0];
       const position = timeline.api.getEventPosition(event);
       setEventData({ event, position });
@@ -39,7 +39,6 @@ export const EventPopup = <TEvent extends TimelineEvent>({
   }, []);
 
   useTimelineEvent(timeline, "on-hover", handleEventsHover);
-
   useTimelineEvent(timeline, "on-leave", handleEventLeave);
 
   if (!eventData) return null;
@@ -54,7 +53,7 @@ export const EventPopup = <TEvent extends TimelineEvent>({
           left: eventData.position.x0,
           width: eventData.position.x1 - eventData.position.x0,
           height: eventData.position.h,
-          zIndex: 1,
+          zIndex: 2,
           pointerEvents: "none",
         }}
       ></div>

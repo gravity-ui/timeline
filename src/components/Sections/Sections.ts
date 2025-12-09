@@ -67,7 +67,7 @@ export class Sections<
         const minX = section.from;
         const maxX = section.to || end;
         const minY = rulerHeight;
-        const maxY = this.api.ctx.canvas.height;
+        const maxY = this.api.height - rulerHeight;
         return { minX, maxX, minY, maxY, section };
       },
     );
@@ -81,7 +81,7 @@ export class Sections<
     const { start, end } = this.api.getInterval();
     const ctx = this.api.ctx;
     const rulerHeight = this.api.getRulerHeight();
-    const contentHeight = ctx.canvas.height - rulerHeight;
+    const contentHeight = this.api.height - rulerHeight;
 
     for (let i = 0, len = this._sections.length; i < len; i += 1) {
       const section = this._sections[i];

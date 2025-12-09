@@ -272,13 +272,14 @@ export class CanvasApi<
     const { end } = this.getInterval();
     const x0 = this.timeToPosition(section.from);
     const x1 = this.timeToPosition(section.to || end);
-    const y0 = this.getRulerHeight() - this.canvasScrollTop;
+    const rulerHeight = this.getRulerHeight();
+    const y0 = rulerHeight - this.canvasScrollTop;
 
     return {
       x0,
       x1,
       y0: y0 > 0 ? y0 : 0,
-      h: this.height,
+      h: this.height - rulerHeight,
     };
   }
 }
