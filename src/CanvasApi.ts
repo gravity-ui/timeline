@@ -234,6 +234,10 @@ export class CanvasApi<
   }
 
   public getEventPosition(event: TEvent) {
+    if (!event) {
+      throw new Error("Invalid event");
+    }
+
     const axesComponent = this.getComponent<Axes>(ComponentType.Axes);
     if (!axesComponent) {
       throw new Error("Invalid axes configuration");
@@ -257,6 +261,24 @@ export class CanvasApi<
       x1,
       y0,
       h: axis.height,
+    };
+  }
+
+  public getSectionPosition(section: TSection) {
+    if (!section) {
+      throw new Error("Invalid section");
+    }
+
+    const { end } = this.getInterval();
+    const x0 = this.timeToPosition(section.from);
+    const x1 = this.timeToPosition(section.to || end);
+    const y0 = this.getRulerHeight() - this.canvasScrollTop;
+
+    return {
+      x0,
+      x1,
+      y0: y0 > 0 ? y0 : 0,
+      h: this.height,
     };
   }
 }
