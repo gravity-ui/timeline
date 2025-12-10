@@ -1,5 +1,13 @@
 # Changelog
 
+## [1.26.0](https://github.com/gravity-ui/timeline/compare/v1.25.1...v1.26.0) (2025-12-10)
+
+
+### Features
+
+* **Api:** add get section position method ([248e93c](https://github.com/gravity-ui/timeline/commit/248e93c074b1a3e55ab5bc0bc903c8ccad676407))
+* **Sections:** add section popup example ([e453630](https://github.com/gravity-ui/timeline/commit/e453630e8fd1ea5936d7f418f26f687f6c9df4c1))
+
 ## [1.25.1](https://github.com/gravity-ui/timeline/compare/v1.25.0...v1.25.1) (2025-12-02)
 
 
