@@ -17,6 +17,7 @@ import {
   TimelineSettings,
   ViewConfigurationDefault,
 } from "./types";
+import cloneDeep from "lodash/cloneDeep";
 import { Sections } from "./components/Sections";
 
 /**
@@ -53,8 +54,9 @@ export class Timeline<
    * });
    */
   constructor(config: TimeLineConfig<TEvent, TMarker, TSection>) {
-    this.viewConfiguration = this.getViewConfig(config.viewConfiguration);
-    this.settings = config.settings;
+    const { settings, viewConfiguration } = cloneDeep(config);
+    this.viewConfiguration = this.getViewConfig(viewConfiguration);
+    this.settings = settings;
   }
 
   /**
