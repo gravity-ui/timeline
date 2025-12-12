@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.26.1](https://github.com/gravity-ui/timeline/compare/v1.26.0...v1.26.1) (2025-12-12)
+
+
+### Bug Fixes
+
+* **Timeline:** config mutation problem ([90b6ff0](https://github.com/gravity-ui/timeline/commit/90b6ff04cfdfe5422402749112452b1f1e644866))
+
 ## [1.26.0](https://github.com/gravity-ui/timeline/compare/v1.25.1...v1.26.0) (2025-12-10)
 
 
