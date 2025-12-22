@@ -34,8 +34,6 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     },
   },
   axes: {
-    trackHeight: 25,
-    lineHeight: 25,
     color: {
       line: defaultPalette.gray13,
     },

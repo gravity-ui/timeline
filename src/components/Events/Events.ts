@@ -225,7 +225,6 @@ export class Events<
    */
   public rebuildIndex(): void {
     const { end } = this.api.getInterval();
-    const { axes } = this.api.getViewConfiguration();
 
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
     const axesById = axesComponent.getAxesById();
@@ -239,8 +238,8 @@ export class Events<
 
       const minX = event.from;
       const maxX = event.to ? event.to : end;
-      const minY = eventTrackY - axes.lineHeight / 2;
-      const maxY = eventTrackY + axes.lineHeight / 2;
+      const minY = eventTrackY - axis.height / 2;
+      const maxY = eventTrackY + axis.height / 2;
       return { minX, maxX, minY, maxY, event };
     });
     this.index.clear();
