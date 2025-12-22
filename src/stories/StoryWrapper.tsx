@@ -1,4 +1,4 @@
-import React, { useEffect } from "react";
+import React from "react";
 import { useTimeline } from "../react-components/hooks/useTimeline";
 import { useTimelineEvent } from "../react-components/hooks/useTimelineEvent";
 import { action } from "@storybook/addon-actions";
@@ -55,14 +55,6 @@ export const StoryWrapper: React.FC<TimelineStoryProps> = (props) => {
   );
 
   const { timeline } = useTimeline({ settings, viewConfiguration });
-
-  useEffect(() => {
-    return () => {
-      if (timeline) {
-        timeline.destroy();
-      }
-    };
-  }, [timeline]);
 
   useTimelineEvent(timeline, "on-click", (data) => {
     action("on-click")(data);
