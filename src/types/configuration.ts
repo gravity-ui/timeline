@@ -33,8 +33,6 @@ export type GridViewOptions = {
 };
 
 export type AxesViewOptions = {
-  trackHeight?: number;
-  lineHeight?: number;
   lineWidth?: number;
   color?: {
     line?: string;

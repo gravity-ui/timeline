@@ -68,9 +68,8 @@ export class Axes<
       throw new Error("Invalid axis configuration");
     }
 
-    const { axes } = this.api.getViewConfiguration();
     const index = clamp(trackIndex, 0, axis.tracksCount - 1);
-    return axis.top + axes.trackHeight * index + axes.trackHeight / 2;
+    return axis.top + axis.height * index + axis.height / 2;
   }
 
   /**
@@ -96,7 +95,7 @@ export class Axes<
     const visibleAxes = this.axesIndex.sortedAxes.filter((axis) => {
       return rangeToRangeIntersect(
         axis.top,
-        axis.top + axis.tracksCount * axes.trackHeight,
+        axis.top + axis.tracksCount * axis.height,
         camera.y0,
         camera.y1,
       );
