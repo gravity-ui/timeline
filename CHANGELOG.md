@@ -1,5 +1,18 @@
 # Changelog
 
+## [1.27.0](https://github.com/gravity-ui/timeline/compare/v1.26.1...v1.27.0) (2025-12-22)
+
+
+### Features
+
+* **Axes:** change axes config ([a313969](https://github.com/gravity-ui/timeline/commit/a31396946cc45caea4384fa3874daeecbf6488e1))
+
+
+### Bug Fixes
+
+* **Sections:** clean canvas problem ([7d29540](https://github.com/gravity-ui/timeline/commit/7d295400fb8f1a6c56abdee5f38645ff6d91d8fc))
+* **Timeline:** memory leak ([ae756cc](https://github.com/gravity-ui/timeline/commit/ae756cce9c863eaf7272a9694c449a5c23382da3))
+
 ## [1.26.1](https://github.com/gravity-ui/timeline/compare/v1.26.0...v1.26.1) (2025-12-12)
 
 
