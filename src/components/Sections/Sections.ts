@@ -110,6 +110,13 @@ export class Sections<
     }
   }
 
+  public destroy() {
+    this.api.canvas.removeEventListener(
+      "mousemove",
+      this.handleCanvasMousemove,
+    );
+  }
+
   protected handleCanvasMousemove = (event: MouseEvent) => {
     const candidates = this.getSectionsAtPoint(event.offsetX, event.offsetY);
 
