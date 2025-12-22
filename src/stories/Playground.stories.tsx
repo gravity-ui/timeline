@@ -14,6 +14,7 @@ import {
   PlaygroundTemplate,
   playgroundTemplates,
 } from "./playground-templates";
+import { colorToHex } from "./helpers/colorToHex";
 
 // Playground Controls Component
 const PlaygroundControls: React.FC<{
@@ -32,7 +33,7 @@ const PlaygroundControls: React.FC<{
   onExportCode,
 }) => {
   const [activeTab, setActiveTab] = useState<
-    "templates" | "events" | "axes" | "view" | "camera"
+    "templates" | "events" | "markers" | "sections" | "axes" | "view" | "camera"
   >("templates");
 
   const applyTemplate = useCallback(
@@ -106,6 +107,82 @@ const PlaygroundControls: React.FC<{
     [settings, onSettingsChange],
   );
 
+  const addSection = useCallback(() => {
+    const newSection: TimelineSection = {
+      id: `section-${Date.now()}`,
+      from: Date.now(),
+      to: Date.now() + 3600000, // 1 hour
+      color: `rgba(${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, ${Math.floor(Math.random() * 255)}, 0.3)`,
+    };
+
+    onSettingsChange({
+      ...settings,
+      sections: [...(settings.sections || []), newSection],
+    });
+  }, [settings, onSettingsChange]);
+
+  const removeSection = useCallback(
+    (sectionId: string) => {
+      onSettingsChange({
+        ...settings,
+        sections: (settings.sections || []).filter((s) => s.id !== sectionId),
+      });
+    },
+    [settings, onSettingsChange],
+  );
+
+  const updateSection = useCallback(
+    (sectionId: string, updates: Partial<TimelineSection>) => {
+      onSettingsChange({
+        ...settings,
+        sections: (settings.sections || []).map((s) =>
+          s.id === sectionId ? { ...s, ...updates } : s,
+        ),
+      });
+    },
+    [settings, onSettingsChange],
+  );
+
+  const addMarker = useCallback(() => {
+    const baseColor = `#${Math.floor(Math.random() * 16777215)
+      .toString(16)
+      .padStart(6, "0")}`;
+    const newMarker: TimelineMarker = {
+      time: Date.now(),
+      color: baseColor,
+      activeColor: baseColor,
+      hoverColor: baseColor,
+      label: `Marker ${(settings.markers?.length || 0) + 1}`,
+    };
+
+    onSettingsChange({
+      ...settings,
+      markers: [...(settings.markers || []), newMarker],
+    });
+  }, [settings, onSettingsChange]);
+
+  const removeMarker = useCallback(
+    (index: number) => {
+      onSettingsChange({
+        ...settings,
+        markers: (settings.markers || []).filter((_, i) => i !== index),
+      });
+    },
+    [settings, onSettingsChange],
+  );
+
+  const updateMarker = useCallback(
+    (index: number, updates: Partial<TimelineMarker>) => {
+      onSettingsChange({
+        ...settings,
+        markers: (settings.markers || []).map((m, i) =>
+          i === index ? { ...m, ...updates } : m,
+        ),
+      });
+    },
+    [settings, onSettingsChange],
+  );
+
   return (
     <div
       style={{
@@ -128,26 +205,41 @@ const PlaygroundControls: React.FC<{
         </h3>
 
         {/* Tab Navigation */}
-        <div style={{ display: "flex", gap: "8px", marginBottom: "16px" }}>
-          {(["templates", "events", "axes", "view", "camera"] as const).map(
-            (tab) => (
-              <button
-                key={tab}
-                onClick={() => setActiveTab(tab)}
-                style={{
-                  padding: "6px 12px",
-                  border: "1px solid #ddd",
-                  borderRadius: "4px",
-                  background: activeTab === tab ? "#007acc" : "white",
-                  color: activeTab === tab ? "white" : "#333",
-                  cursor: "pointer",
-                  fontSize: "12px",
-                }}
-              >
-                {tab.charAt(0).toUpperCase() + tab.slice(1)}
-              </button>
-            ),
-          )}
+        <div
+          style={{
+            display: "flex",
+            gap: "8px",
+            marginBottom: "16px",
+            flexWrap: "wrap",
+          }}
+        >
+          {(
+            [
+              "templates",
+              "events",
+              "markers",
+              "sections",
+              "axes",
+              "view",
+              "camera",
+            ] as const
+          ).map((tab) => (
+            <button
+              key={tab}
+              onClick={() => setActiveTab(tab)}
+              style={{
+                padding: "6px 12px",
+                border: "1px solid #ddd",
+                borderRadius: "4px",
+                background: activeTab === tab ? "#007acc" : "white",
+                color: activeTab === tab ? "white" : "#333",
+                cursor: "pointer",
+                fontSize: "12px",
+              }}
+            >
+              {tab.charAt(0).toUpperCase() + tab.slice(1)}
+            </button>
+          ))}
         </div>
 
         {/* Templates Tab */}
@@ -244,10 +336,21 @@ const PlaygroundControls: React.FC<{
                       marginTop: "6px",
                       display: "flex",
                       gap: "8px",
+                      flexWrap: "wrap",
                     }}
                   >
                     <span>Axes: {template.settings.axes.length}</span>
                     <span>Events: {template.settings.events.length}</span>
+                    {template.settings.sections &&
+                      template.settings.sections.length > 0 && (
+                        <span>
+                          Sections: {template.settings.sections.length}
+                        </span>
+                      )}
+                    {template.settings.markers &&
+                      template.settings.markers.length > 0 && (
+                        <span>Markers: {template.settings.markers.length}</span>
+                      )}
                   </div>
                 </div>
               ))}
@@ -335,7 +438,7 @@ const PlaygroundControls: React.FC<{
                   >
                     <input
                       type="color"
-                      value={event.color || "#333333"}
+                      value={colorToHex(event.color)}
                       onChange={(e) =>
                         updateEvent(event.id, { color: e.target.value })
                       }
@@ -378,6 +481,297 @@ const PlaygroundControls: React.FC<{
                   </div>
                 </div>
               ))}
+            </div>
+          </div>
+        )}
+
+        {/* Markers Tab */}
+        {activeTab === "markers" && (
+          <div>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+              <button
+                onClick={addMarker}
+                style={{
+                  padding: "6px 12px",
+                  background: "#28a745",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                }}
+              >
+                + Add Marker
+              </button>
+            </div>
+
+            <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+              {(settings.markers || []).map((marker, index) => (
+                <div
+                  key={index}
+                  style={{
+                    border: "1px solid #eee",
+                    borderRadius: "4px",
+                    padding: "8px",
+                    marginBottom: "8px",
+                    fontSize: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    <strong>{marker.label || `Marker ${index + 1}`}</strong>
+                    <button
+                      onClick={() => removeMarker(index)}
+                      style={{
+                        background: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "3px",
+                        padding: "2px 6px",
+                        cursor: "pointer",
+                        fontSize: "10px",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "4px",
+                    }}
+                  >
+                    <div style={{ gridColumn: "1 / -1" }}>
+                      <label style={{ fontSize: "10px", color: "#666" }}>
+                        Label:
+                      </label>
+                      <input
+                        type="text"
+                        value={marker.label || ""}
+                        onChange={(e) =>
+                          updateMarker(index, { label: e.target.value })
+                        }
+                        placeholder="Marker label"
+                        style={{
+                          fontSize: "11px",
+                          padding: "2px",
+                          width: "100%",
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "10px", color: "#666" }}>
+                        Color:
+                      </label>
+                      <input
+                        type="color"
+                        value={colorToHex(marker.color)}
+                        onChange={(e) =>
+                          updateMarker(index, {
+                            color: e.target.value,
+                            activeColor: e.target.value,
+                            hoverColor: e.target.value,
+                          })
+                        }
+                        style={{ width: "100%", height: "24px" }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "10px", color: "#666" }}>
+                        Time (offset min):
+                      </label>
+                      <input
+                        type="number"
+                        value={Math.round((marker.time - Date.now()) / 60000)}
+                        onChange={(e) => {
+                          const offsetMinutes =
+                            parseInt(e.target.value, 10) || 0;
+                          updateMarker(index, {
+                            time: Date.now() + offsetMinutes * 60000,
+                          });
+                        }}
+                        style={{
+                          fontSize: "11px",
+                          padding: "2px",
+                          width: "100%",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {(!settings.markers || settings.markers.length === 0) && (
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: "#666",
+                    textAlign: "center",
+                  }}
+                >
+                  No markers yet. Click &#34;+ Add Marker&#34; to create one.
+                </p>
+              )}
+            </div>
+          </div>
+        )}
+
+        {/* Sections Tab */}
+        {activeTab === "sections" && (
+          <div>
+            <div style={{ display: "flex", gap: "8px", marginBottom: "12px" }}>
+              <button
+                onClick={addSection}
+                style={{
+                  padding: "6px 12px",
+                  background: "#28a745",
+                  color: "white",
+                  border: "none",
+                  borderRadius: "4px",
+                  cursor: "pointer",
+                  fontSize: "12px",
+                }}
+              >
+                + Add Section
+              </button>
+            </div>
+
+            <div style={{ maxHeight: "200px", overflowY: "auto" }}>
+              {(settings.sections || []).map((section) => (
+                <div
+                  key={section.id}
+                  style={{
+                    border: "1px solid #eee",
+                    borderRadius: "4px",
+                    padding: "8px",
+                    marginBottom: "8px",
+                    fontSize: "12px",
+                  }}
+                >
+                  <div
+                    style={{
+                      display: "flex",
+                      justifyContent: "space-between",
+                      alignItems: "center",
+                      marginBottom: "4px",
+                    }}
+                  >
+                    <strong>{section.id}</strong>
+                    <button
+                      onClick={() => removeSection(section.id)}
+                      style={{
+                        background: "#dc3545",
+                        color: "white",
+                        border: "none",
+                        borderRadius: "3px",
+                        padding: "2px 6px",
+                        cursor: "pointer",
+                        fontSize: "10px",
+                      }}
+                    >
+                      ×
+                    </button>
+                  </div>
+
+                  <div
+                    style={{
+                      display: "grid",
+                      gridTemplateColumns: "1fr 1fr",
+                      gap: "4px",
+                    }}
+                  >
+                    <div style={{ gridColumn: "1 / -1" }}>
+                      <label style={{ fontSize: "10px", color: "#666" }}>
+                        Color:
+                      </label>
+                      <input
+                        type="color"
+                        value={colorToHex(section.color)}
+                        onChange={(e) => {
+                          const hex = e.target.value;
+                          const r = parseInt(hex.slice(1, 3), 16);
+                          const g = parseInt(hex.slice(3, 5), 16);
+                          const b = parseInt(hex.slice(5, 7), 16);
+                          updateSection(section.id, {
+                            color: `rgba(${r}, ${g}, ${b}, 0.3)`,
+                            hoverColor: `rgba(${r}, ${g}, ${b}, 0.4)`,
+                          });
+                        }}
+                        style={{ width: "100%", height: "24px" }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "10px", color: "#666" }}>
+                        From (offset min):
+                      </label>
+                      <input
+                        type="number"
+                        value={Math.round((section.from - Date.now()) / 60000)}
+                        onChange={(e) => {
+                          const offsetMinutes =
+                            parseInt(e.target.value, 10) || 0;
+                          updateSection(section.id, {
+                            from: Date.now() + offsetMinutes * 60000,
+                          });
+                        }}
+                        style={{
+                          fontSize: "11px",
+                          padding: "2px",
+                          width: "100%",
+                        }}
+                      />
+                    </div>
+                    <div>
+                      <label style={{ fontSize: "10px", color: "#666" }}>
+                        To (offset min):
+                      </label>
+                      <input
+                        type="number"
+                        value={
+                          section.to
+                            ? Math.round((section.to - Date.now()) / 60000)
+                            : ""
+                        }
+                        onChange={(e) => {
+                          const value = e.target.value;
+                          if (value === "") {
+                            updateSection(section.id, { to: undefined });
+                          } else {
+                            const offsetMinutes = parseInt(value, 10) || 0;
+                            updateSection(section.id, {
+                              to: Date.now() + offsetMinutes * 60000,
+                            });
+                          }
+                        }}
+                        placeholder="∞"
+                        style={{
+                          fontSize: "11px",
+                          padding: "2px",
+                          width: "100%",
+                        }}
+                      />
+                    </div>
+                  </div>
+                </div>
+              ))}
+              {(!settings.sections || settings.sections.length === 0) && (
+                <p
+                  style={{
+                    fontSize: "12px",
+                    color: "#666",
+                    textAlign: "center",
+                  }}
+                >
+                  No sections yet. Click &#34;+ Add Section&#34; to create one.
+                </p>
+              )}
             </div>
           </div>
         )}
@@ -637,12 +1031,6 @@ const PlaygroundComponent: React.FC = () => {
         top: 0,
         height: 100,
       },
-      {
-        id: "axis2",
-        tracksCount: 2,
-        top: 120,
-        height: 100,
-      },
     ],
     events: [
       {
@@ -663,8 +1051,8 @@ const PlaygroundComponent: React.FC = () => {
       },
       {
         id: "event3",
-        axisId: "axis2",
-        trackIndex: 0,
+        axisId: "axis1",
+        trackIndex: 2,
         from: Date.now(),
         to: Date.now() + 3600000,
         color: "#45b7d1",

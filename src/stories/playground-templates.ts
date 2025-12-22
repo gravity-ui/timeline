@@ -140,97 +140,117 @@ export const playgroundTemplates: PlaygroundTemplate[] = [
   },
   {
     name: "Project Timeline",
-    description: "Detailed timeline for project management with phases",
+    description:
+      "Detailed timeline for project management with workflow phases as sections",
     category: "business",
     settings: {
       start: Date.now() - 2592000000, // 30 days ago
       end: Date.now() + 2592000000, // 30 days from now
       axes: [
         {
-          id: "planning",
-          tracksCount: 1,
+          id: "main",
+          tracksCount: 4,
           top: 0,
-          height: 60,
-        },
-        {
-          id: "development",
-          tracksCount: 3,
-          top: 80,
-          height: 100,
-        },
-        {
-          id: "testing",
-          tracksCount: 2,
-          top: 200,
-          height: 80,
-        },
-        {
-          id: "deployment",
-          tracksCount: 1,
-          top: 300,
-          height: 60,
+          height: 160,
         },
       ],
       events: [
-        // Planning phase
+        // Planning phase events
         {
-          id: "project-planning",
-          axisId: "planning",
+          id: "requirements",
+          axisId: "main",
           trackIndex: 0,
           from: Date.now() - 2592000000,
           to: Date.now() - 2160000000,
-          color: "#6366f1",
+          color: "rgb(63, 81, 181)",
         },
-        // Development phase
+        // Development phase events
         {
           id: "backend-dev",
-          axisId: "development",
-          trackIndex: 0,
-          from: Date.now() - 2160000000,
-          to: Date.now() - 1296000000,
-          color: "#dc2626",
-        },
-        {
-          id: "frontend-dev",
-          axisId: "development",
+          axisId: "main",
           trackIndex: 1,
           from: Date.now() - 1728000000,
           to: Date.now() - 864000000,
-          color: "#059669",
+          color: "rgb(33, 150, 243)",
         },
         {
-          id: "integration",
-          axisId: "development",
+          id: "frontend-dev",
+          axisId: "main",
           trackIndex: 2,
           from: Date.now() - 1296000000,
           to: Date.now() - 432000000,
-          color: "#d97706",
+          color: "rgb(92,165,223)",
         },
-        // Testing phase
+        // Testing phase events
         {
-          id: "unit-testing",
-          axisId: "testing",
-          trackIndex: 0,
-          from: Date.now() - 864000000,
-          to: Date.now() - 432000000,
-          color: "#7c3aed",
-        },
-        {
-          id: "integration-testing",
-          axisId: "testing",
-          trackIndex: 1,
+          id: "qa-testing",
+          axisId: "main",
+          trackIndex: 3,
           from: Date.now() - 432000000,
-          to: Date.now(),
-          color: "#0891b2",
+          to: Date.now() + 432000000,
+          color: "rgb(255, 152, 0)",
         },
-        // Deployment phase
+        // Deployment phase events
         {
-          id: "production-deploy",
-          axisId: "deployment",
+          id: "deployment",
+          axisId: "main",
           trackIndex: 0,
-          from: Date.now(),
+          from: Date.now() + 864000000,
+          to: Date.now() + 1296000000,
+          color: "rgb(76, 175, 80)",
+        },
+      ],
+      sections: [
+        {
+          id: "planning-phase",
+          from: Date.now() - 2592000000,
+          to: Date.now() - 1728000000,
+          color: "rgba(63, 81, 181, 0.2)", // Indigo - planning
+          hoverColor: "rgba(63, 81, 181, 0.3)",
+        },
+        {
+          id: "development-phase",
+          from: Date.now() - 1728000000,
+          to: Date.now() - 432000000,
+          color: "rgba(33, 150, 243, 0.2)", // Blue - development
+          hoverColor: "rgba(33, 150, 243, 0.3)",
+        },
+        {
+          id: "testing-phase",
+          from: Date.now() - 432000000,
           to: Date.now() + 864000000,
-          color: "#16a34a",
+          color: "rgba(255, 152, 0, 0.2)", // Orange - testing
+          hoverColor: "rgba(255, 152, 0, 0.3)",
+        },
+        {
+          id: "deployment-phase",
+          from: Date.now() + 864000000,
+          // Extends to end
+          color: "rgba(76, 175, 80, 0.2)", // Green - deployment
+          hoverColor: "rgba(76, 175, 80, 0.3)",
+        },
+      ],
+      markers: [
+        {
+          time: Date.now() - 1728000000,
+          color: "rgb(63, 81, 181)",
+          activeColor: "rgb(92, 107, 192)",
+          hoverColor: "rgb(57, 73, 171)",
+          label: "Dev Start",
+        },
+        {
+          time: Date.now() - 432000000,
+          color: "rgb(255, 152, 0)",
+          activeColor: "rgb(255, 193, 7)",
+          hoverColor: "rgb(255, 87, 34)",
+          label: "Testing",
+        },
+        {
+          time: Date.now() + 864000000,
+          color: "rgb(76, 175, 80)",
+          activeColor: "rgb(102, 187, 106)",
+          hoverColor: "rgb(67, 160, 71)",
+          label: "Deploy",
         },
       ],
       selectedEventIds: [],
