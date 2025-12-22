@@ -32,5 +32,9 @@ export function useTimelineEvent<
   useLayoutEffect(() => {
     if (!timeline) return;
     timeline.on(event, onEvent);
+
+    return () => {
+      timeline.off(event, onEvent);
+    };
   }, [timeline, event, onEvent]);
 }
