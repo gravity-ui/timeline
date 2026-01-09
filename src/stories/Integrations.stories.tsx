@@ -3,6 +3,7 @@ import type { Meta, StoryObj } from "@storybook/react";
 import { RangeSelection } from "./integrations/RangeSelection";
 import { TimelineWithPopup } from "./integrations/Popup";
 import { ListIntegration } from "./integrations/List";
+import { NestedEvents } from "./integrations/NestedEvents";
 
 const meta = {
   title: "Integrations/gravity-ui",
@@ -51,6 +52,18 @@ export const List: Story = {
     docs: {
       description: {
         story: "List component from integrations",
+      },
+    },
+  },
+};
+
+export const NestedEventsStory: Story = {
+  name: "NestedEvents",
+  render: () => <NestedEvents />,
+  parameters: {
+    docs: {
+      description: {
+        story: "Timeline with nested/hierarchical events",
       },
     },
   },
