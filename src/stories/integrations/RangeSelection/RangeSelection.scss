@@ -1,0 +1,17 @@
+.container {
+  display: flex;
+  flex-direction: column;
+  width: 100%;
+  height: 100%;
+}
+
+.rangeDatePicker {
+  width: 100%;
+  border-top: unset;
+}
+
+.timelineWrapper {
+  flex: 1;
+  width: 100%;
+  min-height: 0;
+}
