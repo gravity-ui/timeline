@@ -27,7 +27,10 @@ export const TimelineRuler: Story = {
   parameters: {
     docs: {
       description: {
-        story: "RangeDateSelection component from integrations",
+        story:
+          "Integration with @gravity-ui/date-components RangeDateSelection. " +
+          "Features: hidden default ruler, synchronized grid lines with RangeDateSelection ticks, " +
+          "draggable ruler for smooth panning.",
       },
     },
   },

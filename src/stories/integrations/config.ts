@@ -20,3 +20,20 @@ export const config: TimeLineConfig<
   },
   viewConfiguration: defaultViewConfig,
 };
+
+export const configWithHiddenRuler: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection
+> = {
+  settings: {
+    start: baseTimelineConfig.settings.start,
+    end: baseTimelineConfig.settings.end,
+    axes: baseTimelineConfig.settings.axes,
+    events: baseTimelineConfig.settings.events,
+  },
+  viewConfiguration: {
+    ...defaultViewConfig,
+    hideRuler: true,
+  },
+};
