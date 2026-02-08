@@ -15,7 +15,6 @@ import {
   ViewConfigurationDefault,
 } from "./types";
 import { Sections } from "./components/Sections";
-import { defaultViewConfig } from "./constants/options";
 import { deepMerge } from "./lib/utils";
 
 export class CanvasApi<
@@ -129,7 +128,7 @@ export class CanvasApi<
 
   public setViewConfiguration(viewConfiguration: ViewConfiguration) {
     this.timeline.viewConfiguration = deepMerge(
-      defaultViewConfig,
+      this.timeline.viewConfiguration,
       viewConfiguration,
     ) as ViewConfigurationDefault;
     this.rerender();
