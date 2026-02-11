@@ -1,5 +1,17 @@
 # Changelog
 
+## [1.28.0](https://github.com/gravity-ui/timeline/compare/v1.27.0...v1.28.0) (2026-02-11)
+
+
+### Features
+
+* export AbstractSectionRenderer for custom section renderers ([0dfaa08](https://github.com/gravity-ui/timeline/commit/0dfaa0836707cd5c3e75711b8996644849220357))
+
+
+### Bug Fixes
+
+* setViewConfiguration now merges with current config instead of defaults ([8d807c8](https://github.com/gravity-ui/timeline/commit/8d807c8bf82282a470b44b70b8792768b0fcedfe))
+
 ## [1.27.0](https://github.com/gravity-ui/timeline/compare/v1.26.1...v1.27.0) (2025-12-22)
 
 
