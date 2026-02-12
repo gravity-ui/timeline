@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.0](https://github.com/gravity-ui/timeline/compare/v1.28.0...v1.29.0) (2026-02-12)
+
+
+### Features
+
+* **Readme:** add images for preview ([162972e](https://github.com/gravity-ui/timeline/commit/162972ea2a1a28987aee9c8a6541bb53bef02b17))
+
 ## [1.28.0](https://github.com/gravity-ui/timeline/compare/v1.27.0...v1.28.0) (2026-02-11)
 
 
