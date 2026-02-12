@@ -8,6 +8,16 @@ A React-based library for building interactive timeline visualizations with canv
 
 For details see [Documentation](./docs/docs.md).
 
+## Preview
+
+Basic timeline with events and axes:
+
+![Basic timeline with events](./docs/img/lines.png)
+
+Custom rendering with expandable nested events ([NestedEvents](https://preview.gravity-ui.com/timeline/?path=/story/integrations-gravity-ui--nested-events-story) example):
+
+![Nested events timeline](./docs/img/events.png)
+
 ## Features
 
 - Canvas-based rendering for high performance
