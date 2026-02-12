@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.1](https://github.com/gravity-ui/timeline/compare/v1.29.0...v1.29.1) (2026-02-12)
+
+
+### Bug Fixes
+
+* **Readme:** wrong ru readme file name ([7b782eb](https://github.com/gravity-ui/timeline/commit/7b782eb137cb08e7d00e1397f4fb6d96da67a1bd))
+
 ## [1.29.0](https://github.com/gravity-ui/timeline/compare/v1.28.0...v1.29.0) (2026-02-12)
 
 
