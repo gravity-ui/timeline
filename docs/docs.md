@@ -35,14 +35,14 @@ const timeline = new Timeline({
 Manages and renders timeline events with support for selection, interaction, and custom rendering.
 
 ```typescript
-// Events are managed through the Timeline instance
-timeline.settings.events = [{
+// Events are managed through the Timeline API
+timeline.api.setEvents([{
   id: '1',
   axisId: 'axis1',
   trackIndex: 0,
   from: Date.now(),
   to: Date.now() + 1800000
-}];
+}]);
 ```
 
 ### [Ruler](./Ruler.md)
@@ -176,12 +176,11 @@ const event = {
 
 Visit our [Storybook](https://preview.gravity-ui.com/timeline/) to explore interactive examples:
 
-- [Basic Timeline](https://preview.gravity-ui.com/timeline/?path=/story/basic-timeline--default)
-- [Multiple Axes](https://preview.gravity-ui.com/timeline/?path=/story/multiple-axes--default)
-- [Custom Events](https://preview.gravity-ui.com/timeline/?path=/story/custom-events--default)
-- [Markers](https://preview.gravity-ui.com/timeline/?path=/story/markers--default)
-- [Grid Customization](https://preview.gravity-ui.com/timeline/?path=/story/grid-customization--default)
-- [Ruler Customization](https://preview.gravity-ui.com/timeline/?path=/story/ruler-customization--default)
+- [Basic Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--basic) — Simple timeline with events and axes
+- [Endless Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--endless-timelines) — Endless timeline with events and axes
+- [Markers](https://preview.gravity-ui.com/timeline/?path=/story/timeline-markers--basic) — Timeline with vertical markers and labels
+- [Custom Events](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--custom-renderer) — Timeline with custom event rendering
+- [Integrations](https://preview.gravity-ui.com/timeline/?path=/story/integrations-gravity-ui--timeline-ruler) — RangeDateSelection, DragHandler, NestedEvents, Popup, List
 
 ## Best Practices
 

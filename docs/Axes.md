@@ -148,7 +148,6 @@ const timeline = new Timeline({
   },
   viewConfiguration: {
     axes: {
-      trackHeight: 30,
       lineWidth: 1,
       color: {
         line: '#e0e0e0'
@@ -188,8 +187,6 @@ const timeline = new Timeline({
   },
   viewConfiguration: {
     axes: {
-      // Customize axis appearance
-      trackHeight: 40,
       lineWidth: 2,
       color: {
         line: '#b0b0b0'
@@ -220,7 +217,7 @@ constructor(api: CanvasApi) {
 
 ### Track Position Calculation
 
-Track positions are calculated based on the axis configuration and visual settings:
+Track positions are calculated based on the axis configuration (each axis has its own `height` per track):
 
 ```typescript
 public getAxisTrackPosition(axis: Axis, trackIndex: number): number {
@@ -228,9 +225,8 @@ public getAxisTrackPosition(axis: Axis, trackIndex: number): number {
     throw new Error("Invalid axis configuration");
   }
 
-  const { axes } = this.api.getVisualConfiguration();
   const index = clamp(trackIndex, 0, axis.tracksCount - 1);
-  return axis.top + axes.trackHeight * index + axes.trackHeight / 2;
+  return axis.top + axis.height * index + axis.height / 2;
 }
 ```
 
@@ -240,7 +236,7 @@ The rendering process handles both straight and dashed line modes:
 
 ```typescript
 public render() {
-  const { ruler, axes } = this.api.getVisualConfiguration();
+  const { axes } = this.api.getViewConfiguration();
   const { ctx } = this.api;
 
   // Set line style based on mode
@@ -250,7 +246,7 @@ public render() {
 
   // Apply scroll transform and ruler offset
   this.api.useScrollTransform();
-  ctx.translate(0, ruler.height);
+  ctx.translate(0, this.api.getRulerHeight());
 
   // Render tracks for each axis
   ctx.strokeStyle = axes.color.line;
@@ -279,7 +275,7 @@ public render() {
 
 2. **Visual Customization**
    - Choose appropriate line styles (straight/dashed)
-   - Set track heights based on content
+   - Set `height` per axis (height of each track in that axis)
    - Use consistent colors across related axes
 
 3. **Performance**

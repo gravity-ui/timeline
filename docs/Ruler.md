@@ -336,7 +336,7 @@ private renderLevel(
   y: number,
   color: string,
 ) {
-  const { ruler } = this.api.getVisualConfiguration();
+  const { ruler } = this.api.getViewConfiguration();
   const { start, end } = this.api.getInterval();
   const { ctx, width } = this.api;
 
