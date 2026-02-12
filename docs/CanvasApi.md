@@ -166,6 +166,8 @@ api.setMarkers([
   {
     time: Date.now() + 1800000,
     color: '#ff0000',
+    activeColor: '#ff5252',
+    hoverColor: '#ff1744',
     label: 'Important Point'
   }
 ]);
@@ -184,6 +186,37 @@ api.setSelectedEvents(['event1', 'event2']);
 
 **Parameters:**
 - `ids`: Array of event IDs to select
+
+#### `setSections(sections: TimelineSection[])`
+
+Updates the timeline sections.
+
+```typescript
+api.setSections([
+  {
+    id: 'section1',
+    from: Date.now(),
+    to: Date.now() + 1800000,
+    color: 'rgba(255, 193, 7, 0.2)',
+    hoverColor: 'rgba(255, 193, 7, 0.3)'
+  }
+]);
+```
+
+**Parameters:**
+- `sections`: Array of section configurations
+
+#### `setViewConfiguration(viewConfiguration: ViewConfiguration)`
+
+Updates the view configuration. **Merges with the current configuration** (does not replace it entirely).
+
+```typescript
+api.setViewConfiguration({ hideRuler: true });
+api.setViewConfiguration({ axes: { lineWidth: 2 } });
+```
+
+**Parameters:**
+- `viewConfiguration`: Partial view configuration to merge in
 
 ### Utility Methods
 
@@ -240,7 +273,7 @@ const duration = api.widthToTime(200);
 | `currentTime` | `number` | Current timestamp (aligned to seconds) |
 | `emit` | `Function` | Event emitter function |
 | `getInterval()` | `{ start: number; end: number }` | Current timeline range |
-| `getVisualConfiguration()` | `ViewConfigurationDefault` | Current view configuration |
+| `getViewConfiguration()` | `ViewConfigurationDefault` | Current view configuration |
 | `getTimelineSettings()` | `TimelineSettings` | Current timeline settings |
 
 ## Examples
@@ -327,7 +360,7 @@ api.setSelectedEvents(['event1']);
 // Get current timeline state
 const { start, end } = api.getInterval();
 const settings = api.getTimelineSettings();
-const config = api.getVisualConfiguration();
+const config = api.getViewConfiguration();
 ```
 
 ## Implementation Details

@@ -172,7 +172,7 @@ private selectGridLevel(domainSize: number, canvasWidth: number): TGridLevel | n
 
     // Check if marks fit within visible area
     if (this.calculateMarksWidth(level, domainSize) > 
-        canvasWidth + this.api.getVisualConfiguration().grid.widthBuffer) {
+        canvasWidth + this.api.getViewConfiguration().grid.widthBuffer) {
       continue;
     }
 
@@ -190,7 +190,7 @@ Grid lines are rendered using the canvas 2D context:
 
 ```typescript
 private renderLevel(top: number, left: number, width: number, height: number, level: TGridLevel) {
-  const { grid } = this.api.getVisualConfiguration();
+  const { grid } = this.api.getViewConfiguration();
   const { start, end } = this.api.getInterval();
   const { ctx } = this.api;
   
