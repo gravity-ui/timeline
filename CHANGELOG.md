@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.29.2](https://github.com/gravity-ui/timeline/compare/v1.29.1...v1.29.2) (2026-03-11)
+
+
+### Bug Fixes
+
+* reset canvas transform before clearing to prevent rendering artifacts ([46750a7](https://github.com/gravity-ui/timeline/commit/46750a7187f1545ec2723f2bfb90ceedfb1d2151))
+
 ## [1.29.1](https://github.com/gravity-ui/timeline/compare/v1.29.0...v1.29.1) (2026-02-12)
 
 
