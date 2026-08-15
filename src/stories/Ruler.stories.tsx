@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import dayjs from "dayjs";
 import "dayjs/locale/ru";
 import "dayjs/locale/de";

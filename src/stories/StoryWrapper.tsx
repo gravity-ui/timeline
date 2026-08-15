@@ -1,7 +1,7 @@
 import React from "react";
 import { useTimeline } from "../react-components/hooks/useTimeline";
 import { useTimelineEvent } from "../react-components/hooks/useTimelineEvent";
-import { action } from "@storybook/addon-actions";
+import { action } from "storybook/actions";
 import { TimelineCanvas } from "../react-components/TimelineCanvas";
 import {
   TimelineEvent,

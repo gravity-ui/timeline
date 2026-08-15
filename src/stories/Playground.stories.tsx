@@ -1,5 +1,5 @@
 import React, { useCallback, useState } from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { StoryWrapper } from "./StoryWrapper";
 import {
   TimelineEvent,

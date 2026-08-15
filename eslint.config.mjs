@@ -1,3 +1,6 @@
+// For more info, see https://github.com/storybookjs/eslint-plugin-storybook#configuration-flat-config-format
+import storybook from "eslint-plugin-storybook";
+
 import baseConfig from "@gravity-ui/eslint-config";
 import prettierConfig from "@gravity-ui/eslint-config/prettier";
 import reactConfig from "@gravity-ui/eslint-config/react";
@@ -60,4 +63,5 @@ export default [
       "no-param-reassign": ["error", { props: false }],
     },
   },
+  ...storybook.configs["flat/recommended"],
 ];
