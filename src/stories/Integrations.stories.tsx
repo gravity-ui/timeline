@@ -1,5 +1,5 @@
 import React from "react";
-import type { Meta, StoryObj } from "@storybook/react";
+import type { Meta, StoryObj } from "@storybook/react-vite";
 import { RangeSelection } from "./integrations/RangeSelection";
 import { TimelineWithPopup } from "./integrations/Popup";
 import { ListIntegration } from "./integrations/List";
@@ -8,7 +8,6 @@ import { DragHandlerDemo } from "./integrations/DragHandler";
 
 const meta = {
   title: "Integrations/gravity-ui",
-  component: null,
   decorators: [
     (Story) => (
       <div style={{ width: "100%", height: "400px" }}>
@@ -38,7 +37,6 @@ export const TimelineRuler: Story = {
 };
 
 export const Popup: Story = {
-  name: "Popup",
   render: () => <TimelineWithPopup />,
   parameters: {
     docs: {
@@ -50,7 +48,6 @@ export const Popup: Story = {
 };
 
 export const List: Story = {
-  name: "List",
   render: () => <ListIntegration />,
   parameters: {
     docs: {
