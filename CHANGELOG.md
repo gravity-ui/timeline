@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.30.0](https://github.com/gravity-ui/timeline/compare/v1.29.2...v1.30.0) (2026-08-15)
+
+
+### Features
+
+* **Storybook:** migrate to 10 version ([de48c85](https://github.com/gravity-ui/timeline/commit/de48c8573d8d0bba2bb214454b6fb2fbcad8567f))
+
 ## [1.29.2](https://github.com/gravity-ui/timeline/compare/v1.29.1...v1.29.2) (2026-03-11)
 
 
