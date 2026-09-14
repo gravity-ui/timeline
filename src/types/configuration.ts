@@ -32,7 +32,14 @@ export type GridViewOptions = {
   };
 };
 
+export type AxesLinePosition = "center" | "between";
+
 export type AxesViewOptions = {
+  /**
+   * Vertical position of horizontal axis lines within a track.
+   * `center` draws through the track center; `between` draws at its bottom boundary.
+   */
+  linePosition?: AxesLinePosition;
   lineWidth?: number;
   color?: {
     line?: string;

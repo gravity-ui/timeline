@@ -84,6 +84,21 @@ type TimelineAxis = {
 };
 ```
 
+### Horizontal Axis Lines
+
+Configure horizontal line placement through `viewConfiguration.axes.linePosition`:
+
+- `"center"` (default) draws a line through the center of every track.
+- `"between"` draws a line after every track, at its bottom boundary. This is useful for table-style rows with centered event bars.
+
+```typescript
+viewConfiguration: {
+  axes: {
+    linePosition: 'between'
+  }
+}
+```
+
 ### Section Structure
 
 Each section requires the following structure:
