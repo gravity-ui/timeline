@@ -17,7 +17,7 @@ const events = new Events(timeline.api);
 | Property | Type | Description | Visibility |
 |----------|------|-------------|------------|
 | `allowMultipleSelection` | `boolean` | Whether multiple events can be selected simultaneously | public |
-| `activeEvent` | `TimelineEvent \| null` | Currently hovered event | public |
+| `_hoveredEvents` | `Set<string>` | Set of currently hovered event IDs | private |
 | `index` | [`RBush`](https://github.com/mourner/rbush) | Spatial index for efficient event lookup | protected |
 | `api` | `CanvasApi` | API instance for timeline manipulation | private |
 | `_selectedEvents` | `Set<string>` | Set of selected event IDs | private |
@@ -153,6 +153,7 @@ type TimelineEvent = {
   from: number;            // Start timestamp
   to?: number;             // Optional end timestamp
   color?: string;          // Optional event color
+  hoverColor?: string;     // Optional color when hovered
   selectedColor?: string;  // Optional color when selected
   renderer?: AbstractEventRenderer; // Optional custom renderer
 };
@@ -172,8 +173,9 @@ abstract class AbstractEventRenderer {
     x1: number,
     y: number,
     h: number,
+    viewConfiguration: ViewConfiguration,
     timeToPosition?: (n: number) => number,
-    color?: string,
+    isHovered?: boolean,
   ): void;
 
   abstract getHitbox(
@@ -243,10 +245,17 @@ class CustomEventRenderer extends AbstractEventRenderer {
     x1: number,
     y: number,
     h: number,
+    _viewConfiguration: ViewConfiguration,
+    _timeToPosition?: (n: number) => number,
+    isHovered = false,
   ) {
     // Custom rendering logic
     ctx.beginPath();
-    ctx.fillStyle = isSelected ? '#5469d4' : event.color || '#333333';
+    ctx.fillStyle = isSelected
+      ? '#5469d4'
+      : isHovered
+        ? event.hoverColor || event.color || '#333333'
+        : event.color || '#333333';
     ctx.roundRect(x0, y - h/2, x1 - x0, h, 4);
     ctx.fill();
   }

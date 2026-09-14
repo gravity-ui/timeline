@@ -10,6 +10,7 @@ export type TimelineEvent = {
   trackIndex: number; //index in axis
   renderer?: AbstractEventRenderer;
   color?: string;
+  hoverColor?: string;
   selectedColor?: string;
 };
 

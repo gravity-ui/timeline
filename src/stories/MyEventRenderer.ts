@@ -1,5 +1,5 @@
 import { AbstractEventRenderer } from "../components/Events";
-import { TimelineEvent } from "../types";
+import { TimelineEvent, ViewConfiguration } from "../types";
 import { Hitbox } from "../components/Events/AbstractEventRenderer";
 
 export type MyEvent = TimelineEvent & {
@@ -19,6 +19,9 @@ export class MyEventRenderer extends AbstractEventRenderer {
     x1: number,
     y: number,
     h: number,
+    _viewConfiguration: ViewConfiguration,
+    _timeToPosition?: (n: number) => number,
+    isHovered = false,
   ) {
     const percent = (x1 - x0) / 100;
 
@@ -47,9 +50,10 @@ export class MyEventRenderer extends AbstractEventRenderer {
 
     ctx.beginPath();
     ctx.lineWidth = BORDER_WIDTH;
-    ctx.strokeStyle = isSelected
-      ? event.selectedBorderColor
-      : event.borderColor;
+    let borderColor = event.borderColor;
+    if (isHovered) borderColor = "#7c3aed";
+    if (isSelected) borderColor = event.selectedBorderColor;
+    ctx.strokeStyle = borderColor;
     ctx.strokeRect(
       x0 - BORDER_WIDTH,
       y - h / 2 - BORDER_WIDTH,

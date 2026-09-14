@@ -18,6 +18,7 @@ export abstract class AbstractEventRenderer {
     h: number,
     viewConfiguration: ViewConfiguration,
     timeToPosition?: (n: number) => number,
+    isHovered?: boolean,
   ): void;
 
   protected hitboxResult: Hitbox = {

@@ -273,6 +273,7 @@ type TimelineEvent = {
   trackIndex: number;     // Index in the axis track
   renderer?: AbstractEventRenderer; // Optional custom renderer
   color?: string;         // Optional event color
+  hoverColor?: string;    // Optional hovered state color
   selectedColor?: string; // Optional selected state color
 };
 ```

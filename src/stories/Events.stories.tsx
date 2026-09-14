@@ -67,6 +67,7 @@ type TimelineEvent = {
   trackIndex: number;      // Index of the track within the axis
   renderer?: AbstractEventRenderer; // Optional custom renderer
   color?: string;          // Optional event color
+  hoverColor?: string;     // Optional color when hovered
   selectedColor?: string;  // Optional color when selected
 };
 \`\`\`
@@ -92,6 +93,7 @@ const timeline = new Timeline({
         from: Date.now(),
         to: Date.now() + 1800000,  // 30 minutes
         color: '#ff6b6b',
+        hoverColor: '#ff8787',
         selectedColor: '#ff5252'
       },
       {
@@ -173,10 +175,17 @@ class CustomEventRenderer extends AbstractEventRenderer {
     x1: number,
     y: number,
     h: number,
+    _viewConfiguration: ViewConfiguration,
+    _timeToPosition?: (n: number) => number,
+    isHovered = false,
   ) {
     // Custom rendering logic
     ctx.beginPath();
-    ctx.fillStyle = isSelected ? '#5469d4' : event.color || '#333333';
+    ctx.fillStyle = isSelected
+      ? '#5469d4'
+      : isHovered
+        ? '#7c3aed'
+        : event.color || '#333333';
     ctx.roundRect(x0, y - h/2, x1 - x0, h, 4);
     ctx.fill();
     
@@ -510,7 +519,8 @@ export const Basic: Story = {
     storyKey: "basic",
     docs: {
       description: {
-        story: "Basic timeline configuration with regular events",
+        story:
+          "Basic timeline configuration. Hover an event to see its `hoverColor`.",
       },
     },
   },

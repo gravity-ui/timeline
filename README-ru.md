@@ -273,6 +273,7 @@ type TimelineEvent = {
   trackIndex: number;    // Индекс трека на оси
   renderer?: AbstractEventRenderer; // Опциональный кастомный рендерер
   color?: string;        // Цвет события (опционально)
+  hoverColor?: string;   // Цвет при наведении (опционально)
   selectedColor?: string;// Цвет при выделении (опционально)
 };
 ```

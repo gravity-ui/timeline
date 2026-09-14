@@ -30,6 +30,8 @@ export class Events<
 
   private api: CanvasApi<Event, TMarker, TSection>;
   private _selectedEvents = new Set<string>();
+  private _hoveredEvents = new Set<string>();
+  private lastPointerPosition?: { x: number; y: number };
   private _events: Event[] = [];
 
   constructor(api: CanvasApi<Event, TMarker, TSection>) {
@@ -45,6 +47,10 @@ export class Events<
    */
   public setEvents(newEvents: Event[], selectedIds?: string[]): void {
     this._events = newEvents;
+    const eventIds = new Set(newEvents.map((event) => event.id));
+    this._hoveredEvents = new Set(
+      [...this._hoveredEvents].filter((id) => eventIds.has(id)),
+    );
     this.rebuildIndex();
 
     if (selectedIds) {
@@ -111,6 +117,15 @@ export class Events<
   }
 
   /**
+   * Checks if an event is currently hovered.
+   * @param event - Event to check
+   * @returns True if the event is hovered, false otherwise
+   */
+  public isHoveredEvent(event: Event | undefined): boolean {
+    return Boolean(event && this._hoveredEvents.has(event.id));
+  }
+
+  /**
    * Selects or deselects events based on provided options
    * @param events - Array of events to select/deselect
    * @param options - Selection options (append, toggle)
@@ -150,6 +165,8 @@ export class Events<
   }
 
   public render() {
+    this.updateHoveredEvents();
+
     const viewConfiguration = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
     const axesComponent = this.api.getComponent<Axes>(ComponentType.Axes);
@@ -203,6 +220,7 @@ export class Events<
           axis.height,
           viewConfiguration,
           timeToPosition,
+          this.isHoveredEvent(event),
         );
       }
     }
@@ -213,6 +231,14 @@ export class Events<
    */
   public destroy() {
     this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
+    this.api.canvas.removeEventListener(
+      "mousemove",
+      this.handleCanvasMousemove,
+    );
+    this.api.canvas.removeEventListener(
+      "mouseleave",
+      this.handleCanvasMouseleave,
+    );
     this.api.canvas.removeEventListener(
       "contextmenu",
       this.handleCanvasContextMenu,
@@ -251,11 +277,26 @@ export class Events<
    */
   protected addEventListeners() {
     this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
+    this.api.canvas.addEventListener("mousemove", this.handleCanvasMousemove);
+    this.api.canvas.addEventListener("mouseleave", this.handleCanvasMouseleave);
     this.api.canvas.addEventListener(
       "contextmenu",
       this.handleCanvasContextMenu,
     );
   }
+
+  protected handleCanvasMousemove = (event: MouseEvent) => {
+    this.lastPointerPosition = { x: event.offsetX, y: event.offsetY };
+    if (this.updateHoveredEvents()) this.api.rerender();
+  };
+
+  protected handleCanvasMouseleave = () => {
+    this.lastPointerPosition = undefined;
+    if (this._hoveredEvents.size === 0) return;
+
+    this._hoveredEvents.clear();
+    this.api.rerender();
+  };
 
   protected handleCanvasMouseup = (event: MouseEvent) => {
     const { clickEventsCollectionFilter } = this.api.getTimelineSettings();
@@ -287,6 +328,27 @@ export class Events<
       relativeY: event.clientY,
     });
   };
+
+  private updateHoveredEvents(): boolean {
+    if (!this.lastPointerPosition) return false;
+
+    const hoveredIds = new Set(
+      this.getEventsAtPoint(
+        this.lastPointerPosition.x,
+        this.lastPointerPosition.y,
+      ).map(({ id }) => id),
+    );
+
+    if (
+      hoveredIds.size === this._hoveredEvents.size &&
+      [...hoveredIds].every((id) => this._hoveredEvents.has(id))
+    ) {
+      return false;
+    }
+
+    this._hoveredEvents = hoveredIds;
+    return true;
+  }
 }
 
 export type SelectOptions = {
