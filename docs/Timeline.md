@@ -384,7 +384,7 @@ viewConfiguration: {
 |------|-------|----------|
 | `DEFAULT` | `"default"` | Standard zoom and pan behavior (mouse wheel zooms, Shift+wheel pans vertically) |
 | `HORIZONTAL` | `"horizontal"` | Mouse wheel pans horizontally without requiring Shift key |
-| `NONE` | `"none"` | Disables all zoom and pan interactions |
+| `NONE` | `"none"` | Disables all zoom and pan interactions and passes wheel events to parent scroll containers |
 
 ## Events
 
@@ -634,4 +634,4 @@ timeline.api.setMarkers([
     label: 'Important Point'
   }
 ]);
-``` 
+```

@@ -8,6 +8,7 @@ type Props<
   TSection extends TimelineSection = TimelineSection,
 > = {
   className?: string;
+  tabIndex?: number;
   timeline: Timeline<TEvent, TMarker, TSection>;
 };
 
@@ -18,6 +19,7 @@ export const TimelineCanvas = <
 >({
   timeline,
   className,
+  tabIndex = 0,
 }: Props<TEvent, TMarker, TSection>) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
@@ -33,7 +35,7 @@ export const TimelineCanvas = <
     <canvas
       ref={canvasRef}
       className={className}
-      tabIndex={0}
+      tabIndex={tabIndex}
       style={{
         position: "relative",
         height: "100%",
