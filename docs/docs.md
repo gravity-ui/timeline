@@ -110,7 +110,7 @@ const api = timeline.api;
 The library provides React components and hooks for easy integration:
 
 ### Components
-- `TimelineCanvas`: React component for rendering the timeline
+- `TimelineCanvas`: React component for rendering the timeline. It accepts an optional `tabIndex` prop, which defaults to `0`. Set `tabIndex={-1}` to exclude the canvas from keyboard Tab navigation while keeping it programmatically focusable.
 
 ### Hooks
 - `useTimeline`: Hook for managing timeline instance
@@ -227,4 +227,4 @@ We welcome contributions! Please see our [contributing guide](../CONTRIBUTING.md
 
 ## License
 
-This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details. 
+This project is licensed under the MIT License - see the [LICENSE](../LICENSE) file for details.

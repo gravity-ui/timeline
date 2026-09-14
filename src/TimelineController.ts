@@ -98,14 +98,14 @@ export class TimelineController<
    * @private
    */
   private handleCanvasWheel = (event: WheelEvent) => {
-    event.stopPropagation();
-    event.preventDefault();
-
     const { start, end } = this.api.getInterval();
     const { camera } = this.api.getViewConfiguration();
     const zoomMode = camera.zoom;
 
     if (zoomMode === ZoomMode.NONE) return;
+
+    event.stopPropagation();
+    event.preventDefault();
 
     let newStart = start;
     let newEnd = end;

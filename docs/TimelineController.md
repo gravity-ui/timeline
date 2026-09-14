@@ -85,6 +85,7 @@ The zoom behavior is controlled by the camera configuration's zoom mode:
 
 - **NONE Mode**: 
   - **Disabled**: All zoom and pan interactions are disabled
+  - **Page scroll**: Wheel events are not intercepted, so the containing page can scroll normally
 
 ### Pan
 
@@ -102,6 +103,7 @@ The pan behavior also depends on the zoom mode:
 
 - **NONE Mode**:
   - **Disabled**: All panning interactions are disabled
+  - **Page scroll**: Wheel events are passed to parent scroll containers
 
 ### Canvas Resizing
 
@@ -228,4 +230,4 @@ Canvas size is updated based on container dimensions and device pixel ratio:
 const pixelRatio = window.devicePixelRatio || 1;
 canvas.width = Math.floor(canvas.offsetWidth * pixelRatio);
 canvas.height = Math.floor(canvas.offsetHeight * pixelRatio);
-``` 
+```
