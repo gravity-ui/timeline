@@ -9,6 +9,9 @@
     "*": {
       "react": [
         "build/react-components/index.d.ts"
+      ],
+      "react/uikit": [
+        "build/react-uikit/index.d.ts"
       ]
     }
   },
@@ -29,6 +32,10 @@
     "./react": {
       "types": "./build/react-components/index.d.ts",
       "default": "./build/react-components/index.js"
+    },
+    "./react/uikit": {
+      "types": "./build/react-uikit/index.d.ts",
+      "default": "./build/react-uikit/index.js"
     }
   },
   "scripts": {
@@ -37,7 +44,9 @@
     "lint:all": "eslint \"./src/**/*.{js,jsx,ts,tsx}\"",
     "storybook": "storybook dev -p 6006",
     "build-storybook": "storybook build",
-    "test": "echo \"No tests\" && exit 0",
+    "test": "vitest run",
+    "test:watch": "vitest",
+    "test:e2e": "playwright test",
     "typecheck": "npm run build -- --noEmit",
     "prepublishOnly": "npm run typecheck && npm run build"
   },
@@ -45,14 +54,24 @@
     "dayjs": "^1.11.13",
     "rbush": "^4.0.1"
   },
+  "peerDependencies": {
+    "@gravity-ui/uikit": "^7.18.0"
+  },
+  "peerDependenciesMeta": {
+    "@gravity-ui/uikit": {
+      "optional": true
+    }
+  },
   "devDependencies": {
     "@commitlint/config-conventional": "^19.8.1",
     "@gravity-ui/date-components": "^3.2.3",
     "@gravity-ui/date-utils": "^2.5.6",
     "@gravity-ui/eslint-config": "^4.0.1",
     "@gravity-ui/uikit": "^7.18.0",
+    "@playwright/test": "^1.63.0",
     "@storybook/addon-docs": "^10.5.8",
     "@storybook/react-vite": "^10.5.8",
+    "@testing-library/react": "^16.3.3",
     "@types/lodash": "^4.17.25",
     "@types/rbush": "^4.0.0",
     "@types/react": "^18.3.1",
@@ -62,12 +81,14 @@
     "bem-cn-lite": "^4.1.0",
     "eslint": "^9.24.0",
     "eslint-plugin-storybook": "^10.5.8",
+    "jsdom": "^29.1.1",
     "lodash": "^4.18.1",
     "react": "^18.3.1",
     "react-dom": "^18.3.1",
     "sass-embedded": "^1.89.2",
     "storybook": "^10.5.8",
     "typescript": "^5.5.3",
-    "vite": "^8.2.1"
+    "vite": "^8.2.1",
+    "vitest": "^4.1.11"
   }
 }

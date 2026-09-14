@@ -58,6 +58,7 @@ export type LeaveEvent<
   sections: TSection[];
 };
 export type CameraEvent = { from: number; to: number };
+export type TimelineLifecycleEvent = Record<string, never>;
 export type MarkerSelectEvent<TMarker extends TimelineMarker = TimelineMarker> =
   { markers: TMarker[] } & BaseEventData;
 
@@ -92,6 +93,9 @@ export type ApiEvent<
   "on-group-marker-click": (
     event: CustomEvent<GroupMarkerClickEvent<TMarker>>,
   ) => void;
+  "on-ready": (event: CustomEvent<TimelineLifecycleEvent>) => void;
+  "on-render": (event: CustomEvent<TimelineLifecycleEvent>) => void;
+  "on-destroy": (event: CustomEvent<TimelineLifecycleEvent>) => void;
 };
 
 export type UnwrapTimelineEvents<

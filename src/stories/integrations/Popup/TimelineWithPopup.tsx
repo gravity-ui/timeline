@@ -3,7 +3,7 @@ import "@gravity-ui/uikit/styles/fonts.css";
 import "@gravity-ui/uikit/styles/styles.css";
 import { TimelineEvent } from "../../../types";
 import { TimelineCanvas, useTimeline } from "../../../react-components";
-import { EventPopup } from "./EventPopup";
+import { EventPopup } from "../../../react-uikit";
 import { config } from "../config";
 import { GravityWrap } from "../GravityWrap";
 import { SectionPopup } from "./SectionPopup";
@@ -34,7 +34,13 @@ export const TimelineWithPopup: FC = () => {
         <EventPopup
           timeline={timeline}
           content={(event) => {
-            return <div>ID: {event.id}</div>;
+            return (
+              <div style={{ padding: "12px" }}>
+                <div>ID: {event.id}</div>
+                <a href={`#${event.id}`}>Open event</a>
+                <button type="button">Action</button>
+              </div>
+            );
           }}
         />
         <SectionPopup

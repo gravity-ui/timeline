@@ -33,6 +33,7 @@ export class Events<
   private _hoveredEvents = new Set<string>();
   private lastPointerPosition?: { x: number; y: number };
   private _events: Event[] = [];
+  private eventsById = new Map<string, Event>();
 
   constructor(api: CanvasApi<Event, TMarker, TSection>) {
     this.api = api;
@@ -47,6 +48,7 @@ export class Events<
    */
   public setEvents(newEvents: Event[], selectedIds?: string[]): void {
     this._events = newEvents;
+    this.eventsById = new Map(newEvents.map((event) => [event.id, event]));
     const eventIds = new Set(newEvents.map((event) => event.id));
     this._hoveredEvents = new Set(
       [...this._hoveredEvents].filter((id) => eventIds.has(id)),
@@ -104,6 +106,25 @@ export class Events<
    */
   public getSelectedEvents(): Event[] {
     return this._events.filter((event) => this.isSelectedEvent(event));
+  }
+
+  /** Gets the current event data by id. */
+  public getEventById(id: string): Event | undefined {
+    return this.eventsById.get(id);
+  }
+
+  /** Gets the top-most event at a canvas position. */
+  public getTopEventAtPoint(x: number, y: number): Event | undefined {
+    const candidateIds = new Set(
+      this.getEventsAtPoint(x, y).map((event) => event.id),
+    );
+
+    for (let index = this._events.length - 1; index >= 0; index -= 1) {
+      const event = this._events[index];
+      if (candidateIds.has(event.id)) return event;
+    }
+
+    return undefined;
   }
 
   /**
