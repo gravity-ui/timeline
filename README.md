@@ -260,6 +260,32 @@ The component uses custom hooks for timeline management:
 
 The component automatically handles cleanup and destruction of the timeline instance when unmounted.
 
+### Event popup
+
+Install `@gravity-ui/uikit` and its styles to display event details without
+subscribing to hover events or calculating coordinates yourself:
+
+```tsx
+import '@gravity-ui/uikit/styles/fonts.css';
+import '@gravity-ui/uikit/styles/styles.css';
+import {EventPopup} from '@gravity-ui/timeline/react/uikit';
+
+<>
+  <TimelineCanvas timeline={timeline} />
+  <EventPopup
+    timeline={timeline}
+    content={(event) => <EventDetails event={event} />}
+  />
+</>
+```
+
+`EventPopup` opens after 150 ms and closes 200 ms after the pointer leaves the
+event. Set `openDelay`, `closeDelay`, `placement`, `offset`, `className`, or
+`aria-label` when needed. The popup remains open while its content has pointer
+or focus, closes on Escape or outside click, and uses the last event in data
+order when events overlap. `hoverColor` and `isHovered` control event drawing;
+`EventPopup` controls its details UI.
+
 ### Event Structure
 
 Events in the timeline follow this structure:

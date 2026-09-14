@@ -260,6 +260,33 @@ const MyTimelineComponent = () => {
 
 При размонтировании компонента экземпляр шкалы автоматически уничтожается.
 
+### Поповер события
+
+Установите `@gravity-ui/uikit` и подключите его стили, чтобы показывать детали
+события без подписок на наведение и расчёта координат:
+
+```tsx
+import '@gravity-ui/uikit/styles/fonts.css';
+import '@gravity-ui/uikit/styles/styles.css';
+import {EventPopup} from '@gravity-ui/timeline/react/uikit';
+
+<>
+  <TimelineCanvas timeline={timeline} />
+  <EventPopup
+    timeline={timeline}
+    content={(event) => <EventDetails event={event} />}
+  />
+</>
+```
+
+`EventPopup` открывается через 150 мс и закрывается через 200 мс после ухода
+курсора с события. При необходимости задайте `openDelay`, `closeDelay`,
+`placement`, `offset`, `className` или `aria-label`. Поповер остаётся открытым,
+пока указатель или фокус находятся в его содержимом; Escape и клик снаружи его
+закрывают. При перекрытии выбирается последнее событие в порядке данных.
+`hoverColor` и `isHovered` отвечают за отрисовку события, `EventPopup` — за UI
+его деталей.
+
 ### Структура события
 
 События на шкале описываются так:

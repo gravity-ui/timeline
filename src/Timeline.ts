@@ -89,6 +89,7 @@ export class Timeline<
 
     this.controller = new TimelineController(this.api);
     this.state = TimelineState.READY;
+    this.emit("on-ready", {});
   }
 
   /**
@@ -99,10 +100,14 @@ export class Timeline<
    * timeline.destroy();
    */
   public destroy() {
+    if (this.state !== TimelineState.READY) return;
+
     this.controller.destroy();
     if (this.api) {
       this.api.destroy();
     }
+    this.state = TimelineState.INIT;
+    this.emit("on-destroy", {});
   }
 
   /**

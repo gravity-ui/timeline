@@ -64,6 +64,7 @@ export class CanvasApi<
       component.render();
     });
     this.ctx.restore();
+    this.emit("on-render", {});
   }
 
   public getViewConfiguration() {

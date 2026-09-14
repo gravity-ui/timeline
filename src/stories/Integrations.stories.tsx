@@ -41,7 +41,8 @@ export const Popup: Story = {
   parameters: {
     docs: {
       description: {
-        story: "Popup component from integrations",
+        story:
+          "Hover an event to open its interactive details popup. Links and buttons remain usable.",
       },
     },
   },
