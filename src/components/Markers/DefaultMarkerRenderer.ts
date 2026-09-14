@@ -1,5 +1,10 @@
 import { AbstractMarkerRenderer } from "./AbstractMarkerRenderer";
-import { LabelSize, TimelineMarker, ViewConfiguration } from "../../types";
+import {
+  CanvasColorResolver,
+  LabelSize,
+  TimelineMarker,
+  ViewConfiguration,
+} from "../../types";
 import { clamp } from "../../helpers/math";
 
 const DEFAULT_LINE_WIDTH = 1;
@@ -18,6 +23,7 @@ export class DefaultMarkerRenderer<
     viewConfiguration,
     lastRenderedLabelPosition,
     getLabelSize,
+    resolveColor,
   }: {
     ctx: CanvasRenderingContext2D;
     marker: TMarker;
@@ -27,6 +33,7 @@ export class DefaultMarkerRenderer<
     viewConfiguration: ViewConfiguration;
     lastRenderedLabelPosition: { top: number; bottom: number };
     getLabelSize: (label: string) => LabelSize;
+    resolveColor?: CanvasColorResolver;
   }) {
     const { markers } = viewConfiguration;
     const activeColor = marker.group ? markers.groupColor : marker.activeColor;
@@ -38,6 +45,7 @@ export class DefaultMarkerRenderer<
     if (isSelected) {
       color = activeColor;
     }
+    const resolvedColor = resolveColor ? resolveColor(color) : color;
 
     let labelAreaHeight = 0;
     if (marker.label) {
@@ -46,7 +54,7 @@ export class DefaultMarkerRenderer<
 
       this.renderLabel(
         ctx,
-        color,
+        resolvedColor,
         isSelected,
         isHovered,
         marker,
@@ -54,10 +62,11 @@ export class DefaultMarkerRenderer<
         labelSize,
         viewConfiguration.markers,
         lastRenderedLabelPosition,
+        resolveColor,
       );
     }
 
-    ctx.strokeStyle = color;
+    ctx.strokeStyle = resolvedColor;
     ctx.lineWidth = marker.lineWidth || DEFAULT_LINE_WIDTH;
     ctx.beginPath();
 
@@ -76,6 +85,7 @@ export class DefaultMarkerRenderer<
     labelSize: LabelSize,
     markerConfiguration: ViewConfiguration["markers"],
     lastRenderedLabelPosition: { top: number; bottom: number },
+    resolveColor?: CanvasColorResolver,
   ) {
     const { width, height } = labelSize;
     const widthWithPadding = width + DEFAULT_LABEL_PADDING * 2;
@@ -101,6 +111,7 @@ export class DefaultMarkerRenderer<
         heightWithPadding,
         height,
         markerConfiguration,
+        resolveColor,
       );
     }
   }
@@ -126,11 +137,15 @@ export class DefaultMarkerRenderer<
     heightWithPadding: number,
     height: number,
     markerConfiguration: ViewConfiguration["markers"],
+    resolveColor?: CanvasColorResolver,
   ): void {
     ctx.font = markerConfiguration.font;
     ctx.fillStyle = color;
     ctx.fillRect(labelPosition, 0, widthWithPadding, heightWithPadding);
-    ctx.fillStyle = marker.labelColor || DEFAULT_TEXT_COLOR;
+    const labelColor = marker.labelColor || DEFAULT_TEXT_COLOR;
+    ctx.fillStyle = resolveColor
+      ? resolveColor(labelColor, DEFAULT_TEXT_COLOR)
+      : labelColor;
     ctx.fillText(
       marker.label,
       labelPosition + DEFAULT_LABEL_PADDING,

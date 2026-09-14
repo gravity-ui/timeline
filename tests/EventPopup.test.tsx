@@ -5,6 +5,7 @@ import { TimelineState } from "../src/enums";
 import { TimelineEvent } from "../src/types";
 
 vi.mock("@gravity-ui/uikit", () => ({
+  useThemeValue: () => "light",
   Popup: ({
     children,
     onOpenChange,

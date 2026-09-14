@@ -79,6 +79,20 @@ api.rerender(false);
 **Parameters:**
 - `clearBeforeRender`: Whether to clear the canvas before rendering (default: true)
 
+#### `resolveColor(color: string, fallback?: string)`
+
+Resolves a whole-value CSS custom property such as
+`var(--g-color-base-positive-medium)` against the canvas element. This lets
+canvas rendering use scoped Gravity UI themes. Plain CSS colors are returned
+unchanged; an unresolved token uses its CSS fallback or `fallback`.
+
+```typescript
+ctx.fillStyle = api.resolveColor(
+  'var(--g-color-base-positive-medium)',
+  'transparent',
+);
+```
+
 #### `clear()`
 
 Clears the entire canvas.

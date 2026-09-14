@@ -1,4 +1,9 @@
-import { LabelSize, TimelineMarker, ViewConfiguration } from "../../types";
+import {
+  CanvasColorResolver,
+  LabelSize,
+  TimelineMarker,
+  ViewConfiguration,
+} from "../../types";
 
 export abstract class AbstractMarkerRenderer<
   TMarker extends TimelineMarker = TimelineMarker,
@@ -13,5 +18,6 @@ export abstract class AbstractMarkerRenderer<
     lastRenderedLabelPosition: { top: number; bottom: number };
     timeToPosition: (n: number) => number;
     getLabelSize: (label: string) => LabelSize;
+    resolveColor?: CanvasColorResolver;
   }): void;
 }

@@ -41,6 +41,7 @@ const createAxes = (
       },
     }),
     useScrollTransform: vi.fn(),
+    resolveColor: (color: string) => color,
     getRulerHeight: () => 0,
     getCameraPosition: () => camera,
   } as unknown as AxesApi;

@@ -105,6 +105,7 @@ export class Sections<
           isHovered: this.isHoveredSection(section.id),
           viewConfiguration,
           timeToPosition: this.api.timeToPosition,
+          resolveColor: this.api.resolveColor,
         });
       }
     }

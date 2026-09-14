@@ -1,4 +1,8 @@
-import { TimelineEvent, ViewConfiguration } from "../../types";
+import {
+  CanvasColorResolver,
+  TimelineEvent,
+  ViewConfiguration,
+} from "../../types";
 
 export type Hitbox = {
   top: number;
@@ -19,6 +23,7 @@ export abstract class AbstractEventRenderer {
     viewConfiguration: ViewConfiguration,
     timeToPosition?: (n: number) => number,
     isHovered?: boolean,
+    resolveColor?: CanvasColorResolver,
   ): void;
 
   protected hitboxResult: Hitbox = {

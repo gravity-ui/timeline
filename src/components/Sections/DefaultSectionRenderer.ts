@@ -1,5 +1,9 @@
 import { AbstractSectionRenderer } from "./AbstractSectionRenderer";
-import { TimelineSection, ViewConfiguration } from "../../types";
+import {
+  CanvasColorResolver,
+  TimelineSection,
+  ViewConfiguration,
+} from "../../types";
 import { Hitbox } from "../Events/AbstractEventRenderer";
 
 export class DefaultSectionRenderer<
@@ -13,6 +17,7 @@ export class DefaultSectionRenderer<
     y0,
     h,
     isHovered,
+    resolveColor,
   }: {
     ctx: CanvasRenderingContext2D;
     section: TSection;
@@ -23,11 +28,13 @@ export class DefaultSectionRenderer<
     isHovered: boolean;
     viewConfiguration: ViewConfiguration;
     timeToPosition?: (n: number) => number;
+    resolveColor?: CanvasColorResolver;
   }) {
     const hoverColor = section.hoverColor || section.color;
 
     ctx.beginPath();
-    ctx.fillStyle = isHovered ? hoverColor : section.color;
+    const color = isHovered ? hoverColor : section.color;
+    ctx.fillStyle = resolveColor ? resolveColor(color) : color;
     ctx.rect(x0, y0, x1 - x0, h);
     ctx.fill();
   }

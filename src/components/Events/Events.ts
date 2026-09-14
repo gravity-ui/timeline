@@ -242,6 +242,7 @@ export class Events<
           viewConfiguration,
           timeToPosition,
           this.isHoveredEvent(event),
+          this.api.resolveColor,
         );
       }
     }

@@ -319,6 +319,51 @@ type TimelineEvent = {
 };
 ```
 
+### Gravity UI colors
+
+Canvas cannot resolve CSS custom properties by itself. Timeline resolves a
+whole-value `var(--token)` against its canvas element, so Gravity UI semantic
+tokens work for built-in events, markers, sections, axes, grid, and ruler.
+
+```tsx
+import '@gravity-ui/uikit/styles/fonts.css';
+import '@gravity-ui/uikit/styles/styles.css';
+import {ThemeProvider} from '@gravity-ui/uikit';
+import {useTimeline} from '@gravity-ui/timeline/react';
+import {GravityTimelineCanvas} from '@gravity-ui/timeline/react/uikit';
+
+<ThemeProvider theme="light">
+  <GravityTimelineCanvas timeline={timeline} />
+</ThemeProvider>
+```
+
+Pass tokens directly in any color field, for example
+`color: 'var(--g-color-base-positive-medium)'`. `GravityTimelineCanvas`
+automatically redraws when the effective Gravity UI theme changes. For a
+missing token, use a CSS fallback such as `var(--app-event-color, transparent)`
+or call `timeline.api.resolveColor(color, fallback)` from a custom renderer.
+
+For events, `color` is used normally, `hoverColor` on pointer hover, and
+`selectedColor` after selection:
+
+```ts
+const events = [
+  {
+    id: 'deploy',
+    from: start,
+    to: end,
+    axisId: 'main',
+    trackIndex: 0,
+    color: 'var(--g-color-base-positive-medium)',
+    hoverColor: 'var(--g-color-base-positive-medium-hover)',
+    selectedColor: 'var(--g-color-base-positive-heavy)',
+  },
+];
+```
+
+Custom event renderers receive `resolveColor` as their final optional argument;
+custom marker and section renderers receive it in their render data.
+
 ### Direct TypeScript Usage
 
 The Timeline class can be used directly in TypeScript without React. This is useful for integrating with other frameworks or vanilla JavaScript applications:
