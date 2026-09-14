@@ -22,6 +22,7 @@ Custom rendering with expandable nested events ([NestedEvents](https://preview.g
 
 - Canvas-based rendering for high performance
 - Interactive timeline with zoom and pan capabilities
+- Flexible wheel and trackpad interactions, including vertical scroll pass-through
 - Support for events, markers, sections, axes, and grid
 - Background sections for visual organization and time period highlighting
 - Smart marker grouping with automatic zoom to group - Click on grouped markers to zoom into their individual components
@@ -98,6 +99,30 @@ viewConfiguration: {
   }
 }
 ```
+
+### Flexible Camera Interactions
+
+`ZoomMode` provides familiar interaction presets, while `camera.interactions` lets you override an individual gesture. This is useful when a timeline lives inside a vertically scrollable page: keep horizontal pan and trackpad zoom, but let normal wheel scrolling reach the parent container.
+
+```tsx
+import {ZoomMode} from '@gravity-ui/timeline';
+
+const {timeline} = useTimeline({
+  settings: { /* ... */ },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.DEFAULT,
+      interactions: {
+        verticalWheel: 'pass-through',
+        horizontalWheel: 'pan',
+        pinch: 'zoom',
+      },
+    },
+  },
+});
+```
+
+Each interaction accepts `'zoom'`, `'pan'`, or `'pass-through'`. `pinch` represents a browser's Ctrl+wheel trackpad gesture. See the interactive [Camera interactions Storybook example](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
 
 ### Section Structure
 
@@ -518,6 +543,7 @@ Explore interactive examples in our [Storybook](https://preview.gravity-ui.com/t
 - [Basic Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--basic) - Simple timeline with events and axes
 - [Endless Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--endless-timelines) - Endless timeline with events and axes
 - [Markers](https://preview.gravity-ui.com/timeline/?path=/story/timeline-markers--basic) - Timeline with vertical markers and labels
+- [Camera interactions](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus) - Configure wheel, horizontal scroll, and trackpad pinch behavior
 - [Custom Events](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--custom-renderer) - Timeline with custom event rendering
 - [Integrations](https://preview.gravity-ui.com/timeline/?path=/story/integrations-gravity-ui--timeline-ruler) - RangeDateSelection, DragHandler, NestedEvents, Popup, List
 

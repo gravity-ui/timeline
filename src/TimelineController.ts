@@ -2,7 +2,14 @@ import { clamp } from "./helpers/math";
 import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
 import debounce_ from "lodash/debounce";
-import { TimelineEvent, TimelineMarker, TimelineSection } from "./types";
+import {
+  CameraInteractionAction,
+  CameraInteractions,
+  CameraViewOptionsDefault,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
+} from "./types";
 import { ComponentType, ZoomMode } from "./enums";
 import { Events } from "./components/Events";
 import { Markers } from "./components/Markers";
@@ -11,6 +18,86 @@ import { Sections } from "./components/Sections";
 const WHEEL_PAN_SPEED = 0.00025;
 const ZOOM_MIN = SECOND * 5;
 const ZOOM_MAX = MONTH * 2;
+const WHEEL_DELTA_THRESHOLD = 2;
+const WHEEL_LISTENER_OPTIONS: AddEventListenerOptions = { passive: false };
+const WHEEL_LISTENER_REMOVAL_OPTIONS: EventListenerOptions = {
+  capture: false,
+};
+
+type WheelInteraction = keyof CameraInteractions;
+
+type WheelGesture = {
+  interaction: WheelInteraction;
+  delta: number;
+  isNativeHorizontal: boolean;
+};
+
+const CAMERA_INTERACTION_PRESETS: Record<
+  ZoomMode,
+  Required<CameraInteractions>
+> = {
+  [ZoomMode.DEFAULT]: {
+    verticalWheel: "zoom",
+    horizontalWheel: "pan",
+    pinch: "zoom",
+  },
+  [ZoomMode.HORIZONTAL]: {
+    verticalWheel: "pan",
+    horizontalWheel: "pan",
+    pinch: "pan",
+  },
+  [ZoomMode.NONE]: {
+    verticalWheel: "pass-through",
+    horizontalWheel: "pass-through",
+    pinch: "pass-through",
+  },
+};
+
+const getWheelGesture = (event: WheelEvent): WheelGesture | undefined => {
+  if (event.ctrlKey) {
+    if (event.deltaY === 0) return undefined;
+
+    return {
+      interaction: "pinch",
+      delta: event.deltaY,
+      isNativeHorizontal: false,
+    };
+  }
+
+  if (event.shiftKey && event.deltaY !== 0) {
+    return {
+      interaction: "horizontalWheel",
+      delta: event.deltaY,
+      isNativeHorizontal: false,
+    };
+  }
+
+  if (Math.abs(event.deltaX) > Math.abs(event.deltaY)) {
+    if (event.deltaX === 0) return undefined;
+
+    return {
+      interaction: "horizontalWheel",
+      delta: event.deltaX,
+      isNativeHorizontal: true,
+    };
+  }
+
+  if (event.deltaY === 0) return undefined;
+
+  return {
+    interaction: "verticalWheel",
+    delta: event.deltaY,
+    isNativeHorizontal: false,
+  };
+};
+
+const getCameraInteractions = ({
+  zoom,
+  interactions,
+}: CameraViewOptionsDefault): Required<CameraInteractions> => ({
+  ...CAMERA_INTERACTION_PRESETS[zoom],
+  ...interactions,
+});
 
 /**
  * Controller class responsible for handling timeline interactions and canvas resizing
@@ -52,7 +139,11 @@ export class TimelineController<
       this.updateCanvasSize();
     });
     this.resizeObserver.observe(this.api.canvas);
-    this.api.canvas.addEventListener("wheel", this.handleCanvasWheel);
+    this.api.canvas.addEventListener(
+      "wheel",
+      this.handleCanvasWheel,
+      WHEEL_LISTENER_OPTIONS,
+    );
     this.api.canvas.addEventListener("mouseup", this.handleCanvasMouseup);
     this.api.canvas.addEventListener("mousemove", this.handleCanvasMouseMove);
   }
@@ -63,7 +154,11 @@ export class TimelineController<
   public destroy() {
     this.resizeObserver?.disconnect();
     this.resizeObserver = undefined;
-    this.api.canvas.removeEventListener("wheel", this.handleCanvasWheel);
+    this.api.canvas.removeEventListener(
+      "wheel",
+      this.handleCanvasWheel,
+      WHEEL_LISTENER_REMOVAL_OPTIONS,
+    );
     this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
     this.api.canvas.removeEventListener(
       "mousemove",
@@ -89,60 +184,56 @@ export class TimelineController<
   };
 
   /**
-   * Handles mouse wheel events for zooming and panning
-   * Supports:
-   * - Zoom with mouse wheel (centered on cursor position)
-   * - Pan with shift + wheel
-   * - Horizontal pan with wheel deltaX
+   * Handles wheel events according to the configured camera interactions.
    * @param event - WheelEvent from canvas
    * @private
    */
   private handleCanvasWheel = (event: WheelEvent) => {
-    const { start, end } = this.api.getInterval();
     const { camera } = this.api.getViewConfiguration();
-    const zoomMode = camera.zoom;
+    const gesture = getWheelGesture(event);
 
-    if (zoomMode === ZoomMode.NONE) return;
+    if (!gesture) return;
+
+    const action: CameraInteractionAction =
+      getCameraInteractions(camera)[gesture.interaction];
+
+    if (action === "pass-through") return;
 
     event.stopPropagation();
     event.preventDefault();
 
+    const { start, end } = this.api.getInterval();
     let newStart = start;
     let newEnd = end;
-    let isPanned = false;
     const oldDomain = newEnd - newStart;
 
-    if (Math.abs(event.deltaY) > 2) {
-      if (event.shiftKey || zoomMode === ZoomMode.HORIZONTAL) {
-        isPanned = true;
-        const shift = oldDomain * event.deltaY * WHEEL_PAN_SPEED;
-        newStart += shift;
-        newEnd += shift;
-      } else {
-        const factor = event.deltaY > 0 ? 1.15 : 0.9;
-        const newDomain = clamp(oldDomain * factor, ZOOM_MIN, ZOOM_MAX);
+    const hasEnoughDelta =
+      gesture.isNativeHorizontal ||
+      Math.abs(gesture.delta) > WHEEL_DELTA_THRESHOLD;
 
-        // Check if the cursor is inside the canvas (using logical pixels)
-        if (
-          event.offsetX >= 0 &&
-          event.offsetX <= this.api.canvas.offsetWidth &&
-          event.offsetY >= 0 &&
-          event.offsetY <= this.api.canvas.offsetHeight
-        ) {
-          // Center zoom around the cursor position
-          const cursorTime = this.api.positionToTime(event.offsetX);
-          const ratio = (cursorTime - start) / oldDomain;
-          newStart = Math.round(cursorTime - ratio * newDomain);
-          newEnd = Math.round(cursorTime + (1 - ratio) * newDomain);
-        }
-      }
-    }
-
-    if (!isPanned && event.deltaX !== 0) {
-      const newDomain = newEnd - newStart;
-      const shift = newDomain * event.deltaX * WHEEL_PAN_SPEED;
+    if (action === "pan" && hasEnoughDelta) {
+      const shift = oldDomain * gesture.delta * WHEEL_PAN_SPEED;
       newStart += shift;
       newEnd += shift;
+    }
+
+    if (action === "zoom" && hasEnoughDelta) {
+      const factor = gesture.delta > 0 ? 1.15 : 0.9;
+      const newDomain = clamp(oldDomain * factor, ZOOM_MIN, ZOOM_MAX);
+
+      // Check if the cursor is inside the canvas (using logical pixels)
+      if (
+        event.offsetX >= 0 &&
+        event.offsetX <= this.api.canvas.offsetWidth &&
+        event.offsetY >= 0 &&
+        event.offsetY <= this.api.canvas.offsetHeight
+      ) {
+        // Center zoom around the cursor position
+        const cursorTime = this.api.positionToTime(event.offsetX);
+        const ratio = (cursorTime - start) / oldDomain;
+        newStart = Math.round(cursorTime - ratio * newDomain);
+        newEnd = Math.round(cursorTime + (1 - ratio) * newDomain);
+      }
     }
 
     if (newStart !== start || newEnd !== end) {

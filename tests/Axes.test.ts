@@ -2,7 +2,7 @@ import { describe, expect, it, vi } from "vitest";
 import { CanvasApi } from "../src/CanvasApi";
 import { Axes } from "../src/components/Axes";
 import { defaultViewConfig } from "../src/constants/options";
-import { StrokeMode } from "../src/enums";
+import { StrokeMode, ZoomMode } from "../src/enums";
 import {
   AxesLinePosition,
   TimelineAxis,
@@ -151,5 +151,25 @@ describe("CanvasApi.setViewConfiguration", () => {
 
     expect(timeline.viewConfiguration.axes.linePosition).toBe("between");
     expect(rerender).toHaveBeenCalledOnce();
+  });
+
+  it("deeply merges camera interaction overrides", () => {
+    const api = Object.create(CanvasApi.prototype) as AxesApi;
+    const rerender = vi.fn();
+    const timeline = { viewConfiguration: structuredClone(defaultViewConfig) };
+
+    (api as unknown as { timeline: typeof timeline }).timeline = timeline;
+    api.rerender = rerender;
+
+    api.setViewConfiguration({
+      camera: { interactions: { verticalWheel: "pass-through" } },
+    });
+    api.setViewConfiguration({ camera: { zoom: ZoomMode.HORIZONTAL } });
+
+    expect(timeline.viewConfiguration.camera).toEqual({
+      zoom: ZoomMode.HORIZONTAL,
+      interactions: { verticalWheel: "pass-through" },
+    });
+    expect(rerender).toHaveBeenCalledTimes(2);
   });
 });

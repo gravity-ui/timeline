@@ -144,7 +144,7 @@ timeline.destroy(); // This will also destroy the TimelineController
 
 ### Configuring Interaction Modes
 
-You can control zoom and pan behavior by setting the camera configuration:
+You can control zoom and pan behavior by setting a `ZoomMode` preset and, when necessary, overriding individual interactions:
 
 ```typescript
 import { Timeline, ZoomMode } from '@gravity-ui/timeline';
@@ -157,6 +157,21 @@ const timelineDefault = new Timeline({
       zoom: ZoomMode.DEFAULT
     }
   }
+});
+
+// Keep default behavior, but let vertical wheel events scroll the parent page
+const timelineWithPageScroll = new Timeline({
+  settings: { /* settings */ },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.DEFAULT,
+      interactions: {
+        verticalWheel: 'pass-through',
+        horizontalWheel: 'pan',
+        pinch: 'zoom',
+      },
+    },
+  },
 });
 
 // Horizontal pan only (no zoom)
@@ -179,6 +194,8 @@ const timelineStatic = new Timeline({
   }
 });
 ```
+
+The preset is used for interaction fields that are not overridden. `pass-through` leaves a wheel event untouched so it can bubble to a parent scroll container. Ctrl+wheel is treated as a trackpad pinch gesture; touchscreen pinch is outside the controller's scope.
 
 ### Custom Interaction Handling
 
