@@ -1,5 +1,21 @@
 # Changelog
 
+## [1.31.0](https://github.com/gravity-ui/timeline/compare/v1.30.0...v1.31.0) (2026-09-14)
+
+
+### Features
+
+* **Axes:** new line position [YTFRONT-6029] ([b7092b0](https://github.com/gravity-ui/timeline/commit/b7092b0462a7020d5a2ea92b8bd7bfd65c842c09))
+* **Camera:** new zoom settings [YTFRONT-6029] ([f834cf5](https://github.com/gravity-ui/timeline/commit/f834cf569a7299dc648f9f61ec84e3ea4e6d373a))
+* **Events:** is hover prop and color [YTFRONT-6029] ([110ea0e](https://github.com/gravity-ui/timeline/commit/110ea0e70bba506f3707722531a2fab61399ce58))
+* **Popup:** add popup component [YTFRONT-6029] ([4d76c23](https://github.com/gravity-ui/timeline/commit/4d76c230aba212f473a308a77e79f48cc9ada0a2))
+* **UI:** gravity colors [YTFRONT-6029] ([58305b4](https://github.com/gravity-ui/timeline/commit/58305b496d3131d440577222b9267c0887cdf408))
+
+
+### Bug Fixes
+
+* **UI:** event and tab index [YTFRONT-6029] ([c4bbc75](https://github.com/gravity-ui/timeline/commit/c4bbc75614d0917d6d33f25116948f9049e274bf))
+
 ## [1.30.0](https://github.com/gravity-ui/timeline/compare/v1.29.2...v1.30.0) (2026-08-15)
 
 
