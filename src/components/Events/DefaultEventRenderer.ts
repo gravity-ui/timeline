@@ -1,5 +1,5 @@
 import { AbstractEventRenderer, Hitbox } from "./AbstractEventRenderer";
-import { TimelineEvent } from "../../types";
+import { TimelineEvent, ViewConfiguration } from "../../types";
 
 const DEFAULT_COLOR = "#333";
 const DEFAULT_SELECTED_COLOR = "#546";
@@ -13,8 +13,12 @@ export class DefaultEventRenderer extends AbstractEventRenderer {
     x1: number,
     y0: number,
     h: number,
+    _viewConfiguration: ViewConfiguration,
+    _timeToPosition?: (n: number) => number,
+    isHovered = false,
   ) {
     let color = event.color || DEFAULT_COLOR;
+    if (isHovered) color = event.hoverColor || color;
     if (isSelected) color = event.selectedColor || DEFAULT_SELECTED_COLOR;
 
     ctx.beginPath();

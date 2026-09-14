@@ -22,6 +22,7 @@ export const baseTimelineConfig: TimeLineConfig<
         axisId: "main",
         trackIndex: 1,
         color: "rgb(161, 193, 129)",
+        hoverColor: "rgb(109, 40, 217)",
       },
       {
         id: "test3",
@@ -30,6 +31,7 @@ export const baseTimelineConfig: TimeLineConfig<
         axisId: "main",
         trackIndex: 2,
         color: "rgb(254, 127, 45)",
+        hoverColor: "rgb(124, 58, 237)",
       },
       {
         id: "test4",
@@ -38,6 +40,7 @@ export const baseTimelineConfig: TimeLineConfig<
         axisId: "main",
         trackIndex: 2,
         color: "rgb(45,181,254)",
+        hoverColor: "rgb(139, 92, 246)",
       },
       {
         id: "test5",
@@ -46,6 +49,7 @@ export const baseTimelineConfig: TimeLineConfig<
         axisId: "main",
         trackIndex: 3,
         color: "rgb(87, 156, 135)",
+        hoverColor: "rgb(167, 139, 250)",
       },
       {
         id: "test6",
@@ -54,6 +58,7 @@ export const baseTimelineConfig: TimeLineConfig<
         axisId: "main",
         trackIndex: 4,
         color: "rgb(11, 180, 193)",
+        hoverColor: "rgb(196, 181, 253)",
       },
     ],
   },
