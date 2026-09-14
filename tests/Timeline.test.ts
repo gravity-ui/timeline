@@ -1,9 +1,30 @@
 import { describe, expect, it, vi } from "vitest";
 import { Timeline } from "../src/Timeline";
-import { TimelineState } from "../src/enums";
+import { TimelineState, ZoomMode } from "../src/enums";
 import { TimelineEvent } from "../src/types";
 
 describe("Timeline lifecycle", () => {
+  it("defaults camera zoom while preserving partial interaction overrides", () => {
+    const timeline = new Timeline({
+      settings: {
+        start: 0,
+        end: 100_000,
+        axes: [],
+        events: [],
+      },
+      viewConfiguration: {
+        camera: {
+          interactions: { verticalWheel: "pass-through" },
+        },
+      },
+    });
+
+    expect(timeline.viewConfiguration.camera).toEqual({
+      zoom: ZoomMode.DEFAULT,
+      interactions: { verticalWheel: "pass-through" },
+    });
+  });
+
   it("leaves the ready state before emitting on-destroy", () => {
     const timeline = Object.create(
       Timeline.prototype,

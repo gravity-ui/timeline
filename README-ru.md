@@ -22,6 +22,7 @@ React-библиотека для построения интерактивны�
 
 - Рендеринг на canvas для высокой производительности
 - Интерактивная шкала с масштабированием и панорамированием
+- Гибкая настройка wheel и trackpad-жестов, включая передачу вертикального скролла родителю
 - Поддержка событий, маркеров, секций, осей и сетки
 - Фоновые секции для визуальной организации и выделения периодов
 - Умная группировка маркеров с автоматическим зумом по группе — клик по сгруппированным маркерам приближает их по отдельности
@@ -98,6 +99,30 @@ viewConfiguration: {
   }
 }
 ```
+
+### Гибкая настройка взаимодействий камеры
+
+`ZoomMode` задаёт привычный preset взаимодействий, а `camera.interactions` позволяет переопределить отдельный жест. Это удобно, когда шкала находится внутри вертикально прокручиваемой страницы: горизонтальное перемещение и зум с trackpad сохраняются, а обычный wheel передаётся родительскому контейнеру.
+
+```tsx
+import {ZoomMode} from '@gravity-ui/timeline';
+
+const {timeline} = useTimeline({
+  settings: { /* ... */ },
+  viewConfiguration: {
+    camera: {
+      zoom: ZoomMode.DEFAULT,
+      interactions: {
+        verticalWheel: 'pass-through',
+        horizontalWheel: 'pan',
+        pinch: 'zoom',
+      },
+    },
+  },
+});
+```
+
+Для каждого взаимодействия доступны `'zoom'`, `'pan'` и `'pass-through'`. `pinch` соответствует Ctrl+wheel, который браузер генерирует для zoom-жеста на trackpad. Настройку можно попробовать в интерактивном [примере Camera interactions в Storybook](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
 
 ### Структура секции
 
@@ -468,6 +493,7 @@ timeline.destroy();
 - [Basic Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--basic) — простая шкала с событиями и осями
 - [Endless Timeline](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--endless-timelines) — бесконечная шкала
 - [Markers](https://preview.gravity-ui.com/timeline/?path=/story/timeline-markers--basic) — шкала с маркерами и подписями
+- [Camera interactions](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus) — настройка wheel, горизонтального скролла и zoom-жеста trackpad
 - [Custom Events](https://preview.gravity-ui.com/timeline/?path=/story/timeline-events--custom-renderer) — кастомный рендеринг событий
 - [Integrations](https://preview.gravity-ui.com/timeline/?path=/story/integrations-gravity-ui--timeline-ruler) — RangeDateSelection, DragHandler, NestedEvents, Popup, List
 

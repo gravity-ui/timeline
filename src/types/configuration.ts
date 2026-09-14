@@ -69,8 +69,22 @@ export type MarkerViewOptions = {
   groupZoomMaxFactor?: number;
 };
 
+export type CameraInteractionAction = "zoom" | "pan" | "pass-through";
+
+export type CameraInteractions = {
+  verticalWheel?: CameraInteractionAction;
+  horizontalWheel?: CameraInteractionAction;
+  pinch?: CameraInteractionAction;
+};
+
 export type CameraViewOptions = {
+  zoom?: ZoomMode;
+  interactions?: CameraInteractions;
+};
+
+export type CameraViewOptionsDefault = {
   zoom: ZoomMode;
+  interactions: CameraInteractions;
 };
 
 export type ViewConfiguration = {
@@ -117,4 +131,8 @@ type DeepRequired<T> = {
   [P in keyof T]-?: T[P] extends object ? DeepRequired<T[P]> : T[P];
 };
 
-export type ViewConfigurationDefault = DeepRequired<ViewConfiguration>;
+export type ViewConfigurationDefault = DeepRequired<
+  Omit<ViewConfiguration, "camera">
+> & {
+  camera: CameraViewOptionsDefault;
+};

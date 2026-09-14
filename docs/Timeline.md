@@ -373,18 +373,29 @@ The `camera` configuration controls timeline interaction behaviors, particularly
 ```typescript
 viewConfiguration: {
   camera: {
-    zoom: ZoomMode.DEFAULT // or ZoomMode.NONE or ZoomMode.HORIZONTAL
+    zoom: ZoomMode.DEFAULT, // optional; defaults to ZoomMode.DEFAULT
+    interactions: {
+      verticalWheel: 'pass-through',
+      horizontalWheel: 'pan',
+      pinch: 'zoom',
+    },
   }
 }
 ```
 
-**Zoom Modes:**
+`zoom` supplies a backwards-compatible interaction preset. `interactions` can override individual gestures without changing the other preset behaviors.
 
-| Mode | Value | Behavior |
-|------|-------|----------|
-| `DEFAULT` | `"default"` | Standard zoom and pan behavior (mouse wheel zooms, Shift+wheel pans vertically) |
-| `HORIZONTAL` | `"horizontal"` | Mouse wheel pans horizontally without requiring Shift key |
-| `NONE` | `"none"` | Disables all zoom and pan interactions and passes wheel events to parent scroll containers |
+**Zoom presets:**
+
+| Mode | Value | `verticalWheel` | `horizontalWheel` | `pinch` |
+|------|-------|-----------------|-------------------|---------|
+| `DEFAULT` | `"default"` | `zoom` | `pan` | `zoom` |
+| `HORIZONTAL` | `"horizontal"` | `pan` | `pan` | `pan` |
+| `NONE` | `"none"` | `pass-through` | `pass-through` | `pass-through` |
+
+Each interaction accepts `"zoom"`, `"pan"`, or `"pass-through"`. `pass-through` does not intercept the browser event, allowing parent scroll containers to handle it. `pinch` represents a browser's synthetic `Ctrl+wheel` trackpad gesture; touchscreen pinch is not handled by the timeline.
+
+Wheel gestures with both `deltaX` and `deltaY` use the dominant axis. Shift+wheel is treated as `horizontalWheel`.
 
 ## Events
 
