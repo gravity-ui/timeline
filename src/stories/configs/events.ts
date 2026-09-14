@@ -5,6 +5,7 @@ import {
   TimelineSection,
 } from "../../types";
 import { MyEvent, MyEventRenderer } from "../MyEventRenderer";
+import { CompactEventRenderer } from "../CompactEventRenderer";
 import { commonConfig } from "./common";
 
 export const baseTimelineConfig: TimeLineConfig<
@@ -87,6 +88,28 @@ export const endlessTimelineConfig: TimeLineConfig<
         color: "rgb(11, 180, 193)",
       },
     ],
+  },
+};
+
+export const betweenLinesConfig: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection
+> = {
+  settings: {
+    ...commonConfig,
+    axes: [
+      {
+        id: "main",
+        tracksCount: 5,
+        top: 0,
+        height: 28,
+      },
+    ],
+    events: baseTimelineConfig.settings.events.map((event) => ({
+      ...event,
+      renderer: new CompactEventRenderer(),
+    })),
   },
 };
 

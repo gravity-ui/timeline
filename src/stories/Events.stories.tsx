@@ -2,6 +2,7 @@ import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import {
   baseTimelineConfig,
+  betweenLinesConfig,
   customRendererConfig,
   endlessTimelineConfig,
 } from "./configs/events";
@@ -540,6 +541,30 @@ export const EndlessTimelines: Story = {
     docs: {
       description: {
         story: "Demonstration of a timeline with infinite scrolling",
+      },
+    },
+  },
+};
+
+export const BetweenLines: Story = {
+  args: {
+    "settings.start": betweenLinesConfig.settings.start,
+    "settings.end": betweenLinesConfig.settings.end,
+    "settings.axes": betweenLinesConfig.settings.axes,
+    "settings.events": betweenLinesConfig.settings.events,
+    "settings.selectedEventIds": betweenLinesConfig.settings.selectedEventIds,
+    ...defaultViewConfigArgs,
+    "viewConfiguration.axes": {
+      ...defaultViewConfig.axes,
+      linePosition: "between",
+    },
+  },
+  parameters: {
+    storyKey: "between lines",
+    docs: {
+      description: {
+        story:
+          "Table-style rows with centered compact events and horizontal separators after each row.",
       },
     },
   },

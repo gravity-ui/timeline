@@ -34,6 +34,7 @@ export const defaultViewConfig: ViewConfigurationDefault = {
     },
   },
   axes: {
+    linePosition: "center",
     color: {
       line: defaultPalette.gray13,
     },

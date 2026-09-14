@@ -914,6 +914,34 @@ const PlaygroundControls: React.FC<{
                   marginBottom: "4px",
                 }}
               >
+                Axis Line Position:
+                <select
+                  value={viewConfiguration.axes.linePosition}
+                  onChange={(e) =>
+                    onViewConfigChange({
+                      ...viewConfiguration,
+                      axes: {
+                        ...viewConfiguration.axes,
+                        linePosition: e.target.value as "center" | "between",
+                      },
+                    })
+                  }
+                  style={{ marginLeft: "8px" }}
+                >
+                  <option value="center">Center</option>
+                  <option value="between">Between rows</option>
+                </select>
+              </label>
+            </div>
+
+            <div style={{ marginBottom: "12px" }}>
+              <label
+                style={{
+                  display: "block",
+                  fontSize: "12px",
+                  marginBottom: "4px",
+                }}
+              >
                 Primary Grid Color:
                 <input
                   type="color"

@@ -148,6 +148,7 @@ const timeline = new Timeline({
   },
   viewConfiguration: {
     axes: {
+      linePosition: 'between',
       lineWidth: 1,
       color: {
         line: '#e0e0e0'
@@ -187,6 +188,7 @@ const timeline = new Timeline({
   },
   viewConfiguration: {
     axes: {
+      linePosition: 'between',
       lineWidth: 2,
       color: {
         line: '#b0b0b0'
@@ -197,6 +199,15 @@ const timeline = new Timeline({
   }
 });
 ```
+
+### Horizontal Line Position
+
+Use `linePosition` to control where horizontal lines are drawn in each track:
+
+- `"center"` (default) draws a line through the center of each track: `axis.top + axis.height * index + axis.height / 2`.
+- `"between"` draws a line at the bottom boundary of each track: `axis.top + axis.height * (index + 1)`.
+
+For an axis with `N` tracks, `between` produces `N` lines, including the boundary after the last track. It does not add a separate top boundary. Event positions are unchanged and remain centered in their tracks.
 
 ## Implementation Details
 
@@ -255,7 +266,9 @@ public render() {
 
   for (const axis of this.axesIndex.sortedAxes) {
     for (let i = 0; i < axis.tracksCount; i += 1) {
-      const y = this.getAxisTrackPosition(axis, i);
+      const y = axes.linePosition === 'between'
+        ? axis.top + axis.height * (i + 1)
+        : this.getAxisTrackPosition(axis, i);
       ctx.moveTo(0, y);
       ctx.lineTo(canvasWidth, y);
     }
@@ -281,4 +294,4 @@ public render() {
 3. **Performance**
    - Minimize the number of axes when possible
    - Use appropriate track counts
-   - Consider using dashed lines sparingly 
+   - Consider using dashed lines sparingly

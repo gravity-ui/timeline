@@ -103,7 +103,10 @@ export class Axes<
 
     for (const axis of visibleAxes) {
       for (let i = 0; i < axis.tracksCount; i += 1) {
-        const y = this.getAxisTrackPosition(axis, i);
+        const y =
+          axes.linePosition === "between"
+            ? axis.top + axis.height * (i + 1)
+            : this.getAxisTrackPosition(axis, i);
         // Check if this track is within the camera's field of view
         if (y >= camera.y0 && y <= camera.y1) {
           ctx.moveTo(0, y);
