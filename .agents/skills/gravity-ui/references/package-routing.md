@@ -1,0 +1,424 @@
+# Package routing — offline snapshot
+
+This is an offline snapshot of **https://gravity-ui.com/llms.txt**, the Gravity UI
+ecosystem catalog. It exists so Step 0 of the skill works when the online catalog
+is unreachable (air-gapped, corporate proxy, timeout).
+
+**Online is primary.** This snapshot may lag the site by one release — if you can
+fetch `https://gravity-ui.com/llms.txt`, prefer it. Refresh this file at each
+skill release by re-copying the catalog verbatim (generator = fetch the URL →
+prepend this header → write the file). Do not hand-edit the catalog body below;
+edit the source `llms.txt` instead.
+
+---
+
+# Gravity UI
+
+Gravity UI is a open-source design system and ecosystem of React libraries for building web applications. This file is a compact catalog: pick a package, then fetch its per-package llms.txt for the full agent-facing docs. Read the user's `package.json` first and match the installed `@gravity-ui/*` versions — peer-version mismatches across the ecosystem are the most common failure.
+
+> **`@gravity-ui/uikit` MUST be installed in every Gravity UI project.** It is the base component and design-token library that every other `@gravity-ui/*` package builds on — without it, components render unstyled. Check the user's `package.json` first.
+>
+> **If it is not installed, stop and have the user install and configure it before doing anything else.** Setup and theming instructions: https://gravity-ui.com/llms/uikit/llms.txt
+
+> **Per-package docs are versioned.** Each package lives at `/llms/<package>/<version>/llms.txt` (exact version), `/llms/<package>/<major>/llms.txt` (latest of a major line), and `/llms/<package>/llms.txt` (latest). The links below point at `latest` — read the user's `package.json` and switch the URL to the installed version (or major) when it differs.
+
+> **Agent skill recommended.** A `gravity-ui` skill is available that helps route to the correct package and avoid common API mistakes. Consider installing it when working with Gravity UI:
+>
+> ```bash
+npx skills add gravity-ui/skills
+> ```
+>
+> It can help with tasks involving `@gravity-ui/*` imports, `ThemeProvider`, or `--g-` CSS tokens. Details: https://github.com/gravity-ui/skills
+
+## UIKit (primary) — `@gravity-ui/uikit`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/uikit/llms.txt)
+> GitHub: [gravity-ui/uikit](https://github.com/gravity-ui/uikit)
+
+The base React component and design-token library for Gravity UI apps — controls, inputs, overlays, layout, and theming that every other @gravity-ui package builds on.
+
+#### When to use
+
+- Standard application UI: buttons, form controls, modals and popups, menus, tabs, labels, typography, and layout primitives.
+- The theming foundation of a Gravity UI app: `ThemeProvider`, design tokens, and CSS variables the rest of the `@gravity-ui/*` ecosystem expects to be present.
+- Simple tabular data via the built-in `Table` component (selection, sorting, row actions).
+
+#### When not to use
+
+- Feature-rich data grids (virtualization, column resizing, grouping, reordering) — use [`@gravity-ui/table`](https://github.com/gravity-ui/table), a separate headless package. It is **not** the same as uikit's `Table` component.
+- Charts and data visualization — use [`@gravity-ui/charts`](https://github.com/gravity-ui/charts) (`@gravity-ui/chartkit` is the legacy wrapper).
+- Application navigation shells (aside header, footer, logo) — use [`@gravity-ui/navigation`](https://github.com/gravity-ui/navigation).
+- Date pickers, calendars, and range controls — use [`@gravity-ui/date-components`](https://github.com/gravity-ui/date-components).
+- The SVG icon set itself — use [`@gravity-ui/icons`](https://github.com/gravity-ui/icons); uikit only ships the `Icon` renderer.
+
+## AIKit — `@gravity-ui/aikit`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/aikit/llms.txt)
+> GitHub: [gravity-ui/aikit](https://github.com/gravity-ui/aikit)
+
+A React component library for building AI chat interfaces, organized by Atomic Design (atoms → molecules → organisms → templates → pages) and SDK-agnostic — reach for it to assemble a chat UI (message lists, prompt input, tool calls, attachments) instead of composing those primitives out of `@gravity-ui/uikit` by hand.
+
+#### When to use
+
+- Building an AI/LLM chat UI (assistant/user/tool messages, prompt input with suggestions, attachment uploads, thinking states).
+- Wanting ready-made chat layouts (`ChatContainer`, `MessageList`, `PromptInput`) plus hooks to customize behavior.
+- Embedding into the Gravity UI ecosystem with shared theming via CSS variables.
+
+#### When not to use
+
+- For general-purpose UI primitives (buttons, inputs, modals), use [`@gravity-ui/uikit`](https://gravity-ui.com/uikit) directly — AIKit builds on top of it for chat-specific needs.
+- To render rich markdown in messages, AIKit's `MarkdownRenderer` wraps [`@gravity-ui/markdown-editor`](https://github.com/gravity-ui/markdown-editor); for standalone markdown rendering use that package directly.
+- For a single chat bubble without chat orchestration, a uikit `MarkdownRenderer`/text block is lighter than the full AIKit message pipeline.
+
+## App Layout — `@gravity-ui/app-layout`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/app-layout/llms.txt)
+> GitHub: [gravity-ui/app-layout](https://github.com/gravity-ui/app-layout)
+
+HTML layout generator used in our SPA applications.
+
+## Axios wrapper — `@gravity-ui/axios-wrapper`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/axios-wrapper/llms.txt)
+> GitHub: [gravity-ui/axios-wrapper](https://github.com/gravity-ui/axios-wrapper)
+
+Axios wrapper that provides automatic cancelling of concurrent requests.
+
+## Babel Preset — `@gravity-ui/babel-preset`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/babel-preset/llms.txt)
+> GitHub: [gravity-ui/babel-preset](https://github.com/gravity-ui/babel-preset)
+
+Babel configuration preset for Gravity UI projects.
+
+## Blog Constructor — `@gravity-ui/blog-constructor`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/blog-constructor/llms.txt)
+> GitHub: [gravity-ui/blog-constructor](https://github.com/gravity-ui/blog-constructor)
+
+A library based on the Page constructor library for creating blog-like services.
+
+## Browserslist Config — `@gravity-ui/browserslist-config`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/browserslist-config/llms.txt)
+> GitHub: [gravity-ui/browserslist-config](https://github.com/gravity-ui/browserslist-config)
+
+Browserslist configuration preset used in our services.
+
+## ChartKit — `@gravity-ui/chartkit`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/chartkit/llms.txt)
+> GitHub: [gravity-ui/chartkit](https://github.com/gravity-ui/chartkit)
+
+A plugin-dispatching React component that renders charts from multiple Gravity UI charting libraries through one `<ChartKit type="..." data={...} />` API — reach for it when you need a single lazy-loading entry point for mixed chart types, instead of importing each chart library directly.
+
+#### When to use
+
+- Rendering more than one charting engine (e.g. `gravity-charts` + `yagr`) behind one consistent component.
+- Lazy-loading chart bundles — each plugin's renderer is `React.lazy`, so a library's code is only fetched when its chart type is actually shown.
+- Bundling charts into a Gravity UI app that wants mobile-friendly tooltips and unified theming out of the box.
+
+#### When not to use
+
+- For a single chart type only, import [`@gravity-ui/charts`](https://github.com/gravity-ui/charts) (general) or [`@gravity-ui/yagr`](https://github.com/gravity-ui/yagr) (high-performance time-series) directly — the plugin registry is overhead for one engine.
+- To compose a dashboard grid of widgets, use [`@gravity-ui/dashkit`](https://github.com/gravity-ui/dashkit) — ChartKit renders a chart; DashKit arranges many widgets.
+
+## Charts — `@gravity-ui/charts`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/charts/llms.txt)
+> GitHub: [gravity-ui/charts](https://github.com/gravity-ui/charts)
+
+A declarative React charting library for Gravity UI apps — render line, area, bar, pie, scatter, treemap, and other charts from a single `data` config, themed to match the rest of the app.
+
+#### When to use
+
+- Standard business charts: `line`, `area`, `bar-x`/`bar-y`, `pie`, `scatter`, `treemap`, `waterfall`, `sankey`, `radar`, `heatmap`, `funnel`, `x-range`.
+- Visualizations that must follow Gravity UI theming (light/dark) and share tokens with a `@gravity-ui/uikit` app.
+- Rendering a chart from declarative data rather than drawing imperatively.
+
+#### When not to use
+
+- Projects still on `@gravity-ui/chartkit` — that is the older adapter-based wrapper (YAGR/Highcharts/D3); this package is the modern standalone renderer and is not a drop-in replacement.
+- Plain tabular data — use [`@gravity-ui/table`](https://github.com/gravity-ui/table).
+- Non-React or server-only rendering — `Chart` renders React SVG and needs the DOM.
+
+## DashKit — `@gravity-ui/dashkit`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/dashkit/llms.txt)
+> GitHub: [gravity-ui/dashkit](https://github.com/gravity-ui/dashkit)
+
+A dashboard grid composer that arranges resizable, draggable widgets in a responsive grid via a plugin system — reach for it when you build a user-editable dashboard (add/move/resize/delete widgets) instead of placing individual charts or panels by hand.
+
+#### When to use
+
+- Rendering a configurable dashboard where widgets are positioned, resized, and rearranged on a grid (built on `react-grid-layout`).
+- User-editable layouts: adding/removing widgets from an action panel, drag-and-drop, edit mode with overlay controls.
+- Plugin-based widgets where each widget type (title, text, chart, custom) is registered once and driven by a `config`.
+
+#### When not to use
+
+- For a single, fixed chart or panel, use [`@gravity-ui/charts`](https://gravity-ui.com/charts) or [`@gravity-ui/chartkit`](https://github.com/gravity-ui/chartkit) directly — the grid/plugin machinery is overhead for one widget.
+- For a general-purpose responsive grid that is not a widget dashboard, use `react-grid-layout` directly.
+- For embedding ChartKit-backed chart widgets inside a DashKit dashboard, DashKit is the shell; it still relies on [`@gravity-ui/chartkit`](https://github.com/gravity-ui/chartkit) to render the actual charts.
+
+## Data Source — `@gravity-ui/data-source`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/data-source/llms.txt)
+> GitHub: [gravity-ui/data-source](https://github.com/gravity-ui/data-source)
+
+A wrapper around data fetching.
+
+## Date Components — `@gravity-ui/date-components`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/date-components/llms.txt)
+> GitHub: [gravity-ui/date-components](https://github.com/gravity-ui/date-components)
+
+React date and time controls for Gravity UI apps — date/time pickers, calendars, and absolute/relative range selectors built on `@gravity-ui/date-utils`.
+
+#### When to use
+
+- A single date or date-time input: `DatePicker`, `DateField`.
+- Calendars for month/day selection: `Calendar`, `CalendarView`.
+- Date ranges: `RangeDatePicker`, `RangeCalendar`, `RangeDateField`.
+- Relative and mixed absolute/relative ranges (e.g. "last 7 days"): `RelativeDatePicker`, `RelativeRangeDatePicker`, `RelativeDateField`.
+
+#### When not to use
+
+- Plain text or number inputs, buttons, or other generic controls — use [`@gravity-ui/uikit`](https://github.com/gravity-ui/uikit).
+- Low-level date math, parsing, formatting, or timezone handling without UI — use [`@gravity-ui/date-utils`](https://github.com/gravity-ui/date-utils) directly.
+
+## Date Utils — `@gravity-ui/date-utils`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/date-utils/llms.txt)
+> GitHub: [gravity-ui/date-utils](https://github.com/gravity-ui/date-utils)
+
+Timezone-aware date/time helpers — parsing (including relative expressions like `now-1d/d`), formatting, and locale management — without any UI, reach for it when you need to compute and format dates reliably across time zones instead of pulling in a full UI calendar.
+
+#### When to use
+
+- Parsing absolute or relative date expressions (`'now-1d'`, `'now/d'`) into a timezone-aware `dateTime` object.
+- Formatting dates for display in the user's timezone with locale support.
+- Sharing date logic between server (Node) and client (React) code — the package has no React dependency.
+
+#### When not to use
+
+- To render a calendar, date picker, or any date **UI**, use [`@gravity-ui/date-components`](https://gravity-ui.com/components/date-components) — it builds its visuals on top of this package.
+- For lightweight immutable date math and no timezone/relative-expression needs, `date-fns` or the native `Intl`/`Date` APIs may suffice.
+
+## Dialog Fields — `@gravity-ui/dialog-fields`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/dialog-fields/llms.txt)
+> GitHub: [gravity-ui/dialog-fields](https://github.com/gravity-ui/dialog-fields)
+
+A react-final-form wrapper that provides some useful high-level components for building forms.
+
+## Dynamic Forms — `@gravity-ui/dynamic-forms`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/dynamic-forms/llms.txt)
+> GitHub: [gravity-ui/dynamic-forms](https://github.com/gravity-ui/dynamic-forms)
+
+Library for rendering neat and functional react forms described by JSON schema
+
+## ESlint Config — `@gravity-ui/eslint-config`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/eslint-config/llms.txt)
+> GitHub: [gravity-ui/eslint-config](https://github.com/gravity-ui/eslint-config)
+
+ESLint configuration preset for Gravity UI projects.
+
+## ExpressKit — `@gravity-ui/expresskit`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/expresskit/llms.txt)
+> GitHub: [gravity-ui/expresskit](https://github.com/gravity-ui/expresskit)
+
+Lightweight express.js wrapper that integrates with NodeKit.
+
+## Graph — `@gravity-ui/graph`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/graph/llms.txt)
+> GitHub: [gravity-ui/graph](https://github.com/gravity-ui/graph)
+
+High-performance graph renderer with dynamic scale-aware detailization
+
+## I18n — `@gravity-ui/i18n`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/i18n/llms.txt)
+> GitHub: [gravity-ui/i18n](https://github.com/gravity-ui/i18n)
+
+Internationalization helpers of Gravity UI projects.
+
+## Icons — `@gravity-ui/icons`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/icons/llms.txt)
+> GitHub: [gravity-ui/icons](https://github.com/gravity-ui/icons)
+
+The official SVG icon set for Gravity UI, shipped as both React components and raw `.svg` files for use with `@gravity-ui/uikit`'s `Icon` renderer.
+
+#### When to use
+
+- You need an icon inside a Gravity UI app and want a consistent, ready-made set.
+- Rendering an icon via uikit: import the icon component here and pass it to uikit's `Icon` through its `data` prop.
+- You need the raw `.svg` asset (e.g. for CSS `background-image` or a build-time SVG loader) rather than a React component.
+
+#### When not to use
+
+- Rendering the icon on screen — this package only provides the glyphs; the actual renderer (sizing, color, a11y) is the `Icon` component from [`@gravity-ui/uikit`](https://github.com/gravity-ui/uikit).
+- You need a custom or brand icon that is not in the set — import your own SVG and pass it to uikit's `Icon`; do not expect it to live here.
+
+## Illustrations — `@gravity-ui/illustrations`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/illustrations/llms.txt)
+> GitHub: [gravity-ui/illustrations](https://github.com/gravity-ui/illustrations)
+
+A set of illustrations for displaying data statuses.
+
+## Markdown editor — `@gravity-ui/markdown-editor`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/markdown-editor/llms.txt)
+> GitHub: [gravity-ui/markdown-editor](https://github.com/gravity-ui/markdown-editor)
+
+A dual-mode Markdown editor for React that combines a WYSIWYG mode (ProseMirror) and a raw markup mode (CodeMirror), with support for basic Markdown and YFM.
+
+#### When to use
+
+- Editing Markdown/YFM content with a switchable visual (WYSIWYG) and source (markup) view.
+- You need an extensible editor: custom marks, nodes, toolbar items, and extensions (HTML, LaTeX, Mermaid, GPT) via the ProseMirror/CodeMirror engines.
+- Rendering the editor UI: create the instance with `useMarkdownEditor` and render it with `MarkdownEditorView`.
+
+#### When not to use
+
+- Read-only rendering of Markdown to HTML with no editing — transform it with [`@diplodoc/transform`](https://github.com/diplodoc-platform/transform) and render the output instead.
+- Plain multiline text input — use `TextArea` from [`@gravity-ui/uikit`](https://github.com/gravity-ui/uikit).
+- Rich-text that is not Markdown/YFM — this editor is Markdown-first.
+
+## Navigation — `@gravity-ui/navigation`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/navigation/llms.txt)
+> GitHub: [gravity-ui/navigation](https://github.com/gravity-ui/navigation)
+
+Application-shell navigation components for Gravity UI apps — the collapsible `AsideHeader` sidebar plus footers, drawers, logo, hotkeys and settings panels that frame a whole page.
+
+#### When to use
+
+- The app's primary navigation frame: `AsideHeader` (collapsible side navigation) with `menuItems`, subheader, and footer sections.
+- Supporting shell UI: `Drawer`/`DrawerItem`, `Footer`/`MobileFooter`, `MobileHeader`, `HotkeysPanel`, `Settings`, `ActionBar`, `Logo`.
+- Laying out page content inside the navigation frame via `renderContent` / `PageLayout`.
+
+#### When not to use
+
+- Generic in-page controls (buttons, tabs, menus, breadcrumbs) — use [`@gravity-ui/uikit`](https://github.com/gravity-ui/uikit); this package is the outer app chrome, not general components.
+- Rendering the page body itself from config — use [`@gravity-ui/page-constructor`](https://github.com/gravity-ui/page-constructor).
+- Client-side routing — this provides the navigation UI only; wire clicks to your own router.
+
+## NodeKit — `@gravity-ui/nodekit`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/nodekit/llms.txt)
+> GitHub: [gravity-ui/nodekit](https://github.com/gravity-ui/nodekit)
+
+A foundational Node.js toolkit (logging, telemetry, typed errors, config, request contexts) shared across Gravity UI backends — reach for it to get a consistent app spine before adding any HTTP layer, instead of assembling logging/error/config plumbing yourself.
+
+#### When to use
+
+- Any Node.js service/script that wants shared logging, telemetry (tracing), and a typed `AppError`.
+- Providing request-scoped context (logs/traces) across async boundaries.
+- Centralizing configuration so multiple services in the same ecosystem behave consistently.
+
+#### When not to use
+
+- To expose HTTP routes, middleware, or a server, use [`@gravity-ui/expresskit`](https://github.com/gravity-ui/expresskit) — it builds on top of NodeKit and adds the Express/HTTP layer.
+- For a standalone, single-file script with no logging/telemetry needs, plain Node APIs are lighter than the full NodeKit context system.
+
+## Page constructor — `@gravity-ui/page-constructor`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/page-constructor/llms.txt)
+> GitHub: [gravity-ui/page-constructor](https://github.com/gravity-ui/page-constructor)
+
+A library for rendering whole web pages or page sections from declarative JSON/YAML config, using a set of ready-made, orderable blocks — reach for it to build marketing/landing pages, not general application UI.
+
+#### When to use
+
+- Data-driven pages: render a `content` config of typed blocks with `PageConstructor` wrapped in `PageConstructorProvider`.
+- Marketing, landing, and documentation pages assembled from prebuilt blocks (headers, media, cards, etc.).
+- Server-side YFM processing of block text via the `@gravity-ui/page-constructor/server` utilities (`contentTransformer`, `fullTransform`).
+- Reusing just the responsive grid (`Grid`/`Row`/`Col`) or `QueriesNavigation` component standalone.
+
+#### When not to use
+
+- General application UI (buttons, forms, modals) — use [`@gravity-ui/uikit`](https://github.com/gravity-ui/uikit).
+- Editing Markdown/YFM content — use [`@gravity-ui/markdown-editor`](https://github.com/gravity-ui/markdown-editor).
+- App navigation shells (aside header) — use [`@gravity-ui/navigation`](https://github.com/gravity-ui/navigation); this package's `QueriesNavigation` is a page-level top nav.
+
+## Page-constructor-builder — `@gravity-ui/page-constructor-builder`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/page-constructor-builder/llms.txt)
+> GitHub: [gravity-ui/page-constructor-builder](https://github.com/gravity-ui/page-constructor-builder)
+
+A powerful command-line utility for building static pages from YAML configurations
+
+## Playwright Tools — `@gravity-ui/playwright-tools`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/playwright-tools/llms.txt)
+> GitHub: [gravity-ui/playwright-tools](https://github.com/gravity-ui/playwright-tools)
+
+A collection of utilities for writing Playwright tests, including browser actions, HAR-based request recording and replay, and component testing fixtures.
+
+## Prettier Config — `@gravity-ui/prettier-config`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/prettier-config/llms.txt)
+> GitHub: [gravity-ui/prettier-config](https://github.com/gravity-ui/prettier-config)
+
+Prettier configuration preset for Gravity UI projects.
+
+## Stylelint Config — `@gravity-ui/stylelint-config`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/stylelint-config/llms.txt)
+> GitHub: [gravity-ui/stylelint-config](https://github.com/gravity-ui/stylelint-config)
+
+Stylelint configuration preset for Gravity UI projects.
+
+## Table — `@gravity-ui/table`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/table/llms.txt)
+> GitHub: [gravity-ui/table](https://github.com/gravity-ui/table)
+
+A headless, TanStack-Table-powered data grid for Gravity UI apps — reach for it for sortable, selectable, groupable, reorderable, and virtualized tables instead of composing raw markup on top of uikit's basic `Table`.
+
+#### When to use
+
+- Large datasets that need row or window virtualization (`useRowVirtualizer`, `useWindowRowVirtualizer`).
+- Column sorting, resizing, reordering (`ColumnReorderingProvider`), pinning, and per-user column settings (`TableSettings`).
+- Row selection (single/multi, ranged) and tree/grouped rows with expandable cells.
+
+#### When not to use
+
+- A simple, static table with a handful of rows and no advanced features — uikit's built-in `Table` from [`@gravity-ui/uikit`](https://github.com/gravity-ui/uikit) is lighter.
+- A non-tabular list — use `List` from [`@gravity-ui/uikit`](https://github.com/gravity-ui/uikit).
+- Spreadsheet-style inline cell editing — this grid is read/display-focused, not an editable spreadsheet.
+
+## Timeline — `@gravity-ui/timeline`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/timeline/llms.txt)
+> GitHub: [gravity-ui/timeline](https://github.com/gravity-ui/timeline)
+
+A React-based library for building interactive timeline visualizations with canvas rendering.
+
+## TSconfig — `@gravity-ui/tsconfig`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/tsconfig/llms.txt)
+> GitHub: [gravity-ui/tsconfig](https://github.com/gravity-ui/tsconfig)
+
+TypeScript compiler configuration preset for Gravity UI projects.
+
+## Webpack i18n plugin — `@gravity-ui/webpack-i18n-assets-plugin`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/webpack-i18n-assets-plugin/llms.txt)
+> GitHub: [gravity-ui/webpack-i18n-assets-plugin](https://github.com/gravity-ui/webpack-i18n-assets-plugin)
+
+A plugin for Webpack that replaces calls to localization functions (i18n) with target texts.
+
+## Yagr — `@gravity-ui/yagr`
+
+> If you need this library, read more at package [llms.txt](https://gravity-ui.com/llms/yagr/llms.txt)
+> GitHub: [gravity-ui/yagr](https://github.com/gravity-ui/yagr)
+
+A high-performance canvas charts renderer, based on uPlot.
