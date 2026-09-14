@@ -2,7 +2,7 @@ import React, { useEffect, useRef } from "react";
 import { Timeline } from "../Timeline";
 import { TimelineEvent, TimelineMarker, TimelineSection } from "../types";
 
-type Props<
+export type TimelineCanvasProps<
   TEvent extends TimelineEvent = TimelineEvent,
   TMarker extends TimelineMarker = TimelineMarker,
   TSection extends TimelineSection = TimelineSection,
@@ -20,7 +20,7 @@ export const TimelineCanvas = <
   timeline,
   className,
   tabIndex = 0,
-}: Props<TEvent, TMarker, TSection>) => {
+}: TimelineCanvasProps<TEvent, TMarker, TSection>) => {
   const canvasRef = useRef<HTMLCanvasElement>(null);
 
   useEffect(() => {

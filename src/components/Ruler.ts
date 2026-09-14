@@ -42,7 +42,7 @@ export class Ruler<
     this.api.useStaticTransform();
 
     // Draw background
-    ctx.fillStyle = ruler.color.background;
+    ctx.fillStyle = this.api.resolveColor(ruler.color.background);
     ctx.fillRect(0, 0, width, ruler.height);
 
     // Set common text properties
@@ -63,7 +63,7 @@ export class Ruler<
     const { ruler } = this.api.getViewConfiguration();
     const { ctx, width } = this.api;
 
-    ctx.strokeStyle = ruler.color.borderColor;
+    ctx.strokeStyle = this.api.resolveColor(ruler.color.borderColor);
     ctx.beginPath();
     ctx.moveTo(0, ruler.height + ctx.lineWidth / 2);
     ctx.lineTo(width, ruler.height + ctx.lineWidth / 2);
@@ -155,7 +155,7 @@ export class Ruler<
     const { start, end } = this.api.getInterval();
     const { ctx, width } = this.api;
 
-    ctx.strokeStyle = ruler.color.textOutlineColor;
+    ctx.strokeStyle = this.api.resolveColor(ruler.color.textOutlineColor);
     const t0 = level.start(start);
     let firstRendered = null;
 
@@ -166,7 +166,9 @@ export class Ruler<
 
       if (x > 10 && x < width) {
         if (!firstRendered) firstRendered = t;
-        ctx.fillStyle = (level.color && level.color(t)) || color;
+        ctx.fillStyle = this.api.resolveColor(
+          (level.color && level.color(t)) || color,
+        );
         ctx.strokeText(label, x, y);
         ctx.fillText(label, x, y);
       }
@@ -198,7 +200,9 @@ export class Ruler<
         5,
     );
 
-    ctx.fillStyle = (level.color && level.color(firstLabelTimestamp)) || color;
+    ctx.fillStyle = this.api.resolveColor(
+      (level.color && level.color(firstLabelTimestamp)) || color,
+    );
     ctx.strokeText(firstLabel, firstMark, y);
     ctx.fillText(firstLabel, firstMark, y);
   }

@@ -16,6 +16,8 @@ import {
 } from "./types";
 import { Sections } from "./components/Sections";
 import { deepMerge } from "./lib/utils";
+import { resolveCanvasColor } from "./helpers/color";
+import { CanvasColorResolver } from "./types/colors";
 
 export class CanvasApi<
   TEvent extends TimelineEvent,
@@ -27,6 +29,7 @@ export class CanvasApi<
 
   protected components: Map<string, BaseComponentInterface>;
   protected timeline: Timeline<TEvent, TMarker, TSection>;
+  private colorCache = new Map<string, string>();
 
   constructor(timeline: Timeline<TEvent, TMarker, TSection>) {
     this.timeline = timeline;
@@ -52,6 +55,8 @@ export class CanvasApi<
   }
 
   public rerender(clearBeforeRender = true) {
+    this.colorCache.clear();
+
     if (clearBeforeRender) {
       this.clear();
     }
@@ -70,6 +75,23 @@ export class CanvasApi<
   public getViewConfiguration() {
     return this.timeline.viewConfiguration;
   }
+
+  /**
+   * Converts a CSS custom property into a canvas color in the canvas theme
+   * context. Plain CSS colors are returned unchanged.
+   */
+  public resolveColor: CanvasColorResolver = (
+    color,
+    fallback = "transparent",
+  ) => {
+    const cacheKey = `${color}\u0000${fallback}`;
+    const cached = this.colorCache.get(cacheKey);
+    if (cached !== undefined) return cached;
+
+    const resolved = resolveCanvasColor(color, this.canvas, fallback);
+    this.colorCache.set(cacheKey, resolved);
+    return resolved;
+  };
 
   public getRulerHeight() {
     const config = this.timeline.viewConfiguration;

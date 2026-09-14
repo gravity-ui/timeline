@@ -87,7 +87,7 @@ export class Axes<
     ctx.translate(0, this.api.getRulerHeight());
 
     const canvasWidth = ctx.canvas.width;
-    ctx.strokeStyle = axes.color.line;
+    ctx.strokeStyle = this.api.resolveColor(axes.color.line);
     ctx.beginPath();
     ctx.lineWidth = axes.lineWidth;
 

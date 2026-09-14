@@ -114,7 +114,7 @@ export class Grid<
         convertDomain(Number(t), start, end, left, left + width),
       );
       ctx.beginPath();
-      ctx.strokeStyle = level.style(t);
+      ctx.strokeStyle = this.api.resolveColor(level.style(t));
       ctx.moveTo(x, top);
       ctx.lineTo(x, top + height);
       ctx.stroke();

@@ -1,4 +1,8 @@
-import { TimelineSection, ViewConfiguration } from "../../types";
+import {
+  CanvasColorResolver,
+  TimelineSection,
+  ViewConfiguration,
+} from "../../types";
 import { Hitbox } from "../Events/AbstractEventRenderer";
 
 export abstract class AbstractSectionRenderer<
@@ -14,6 +18,7 @@ export abstract class AbstractSectionRenderer<
     isHovered: boolean;
     viewConfiguration: ViewConfiguration;
     timeToPosition?: (n: number) => number;
+    resolveColor?: CanvasColorResolver;
   }): void;
 
   protected hitboxResult: Hitbox = {

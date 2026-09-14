@@ -127,6 +127,7 @@ export class Markers<
         lastRenderedLabelPosition: this.lastRenderedLabelPosition,
         timeToPosition: this.api.timeToPosition,
         getLabelSize: this.getLabelSize.bind(this),
+        resolveColor: this.api.resolveColor,
       });
     };
 

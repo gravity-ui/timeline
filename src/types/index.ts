@@ -1,4 +1,5 @@
 export * from "./axis";
+export * from "./colors";
 export * from "./component";
 export * from "./configuration";
 export * from "./events";
