@@ -24,6 +24,7 @@ export const baseTimelineConfig: TimeLineConfig<
         trackIndex: 1,
         color: "rgb(161, 193, 129)",
         hoverColor: "rgb(109, 40, 217)",
+        cursor: "pointer",
       },
       {
         id: "test3",

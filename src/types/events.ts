@@ -12,6 +12,8 @@ export type TimelineEvent = {
   color?: string;
   hoverColor?: string;
   selectedColor?: string;
+  /** CSS cursor displayed while the pointer is over this event. */
+  cursor?: string;
 };
 
 export type BaseEventData = {

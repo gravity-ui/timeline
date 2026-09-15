@@ -14,6 +14,11 @@ import {
 
 const MAX_INDEX_TREE_WIDTH = 16;
 
+type AppliedCursor = {
+  value: string;
+  previousValue: string;
+};
+
 /**
  * Events component responsible for managing and rendering timeline events
  * Implements BaseComponentInterface for consistent component structure
@@ -32,6 +37,8 @@ export class Events<
   private _selectedEvents = new Set<string>();
   private _hoveredEvents = new Set<string>();
   private lastPointerPosition?: { x: number; y: number };
+  private appliedCursor?: AppliedCursor;
+  private cursorAcquisitionBaseline?: string;
   private _events: Event[] = [];
   private eventsById = new Map<string, Event>();
 
@@ -187,6 +194,7 @@ export class Events<
 
   public render() {
     this.updateHoveredEvents();
+    this.updateCursor(true);
 
     const viewConfiguration = this.api.getViewConfiguration();
     const { start, end } = this.api.getInterval();
@@ -252,6 +260,8 @@ export class Events<
    * Cleans up event listeners when component is destroyed
    */
   public destroy() {
+    this.lastPointerPosition = undefined;
+    this.updateCursor(false);
     this.api.canvas.removeEventListener("mouseup", this.handleCanvasMouseup);
     this.api.canvas.removeEventListener(
       "mousemove",
@@ -309,11 +319,13 @@ export class Events<
 
   protected handleCanvasMousemove = (event: MouseEvent) => {
     this.lastPointerPosition = { x: event.offsetX, y: event.offsetY };
+    this.updateCursor(true);
     if (this.updateHoveredEvents()) this.api.rerender();
   };
 
   protected handleCanvasMouseleave = () => {
     this.lastPointerPosition = undefined;
+    this.updateCursor(false);
     if (this._hoveredEvents.size === 0) return;
 
     this._hoveredEvents.clear();
@@ -370,6 +382,63 @@ export class Events<
 
     this._hoveredEvents = hoveredIds;
     return true;
+  }
+
+  /**
+   * Applies the cursor of the top-most event at the pointer position.
+   * Cursor ownership is released when another integration changes the inline
+   * cursor, so interaction helpers such as drag handlers are not overwritten.
+   */
+  private updateCursor(allowAcquire: boolean): void {
+    const canvas = this.api.canvas;
+    const appliedCursor = this.appliedCursor;
+
+    if (!this.lastPointerPosition) {
+      this.cursorAcquisitionBaseline = undefined;
+    }
+
+    if (appliedCursor && canvas.style.cursor !== appliedCursor.value) {
+      this.appliedCursor = undefined;
+      this.cursorAcquisitionBaseline = appliedCursor.previousValue;
+      return;
+    }
+
+    if (this.cursorAcquisitionBaseline !== undefined) {
+      if (canvas.style.cursor !== this.cursorAcquisitionBaseline) return;
+      this.cursorAcquisitionBaseline = undefined;
+    }
+
+    const cursor = this.lastPointerPosition
+      ? this.getTopEventAtPoint(
+          this.lastPointerPosition.x,
+          this.lastPointerPosition.y,
+        )?.cursor
+      : undefined;
+
+    if (cursor === undefined) {
+      if (appliedCursor) {
+        canvas.style.cursor = appliedCursor.previousValue;
+        this.appliedCursor = undefined;
+      }
+      return;
+    }
+
+    if (appliedCursor) {
+      if (appliedCursor.value !== cursor) {
+        canvas.style.cursor = cursor;
+        appliedCursor.value = canvas.style.cursor;
+      }
+      return;
+    }
+
+    if (!allowAcquire) return;
+
+    const previousValue = canvas.style.cursor;
+    canvas.style.cursor = cursor;
+    this.appliedCursor = {
+      value: canvas.style.cursor,
+      previousValue,
+    };
   }
 }
 
