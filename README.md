@@ -343,8 +343,13 @@ type TimelineEvent = {
   color?: string;         // Optional event color
   hoverColor?: string;    // Optional hovered state color
   selectedColor?: string; // Optional selected state color
+  cursor?: string;        // Optional CSS cursor while hovering the event
 };
 ```
+
+Set `cursor: 'pointer'` on events that perform an action on click. The cursor
+is applied only while the pointer is over that event; when events overlap, the
+last event in data order determines the cursor.
 
 ### Gravity UI colors
 

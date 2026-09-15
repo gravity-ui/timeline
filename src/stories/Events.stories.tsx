@@ -70,6 +70,7 @@ type TimelineEvent = {
   color?: string;          // Optional event color
   hoverColor?: string;     // Optional color when hovered
   selectedColor?: string;  // Optional color when selected
+  cursor?: string;         // Optional CSS cursor when hovered
 };
 \`\`\`
 
@@ -95,7 +96,8 @@ const timeline = new Timeline({
         to: Date.now() + 1800000,  // 30 minutes
         color: '#ff6b6b',
         hoverColor: '#ff8787',
-        selectedColor: '#ff5252'
+        selectedColor: '#ff5252',
+        cursor: 'pointer'
       },
       {
         id: 'event2',
@@ -521,7 +523,7 @@ export const Basic: Story = {
     docs: {
       description: {
         story:
-          "Basic timeline configuration. Hover an event to see its `hoverColor`.",
+          "Basic timeline configuration. Hover the green event to see its `hoverColor` and `cursor: 'pointer'`.",
       },
     },
   },
