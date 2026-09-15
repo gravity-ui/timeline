@@ -117,12 +117,14 @@ const {timeline} = useTimeline({
         horizontalWheel: 'pan',
         pinch: 'zoom',
       },
+      minRange: 5_000,
+      maxRange: 1000 * 60 * 60 * 24 * 365,
     },
   },
 });
 ```
 
-Each interaction accepts `'zoom'`, `'pan'`, or `'pass-through'`. `pinch` represents a browser's Ctrl+wheel trackpad gesture. See the interactive [Camera interactions Storybook example](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
+Each interaction accepts `'zoom'`, `'pan'`, or `'pass-through'`. `pinch` represents a browser's Ctrl+wheel trackpad gesture. `minRange` and `maxRange` are durations in milliseconds; the minimum defaults to 5 seconds and the maximum is unrestricted unless configured. See the interactive [Camera interactions Storybook example](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
 
 ### Section Structure
 
@@ -341,8 +343,13 @@ type TimelineEvent = {
   color?: string;         // Optional event color
   hoverColor?: string;    // Optional hovered state color
   selectedColor?: string; // Optional selected state color
+  cursor?: string;        // Optional CSS cursor while hovering the event
 };
 ```
+
+Set `cursor: 'pointer'` on events that perform an action on click. The cursor
+is applied only while the pointer is over that event; when events overlap, the
+last event in data order determines the cursor.
 
 ### Gravity UI colors
 

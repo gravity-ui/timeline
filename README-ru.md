@@ -117,12 +117,14 @@ const {timeline} = useTimeline({
         horizontalWheel: 'pan',
         pinch: 'zoom',
       },
+      minRange: 5_000,
+      maxRange: 1000 * 60 * 60 * 24 * 365,
     },
   },
 });
 ```
 
-Для каждого взаимодействия доступны `'zoom'`, `'pan'` и `'pass-through'`. `pinch` соответствует Ctrl+wheel, который браузер генерирует для zoom-жеста на trackpad. Настройку можно попробовать в интерактивном [примере Camera interactions в Storybook](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
+Для каждого взаимодействия доступны `'zoom'`, `'pan'` и `'pass-through'`. `pinch` соответствует Ctrl+wheel, который браузер генерирует для zoom-жеста на trackpad. `minRange` и `maxRange` задаются в миллисекундах: минимум по умолчанию — 5 секунд, а максимум не ограничен, пока его не указали. Настройку можно попробовать в интерактивном [примере Camera interactions в Storybook](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
 
 ### Структура секции
 
@@ -342,8 +344,13 @@ type TimelineEvent = {
   color?: string;        // Цвет события (опционально)
   hoverColor?: string;   // Цвет при наведении (опционально)
   selectedColor?: string;// Цвет при выделении (опционально)
+  cursor?: string;       // CSS-курсор при наведении на событие (опционально)
 };
 ```
+
+Для событий, которые выполняют действие по клику, задайте `cursor: 'pointer'`.
+Курсор применяется только над этим событием; при перекрытии используется
+последнее событие в порядке данных.
 
 ### Цвета Gravity UI
 

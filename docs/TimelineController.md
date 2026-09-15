@@ -75,8 +75,8 @@ The zoom behavior is controlled by the camera configuration's zoom mode:
 - **DEFAULT Mode**: 
   - **Mouse Wheel**: Zoom in/out centered on cursor position
   - **Zoom Limits**: 
-    - Minimum zoom: 5 seconds
-    - Maximum zoom: 2 months
+    - Minimum range: 5 seconds by default (`camera.minRange`)
+    - Maximum range: unlimited by default (`camera.maxRange`)
   - **Zoom Speed**: Controlled by wheel delta
 
 - **HORIZONTAL Mode**: 
