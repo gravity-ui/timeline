@@ -1,9 +1,10 @@
-import React, { useMemo, useState } from "react";
+import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ZoomMode } from "../enums";
 import type { CameraInteractionAction, CameraInteractions } from "../types";
 import { TimelineCanvas } from "../react-components/TimelineCanvas";
 import { useTimeline } from "../react-components/hooks/useTimeline";
+import { useTimelineEvent } from "../react-components/hooks/useTimelineEvent";
 import { baseTimelineConfig } from "./configs/events";
 
 const meta = {
@@ -24,6 +25,24 @@ const interactionNames: Record<keyof CameraInteractions, string> = {
   verticalWheel: "Vertical wheel",
   horizontalWheel: "Horizontal wheel",
   pinch: "Pinch (Ctrl+wheel)",
+};
+
+const DAY = 24 * 60 * 60 * 1000;
+const RANGE_DEMO_START = Date.UTC(2026, 0, 1);
+const RANGE_DEMO_END = RANGE_DEMO_START + 120 * DAY;
+
+type RangeLimitMode = "unlimited" | "twoMonths" | "oneYear";
+
+const maxRanges: Record<RangeLimitMode, number | undefined> = {
+  unlimited: undefined,
+  twoMonths: 60 * DAY,
+  oneYear: 365 * DAY,
+};
+
+const rangeLimitLabels: Record<RangeLimitMode, string> = {
+  unlimited: "No maximum",
+  twoMonths: "60 days",
+  oneYear: "1 year",
 };
 
 const CanvasInteractionExample = () => {
@@ -139,4 +158,92 @@ export const InteractionAndFocus: Story = {
     },
   },
   render: () => <CanvasInteractionExample />,
+};
+
+const ZoomRangeLimitsExample = () => {
+  const [limitMode, setLimitMode] = useState<RangeLimitMode>("unlimited");
+  const [currentRange, setCurrentRange] = useState({
+    from: RANGE_DEMO_START,
+    to: RANGE_DEMO_END,
+  });
+  const maxRange = maxRanges[limitMode];
+  const config = useMemo(
+    () => ({
+      ...baseTimelineConfig,
+      settings: {
+        ...baseTimelineConfig.settings,
+        start: RANGE_DEMO_START,
+        end: RANGE_DEMO_END,
+        events: baseTimelineConfig.settings.events.map((event, index) => ({
+          ...event,
+          from: RANGE_DEMO_START + (index * 24 + 8) * DAY,
+          to: RANGE_DEMO_START + (index * 24 + 16) * DAY,
+        })),
+      },
+      viewConfiguration: {
+        camera: {
+          minRange: 5_000,
+          maxRange,
+        },
+      },
+    }),
+    [maxRange],
+  );
+  const { timeline } = useTimeline(config);
+  const handleCameraChange = useCallback(
+    ({ from, to }: { from: number; to: number }) =>
+      setCurrentRange({ from, to }),
+    [],
+  );
+
+  useTimelineEvent(timeline, "on-camera-change", handleCameraChange);
+
+  useEffect(() => {
+    setCurrentRange({ from: RANGE_DEMO_START, to: RANGE_DEMO_END });
+  }, [limitMode]);
+
+  const visibleDays = Math.round((currentRange.to - currentRange.from) / DAY);
+
+  return (
+    <div style={{ padding: 16 }}>
+      <p style={{ marginTop: 0 }}>
+        The timeline starts with a 120-day range. Use Ctrl+wheel over the canvas
+        to zoom. With no maximum, both zoom directions work beyond 60 days. A
+        configured maximum only restricts zoom-out from ranges that are already
+        within the limit.
+      </p>
+      <label>
+        Maximum range:{" "}
+        <select
+          value={limitMode}
+          onChange={(event) =>
+            setLimitMode(event.target.value as RangeLimitMode)
+          }
+        >
+          {(Object.keys(maxRanges) as RangeLimitMode[]).map((mode) => (
+            <option key={mode} value={mode}>
+              {rangeLimitLabels[mode]}
+            </option>
+          ))}
+        </select>
+      </label>
+      <span style={{ marginLeft: 16 }}>Visible range: {visibleDays} days</span>
+      <div style={{ width: 720, height: 240, marginTop: 16 }}>
+        <TimelineCanvas timeline={timeline} />
+      </div>
+    </div>
+  );
+};
+
+export const ZoomRangeLimits: Story = {
+  name: "Zoom range limits",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Explore the 5-second minimum range, unrestricted default zoom-out, and optional maximum range in milliseconds.",
+      },
+    },
+  },
+  render: () => <ZoomRangeLimitsExample />,
 };

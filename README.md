@@ -117,12 +117,14 @@ const {timeline} = useTimeline({
         horizontalWheel: 'pan',
         pinch: 'zoom',
       },
+      minRange: 5_000,
+      maxRange: 1000 * 60 * 60 * 24 * 365,
     },
   },
 });
 ```
 
-Each interaction accepts `'zoom'`, `'pan'`, or `'pass-through'`. `pinch` represents a browser's Ctrl+wheel trackpad gesture. See the interactive [Camera interactions Storybook example](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
+Each interaction accepts `'zoom'`, `'pan'`, or `'pass-through'`. `pinch` represents a browser's Ctrl+wheel trackpad gesture. `minRange` and `maxRange` are durations in milliseconds; the minimum defaults to 5 seconds and the maximum is unrestricted unless configured. See the interactive [Camera interactions Storybook example](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
 
 ### Section Structure
 

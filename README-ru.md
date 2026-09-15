@@ -117,12 +117,14 @@ const {timeline} = useTimeline({
         horizontalWheel: 'pan',
         pinch: 'zoom',
       },
+      minRange: 5_000,
+      maxRange: 1000 * 60 * 60 * 24 * 365,
     },
   },
 });
 ```
 
-Для каждого взаимодействия доступны `'zoom'`, `'pan'` и `'pass-through'`. `pinch` соответствует Ctrl+wheel, который браузер генерирует для zoom-жеста на trackpad. Настройку можно попробовать в интерактивном [примере Camera interactions в Storybook](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
+Для каждого взаимодействия доступны `'zoom'`, `'pan'` и `'pass-through'`. `pinch` соответствует Ctrl+wheel, который браузер генерирует для zoom-жеста на trackpad. `minRange` и `maxRange` задаются в миллисекундах: минимум по умолчанию — 5 секунд, а максимум не ограничен, пока его не указали. Настройку можно попробовать в интерактивном [примере Camera interactions в Storybook](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
 
 ### Структура секции
 

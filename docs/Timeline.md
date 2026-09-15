@@ -379,11 +379,14 @@ viewConfiguration: {
       horizontalWheel: 'pan',
       pinch: 'zoom',
     },
+    minRange: 5_000,
+    maxRange: 1000 * 60 * 60 * 24 * 365,
   }
 }
 ```
 
 `zoom` supplies a backwards-compatible interaction preset. `interactions` can override individual gestures without changing the other preset behaviors.
+`minRange` and `maxRange` are durations in milliseconds. `minRange` defaults to 5 seconds; omitting `maxRange` leaves zoom-out unrestricted.
 
 **Zoom presets:**
 
