@@ -80,11 +80,17 @@ export type CameraInteractions = {
 export type CameraViewOptions = {
   zoom?: ZoomMode;
   interactions?: CameraInteractions;
+  /** Minimum zoomable time range in milliseconds. Defaults to 5 seconds. */
+  minRange?: number;
+  /** Maximum zoomable time range in milliseconds. Defaults to no limit. */
+  maxRange?: number;
 };
 
 export type CameraViewOptionsDefault = {
   zoom: ZoomMode;
   interactions: CameraInteractions;
+  minRange?: number;
+  maxRange?: number;
 };
 
 export type ViewConfiguration = {

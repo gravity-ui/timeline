@@ -4,6 +4,7 @@ import { TimelineController } from "../src/TimelineController";
 import { ZoomMode } from "../src/enums";
 import {
   CameraInteractions,
+  CameraViewOptions,
   TimelineEvent,
   TimelineMarker,
   TimelineSection,
@@ -11,10 +12,14 @@ import {
 } from "../src/types";
 
 type TestApi = CanvasApi<TimelineEvent, TimelineMarker, TimelineSection>;
+const DAY = 24 * 60 * 60 * 1000;
 
 const createController = (
   zoom = ZoomMode.DEFAULT,
   interactions: CameraInteractions = {},
+  initialInterval = { start: 0, end: 100_000 },
+  rangeLimits: Pick<CameraViewOptions, "minRange" | "maxRange"> = {},
+  positionToTime = (position: number) => position * 500,
 ) => {
   const canvas = document.createElement("canvas");
   Object.defineProperties(canvas, {
@@ -22,19 +27,19 @@ const createController = (
     offsetHeight: { value: 100 },
   });
 
-  let interval = { start: 0, end: 100_000 };
+  let interval = initialInterval;
   const setRange = vi.fn((start: number, end: number) => {
     interval = { start, end };
   });
   const viewConfiguration = {
-    camera: { zoom, interactions },
+    camera: { zoom, interactions, ...rangeLimits },
   } as ViewConfigurationDefault;
   const api = {
     canvas,
     rerender: vi.fn(),
     getInterval: () => interval,
     getViewConfiguration: () => viewConfiguration,
-    positionToTime: (position: number) => position * 500,
+    positionToTime,
     setRange,
     emit: vi.fn(),
   } as unknown as TestApi;
@@ -177,5 +182,128 @@ describe("TimelineController wheel interactions", () => {
     const event = dispatchWheel(canvas, { deltaY: 10 });
     expect(event.defaultPrevented).toBe(false);
     expect(getInterval()).toEqual({ start: 0, end: 100_000 });
+  });
+
+  it("does not collapse a wide range with the default zoom limits", () => {
+    const zoomIn = setup(ZoomMode.DEFAULT, {}, { start: 0, end: 120 * DAY });
+    dispatchWheel(zoomIn.canvas, { deltaY: -10, ctrlKey: true });
+    expect(zoomIn.getInterval().end - zoomIn.getInterval().start).toBe(
+      108 * DAY,
+    );
+
+    const zoomOut = setup(ZoomMode.DEFAULT, {}, { start: 0, end: 120 * DAY });
+    dispatchWheel(zoomOut.canvas, { deltaY: 10, ctrlKey: true });
+    expect(zoomOut.getInterval().end - zoomOut.getInterval().start).toBe(
+      138 * DAY,
+    );
+  });
+
+  it("applies a configured maximum range without collapsing wider external ranges", () => {
+    const atMaximum = setup(
+      ZoomMode.DEFAULT,
+      {},
+      { start: 0, end: 80 * DAY },
+      { minRange: 5_000, maxRange: 90 * DAY },
+    );
+    dispatchWheel(atMaximum.canvas, { deltaY: 10, ctrlKey: true });
+    expect(atMaximum.getInterval().end - atMaximum.getInterval().start).toBe(
+      90 * DAY,
+    );
+
+    const aboveMaximum = setup(
+      ZoomMode.DEFAULT,
+      {},
+      { start: 0, end: 120 * DAY },
+      { minRange: 5_000, maxRange: 90 * DAY },
+    );
+    dispatchWheel(aboveMaximum.canvas, { deltaY: -10, ctrlKey: true });
+    expect(
+      aboveMaximum.getInterval().end - aboveMaximum.getInterval().start,
+    ).toBe(108 * DAY);
+
+    const aboveMaximumZoomOut = setup(
+      ZoomMode.DEFAULT,
+      {},
+      { start: 0, end: 120 * DAY },
+      { minRange: 5_000, maxRange: 90 * DAY },
+    );
+    dispatchWheel(aboveMaximumZoomOut.canvas, { deltaY: 10, ctrlKey: true });
+    expect(aboveMaximumZoomOut.getInterval()).toEqual({
+      start: 0,
+      end: 120 * DAY,
+    });
+  });
+
+  it("respects default and configured minimum ranges", () => {
+    const defaultMinimum = setup(
+      ZoomMode.DEFAULT,
+      {},
+      { start: 0, end: 5_100 },
+    );
+    dispatchWheel(defaultMinimum.canvas, { deltaY: -10, ctrlKey: true });
+    expect(
+      defaultMinimum.getInterval().end - defaultMinimum.getInterval().start,
+    ).toBe(5_000);
+
+    const configuredMinimum = setup(
+      ZoomMode.DEFAULT,
+      {},
+      { start: 0, end: 11_000 },
+      { minRange: 10_000 },
+    );
+    dispatchWheel(configuredMinimum.canvas, { deltaY: -10, ctrlKey: true });
+    expect(
+      configuredMinimum.getInterval().end -
+        configuredMinimum.getInterval().start,
+    ).toBe(10_000);
+
+    const belowMinimum = setup(ZoomMode.DEFAULT, {}, { start: 0, end: 3_000 });
+    dispatchWheel(belowMinimum.canvas, { deltaY: -10, ctrlKey: true });
+    expect(belowMinimum.getInterval()).toEqual({ start: 0, end: 3_000 });
+
+    dispatchWheel(belowMinimum.canvas, { deltaY: 10, ctrlKey: true });
+    expect(
+      belowMinimum.getInterval().end - belowMinimum.getInterval().start,
+    ).toBe(3_450);
+  });
+
+  it("keeps zoomed ranges within the supported Date timestamp range", () => {
+    const maxTimestamp = 8_640_000_000_000_000;
+    const initialInterval = {
+      start: maxTimestamp - 100_000,
+      end: maxTimestamp - 1,
+    };
+    const zoomOut = setup(
+      ZoomMode.DEFAULT,
+      {},
+      initialInterval,
+      {},
+      () => maxTimestamp - 50_000,
+    );
+
+    dispatchWheel(zoomOut.canvas, { deltaY: 10, ctrlKey: true });
+
+    expect(zoomOut.getInterval().start).toBeGreaterThanOrEqual(-maxTimestamp);
+    expect(zoomOut.getInterval().end).toBeLessThanOrEqual(maxTimestamp);
+    expect(Number.isFinite(new Date(zoomOut.getInterval().start).getTime())).toBe(
+      true,
+    );
+    expect(Number.isFinite(new Date(zoomOut.getInterval().end).getTime())).toBe(
+      true,
+    );
+  });
+
+  it("normalizes a maximum range below the minimum range", () => {
+    const zoomIn = setup(
+      ZoomMode.DEFAULT,
+      {},
+      { start: 0, end: 3_000 },
+      { maxRange: 1_000 },
+      () => 1_500,
+    );
+
+    dispatchWheel(zoomIn.canvas, { deltaY: -10, ctrlKey: true });
+
+    expect(zoomIn.getInterval().end - zoomIn.getInterval().start).toBe(2_700);
   });
 });

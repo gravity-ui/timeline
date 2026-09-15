@@ -1,6 +1,5 @@
-import { clamp } from "./helpers/math";
-import { MONTH, SECOND } from "./constants/timeConstants";
 import { CanvasApi } from "./CanvasApi";
+import { SECOND } from "./constants/timeConstants";
 import debounce_ from "lodash/debounce";
 import {
   CameraInteractionAction,
@@ -16,8 +15,8 @@ import { Markers } from "./components/Markers";
 import { Sections } from "./components/Sections";
 
 const WHEEL_PAN_SPEED = 0.00025;
-const ZOOM_MIN = SECOND * 5;
-const ZOOM_MAX = MONTH * 2;
+const DEFAULT_MIN_RANGE = SECOND * 5;
+const MAX_TIMESTAMP = 8_640_000_000_000_000;
 const WHEEL_DELTA_THRESHOLD = 2;
 const WHEEL_LISTENER_OPTIONS: AddEventListenerOptions = { passive: false };
 const WHEEL_LISTENER_REMOVAL_OPTIONS: EventListenerOptions = {
@@ -98,6 +97,57 @@ const getCameraInteractions = ({
   ...CAMERA_INTERACTION_PRESETS[zoom],
   ...interactions,
 });
+
+const getZoomDomain = (
+  domain: number,
+  factor: number,
+  minRange: number,
+  maxRange?: number,
+) => {
+  const nextDomain = domain * factor;
+
+  if (factor < 1) {
+    return domain <= minRange ? domain : Math.max(nextDomain, minRange);
+  }
+
+  if (maxRange === undefined) return nextDomain;
+
+  return domain >= maxRange ? domain : Math.min(nextDomain, maxRange);
+};
+
+const isPositiveFiniteNumber = (value: number | undefined): value is number =>
+  typeof value === "number" && Number.isFinite(value) && value > 0;
+
+const getZoomRangeLimits = (
+  minRange: number | undefined,
+  maxRange: number | undefined,
+  cursorTime: number,
+  ratio: number,
+) => {
+  const minimum = isPositiveFiniteNumber(minRange)
+    ? minRange
+    : DEFAULT_MIN_RANGE;
+  const maximum = isPositiveFiniteNumber(maxRange) ? maxRange : undefined;
+
+  if (!Number.isFinite(ratio) || ratio < 0 || ratio > 1) {
+    return {
+      minRange: maximum === undefined ? minimum : Math.min(minimum, maximum),
+      maxRange: maximum,
+    };
+  }
+
+  const maximumByStart =
+    ratio === 0 ? Infinity : (cursorTime + MAX_TIMESTAMP) / ratio;
+  const maximumByEnd =
+    ratio === 1 ? Infinity : (MAX_TIMESTAMP - cursorTime) / (1 - ratio);
+  const technicalMaximum = Math.min(maximumByStart, maximumByEnd);
+  const effectiveMaximum = Math.min(maximum ?? Infinity, technicalMaximum);
+
+  return {
+    minRange: Math.min(minimum, effectiveMaximum),
+    maxRange: effectiveMaximum,
+  };
+};
 
 /**
  * Controller class responsible for handling timeline interactions and canvas resizing
@@ -219,7 +269,6 @@ export class TimelineController<
 
     if (action === "zoom" && hasEnoughDelta) {
       const factor = gesture.delta > 0 ? 1.15 : 0.9;
-      const newDomain = clamp(oldDomain * factor, ZOOM_MIN, ZOOM_MAX);
 
       // Check if the cursor is inside the canvas (using logical pixels)
       if (
@@ -231,6 +280,18 @@ export class TimelineController<
         // Center zoom around the cursor position
         const cursorTime = this.api.positionToTime(event.offsetX);
         const ratio = (cursorTime - start) / oldDomain;
+        const rangeLimits = getZoomRangeLimits(
+          camera.minRange,
+          camera.maxRange,
+          cursorTime,
+          ratio,
+        );
+        const newDomain = getZoomDomain(
+          oldDomain,
+          factor,
+          rangeLimits.minRange,
+          rangeLimits.maxRange,
+        );
         newStart = Math.round(cursorTime - ratio * newDomain);
         newEnd = Math.round(cursorTime + (1 - ratio) * newDomain);
       }
