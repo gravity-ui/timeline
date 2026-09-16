@@ -1,5 +1,20 @@
 # Changelog
 
+## [1.32.0](https://github.com/gravity-ui/timeline/compare/v1.31.0...v1.32.0) (2026-09-16)
+
+
+### Features
+
+* **Camera:** add configurable zoom sensitivity [YTFRONT-6029] ([5816206](https://github.com/gravity-ui/timeline/commit/5816206c2652b77b5640f00df1db78bc553e124f))
+* **Canvas:** resolve CSS fonts [YTFRONT-6029] ([d373383](https://github.com/gravity-ui/timeline/commit/d37338378cf37c76c572b6374699d685351e7ce6))
+* **Events:** cursor parameter [YTFRONT-6029] ([b06c195](https://github.com/gravity-ui/timeline/commit/b06c1958b3306a0966b0771acb983e90291d7ec7))
+* **Timeline:** add timeline range change event [YTFRONT-6029] ([dff7bc0](https://github.com/gravity-ui/timeline/commit/dff7bc0c1358e9b6a43ddfc6bf9b59ce238e8a2b))
+
+
+### Bug Fixes
+
+* **Camera:** infinite range [YTFRONT-6029] ([af59179](https://github.com/gravity-ui/timeline/commit/af59179ea60f18728a7d10ff56ae36b998255e3d))
+
 ## [1.31.0](https://github.com/gravity-ui/timeline/compare/v1.30.0...v1.31.0) (2026-09-14)
 
 
