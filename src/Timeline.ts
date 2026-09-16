@@ -251,7 +251,14 @@ export class Timeline<
         ...config.events,
         font: config.events?.font ?? font,
       },
-      camera: { ...defaultViewConfig.camera, ...config.camera },
+      camera: {
+        ...defaultViewConfig.camera,
+        ...config.camera,
+        zoomSensitivity: {
+          ...defaultViewConfig.camera.zoomSensitivity,
+          ...config.camera?.zoomSensitivity,
+        },
+      },
       hideRuler:
         config.hideRuler === undefined
           ? defaultViewConfig.hideRuler

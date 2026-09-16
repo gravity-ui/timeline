@@ -77,9 +77,18 @@ export type CameraInteractions = {
   pinch?: CameraInteractionAction;
 };
 
+/**
+ * Multiplies the zoom step for each direction. `1` keeps the default speed.
+ */
+export type ZoomSensitivity = {
+  in?: number;
+  out?: number;
+};
+
 export type CameraViewOptions = {
   zoom?: ZoomMode;
   interactions?: CameraInteractions;
+  zoomSensitivity?: ZoomSensitivity;
   /** Minimum zoomable time range in milliseconds. Defaults to 5 seconds. */
   minRange?: number;
   /** Maximum zoomable time range in milliseconds. Defaults to no limit. */
@@ -89,6 +98,7 @@ export type CameraViewOptions = {
 export type CameraViewOptionsDefault = {
   zoom: ZoomMode;
   interactions: CameraInteractions;
+  zoomSensitivity: Required<ZoomSensitivity>;
   minRange?: number;
   maxRange?: number;
 };

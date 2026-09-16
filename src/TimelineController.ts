@@ -8,6 +8,7 @@ import {
   TimelineEvent,
   TimelineMarker,
   TimelineSection,
+  ZoomSensitivity,
 } from "./types";
 import { ComponentType, ZoomMode } from "./enums";
 import { Events } from "./components/Events";
@@ -18,6 +19,10 @@ const WHEEL_PAN_SPEED = 0.00025;
 const DEFAULT_MIN_RANGE = SECOND * 5;
 const MAX_TIMESTAMP = 8_640_000_000_000_000;
 const WHEEL_DELTA_THRESHOLD = 2;
+const FULL_ZOOM_DELTA = 10;
+const ZOOM_IN_FACTOR = 0.9;
+const ZOOM_OUT_FACTOR = 1.15;
+const DEFAULT_ZOOM_SENSITIVITY = 1;
 const WHEEL_LISTENER_OPTIONS: AddEventListenerOptions = { passive: false };
 const WHEEL_LISTENER_REMOVAL_OPTIONS: EventListenerOptions = {
   capture: false,
@@ -28,6 +33,7 @@ type WheelInteraction = keyof CameraInteractions;
 type WheelGesture = {
   interaction: WheelInteraction;
   delta: number;
+  deltaMode: number;
   isNativeHorizontal: boolean;
 };
 
@@ -59,6 +65,7 @@ const getWheelGesture = (event: WheelEvent): WheelGesture | undefined => {
     return {
       interaction: "pinch",
       delta: event.deltaY,
+      deltaMode: event.deltaMode,
       isNativeHorizontal: false,
     };
   }
@@ -67,6 +74,7 @@ const getWheelGesture = (event: WheelEvent): WheelGesture | undefined => {
     return {
       interaction: "horizontalWheel",
       delta: event.deltaY,
+      deltaMode: event.deltaMode,
       isNativeHorizontal: false,
     };
   }
@@ -77,6 +85,7 @@ const getWheelGesture = (event: WheelEvent): WheelGesture | undefined => {
     return {
       interaction: "horizontalWheel",
       delta: event.deltaX,
+      deltaMode: event.deltaMode,
       isNativeHorizontal: true,
     };
   }
@@ -86,6 +95,7 @@ const getWheelGesture = (event: WheelEvent): WheelGesture | undefined => {
   return {
     interaction: "verticalWheel",
     delta: event.deltaY,
+    deltaMode: event.deltaMode,
     isNativeHorizontal: false,
   };
 };
@@ -97,6 +107,42 @@ const getCameraInteractions = ({
   ...CAMERA_INTERACTION_PRESETS[zoom],
   ...interactions,
 });
+
+const isNonNegativeFiniteNumber = (
+  value: number | undefined,
+): value is number =>
+  typeof value === "number" && Number.isFinite(value) && value >= 0;
+
+const getZoomSensitivity = (
+  sensitivity?: ZoomSensitivity,
+): Required<ZoomSensitivity> => ({
+  in: isNonNegativeFiniteNumber(sensitivity?.in)
+    ? sensitivity.in
+    : DEFAULT_ZOOM_SENSITIVITY,
+  out: isNonNegativeFiniteNumber(sensitivity?.out)
+    ? sensitivity.out
+    : DEFAULT_ZOOM_SENSITIVITY,
+});
+
+const getZoomProgress = ({ delta, deltaMode }: WheelGesture) =>
+  deltaMode === WheelEvent.DOM_DELTA_PIXEL
+    ? Math.min(Math.abs(delta) / FULL_ZOOM_DELTA, 1)
+    : 1;
+
+const getZoomFactor = (
+  gesture: WheelGesture,
+  sensitivity?: ZoomSensitivity,
+) => {
+  const progress = getZoomProgress(gesture);
+  const zoomSensitivity = getZoomSensitivity(sensitivity);
+  const isZoomOut = gesture.delta > 0;
+  const baseFactor = isZoomOut ? ZOOM_OUT_FACTOR : ZOOM_IN_FACTOR;
+  const directionSensitivity = isZoomOut
+    ? zoomSensitivity.out
+    : zoomSensitivity.in;
+
+  return baseFactor ** (progress * directionSensitivity);
+};
 
 const getZoomDomain = (
   domain: number,
@@ -257,18 +303,18 @@ export class TimelineController<
     let newEnd = end;
     const oldDomain = newEnd - newStart;
 
-    const hasEnoughDelta =
+    const hasEnoughPanDelta =
       gesture.isNativeHorizontal ||
       Math.abs(gesture.delta) > WHEEL_DELTA_THRESHOLD;
 
-    if (action === "pan" && hasEnoughDelta) {
+    if (action === "pan" && hasEnoughPanDelta) {
       const shift = oldDomain * gesture.delta * WHEEL_PAN_SPEED;
       newStart += shift;
       newEnd += shift;
     }
 
-    if (action === "zoom" && hasEnoughDelta) {
-      const factor = gesture.delta > 0 ? 1.15 : 0.9;
+    if (action === "zoom") {
+      const factor = getZoomFactor(gesture, camera.zoomSensitivity);
 
       // Check if the cursor is inside the canvas (using logical pixels)
       if (

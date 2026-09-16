@@ -379,6 +379,10 @@ viewConfiguration: {
       horizontalWheel: 'pan',
       pinch: 'zoom',
     },
+    zoomSensitivity: {
+      in: 0.5,
+      out: 0.5,
+    },
     minRange: 5_000,
     maxRange: 1000 * 60 * 60 * 24 * 365,
   }
@@ -386,7 +390,7 @@ viewConfiguration: {
 ```
 
 `zoom` supplies a backwards-compatible interaction preset. `interactions` can override individual gestures without changing the other preset behaviors.
-`minRange` and `maxRange` are durations in milliseconds. `minRange` defaults to 5 seconds; omitting `maxRange` leaves zoom-out unrestricted.
+`zoomSensitivity.in` and `zoomSensitivity.out` independently multiply zoom-in and zoom-out speed. `1` is the default, lower values are gentler, and `0` disables zoom in that direction. Small pixel-based trackpad deltas are smoothed automatically; line and page wheel events use a full step. `minRange` and `maxRange` are durations in milliseconds. `minRange` defaults to 5 seconds; omitting `maxRange` leaves zoom-out unrestricted, so use `maxRange` to bound zoom-out distance.
 
 **Zoom presets:**
 

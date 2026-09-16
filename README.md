@@ -117,6 +117,10 @@ const {timeline} = useTimeline({
         horizontalWheel: 'pan',
         pinch: 'zoom',
       },
+      zoomSensitivity: {
+        in: 0.5,
+        out: 0.5,
+      },
       minRange: 5_000,
       maxRange: 1000 * 60 * 60 * 24 * 365,
     },
@@ -124,7 +128,7 @@ const {timeline} = useTimeline({
 });
 ```
 
-Each interaction accepts `'zoom'`, `'pan'`, or `'pass-through'`. `pinch` represents a browser's Ctrl+wheel trackpad gesture. `minRange` and `maxRange` are durations in milliseconds; the minimum defaults to 5 seconds and the maximum is unrestricted unless configured. See the interactive [Camera interactions Storybook example](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
+Each interaction accepts `'zoom'`, `'pan'`, or `'pass-through'`. `pinch` represents a browser's Ctrl+wheel trackpad gesture. `zoomSensitivity.in` and `zoomSensitivity.out` independently multiply zoom-in and zoom-out speed: `1` is the default, lower values are gentler, and `0` disables zoom in that direction. Small trackpad deltas are smoothed automatically. `minRange` and `maxRange` are durations in milliseconds; the minimum defaults to 5 seconds and the maximum is unrestricted unless configured, so set `maxRange` to limit how far users can zoom out. See the interactive [Camera interactions Storybook example](https://preview.gravity-ui.com/timeline/?path=/story/components-timelinecanvas--interaction-and-focus).
 
 ### Section Structure
 

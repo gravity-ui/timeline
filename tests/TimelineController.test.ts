@@ -20,6 +20,7 @@ const createController = (
   initialInterval = { start: 0, end: 100_000 },
   rangeLimits: Pick<CameraViewOptions, "minRange" | "maxRange"> = {},
   positionToTime = (position: number) => position * 500,
+  zoomSensitivity: CameraViewOptions["zoomSensitivity"] = {},
 ) => {
   const canvas = document.createElement("canvas");
   Object.defineProperties(canvas, {
@@ -32,7 +33,7 @@ const createController = (
     interval = { start, end };
   });
   const viewConfiguration = {
-    camera: { zoom, interactions, ...rangeLimits },
+    camera: { zoom, interactions, zoomSensitivity, ...rangeLimits },
   } as ViewConfigurationDefault;
   const api = {
     canvas,
@@ -87,7 +88,10 @@ describe("TimelineController wheel interactions", () => {
 
   it("keeps the DEFAULT preset behavior", () => {
     const vertical = setup();
-    const verticalEvent = dispatchWheel(vertical.canvas, { deltaY: 10 });
+    const verticalEvent = dispatchWheel(vertical.canvas, {
+      deltaY: 10,
+      deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+    });
     expect(vertical.getInterval()).toEqual({ start: -7_500, end: 107_500 });
     expect(verticalEvent.defaultPrevented).toBe(true);
 
@@ -102,6 +106,112 @@ describe("TimelineController wheel interactions", () => {
     const pinch = setup();
     dispatchWheel(pinch.canvas, { deltaY: 10, ctrlKey: true });
     expect(pinch.getInterval()).toEqual({ start: -7_500, end: 107_500 });
+  });
+
+  it("applies a proportional zoom step to small pixel deltas", () => {
+    const zoomOut = setup();
+    dispatchWheel(zoomOut.canvas, {
+      deltaY: 5,
+      deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+    });
+    expect(zoomOut.getInterval()).toEqual({ start: -3_619, end: 103_619 });
+
+    const zoomIn = setup();
+    dispatchWheel(zoomIn.canvas, {
+      deltaY: -5,
+      deltaMode: WheelEvent.DOM_DELTA_PIXEL,
+    });
+    expect(zoomIn.getInterval()).toEqual({ start: 2_566, end: 97_434 });
+  });
+
+  it("keeps equivalent accumulated pixel deltas close to one full step", () => {
+    const initialInterval = { start: 0, end: 1_000_000_000 };
+    const positionToTime = () => 500_000_000;
+    const accumulated = setup(
+      ZoomMode.DEFAULT,
+      {},
+      initialInterval,
+      {},
+      positionToTime,
+    );
+    const fullStep = setup(
+      ZoomMode.DEFAULT,
+      {},
+      initialInterval,
+      {},
+      positionToTime,
+    );
+
+    dispatchWheel(accumulated.canvas, { deltaY: -5 });
+    dispatchWheel(accumulated.canvas, { deltaY: -5 });
+    dispatchWheel(fullStep.canvas, { deltaY: -10 });
+
+    expect(accumulated.getInterval()).toEqual(fullStep.getInterval());
+  });
+
+  it("uses a full zoom step for line and page wheel deltas", () => {
+    const line = setup();
+    dispatchWheel(line.canvas, {
+      deltaY: 1,
+      deltaMode: WheelEvent.DOM_DELTA_LINE,
+    });
+    expect(line.getInterval()).toEqual({ start: -7_500, end: 107_500 });
+
+    const page = setup();
+    dispatchWheel(page.canvas, {
+      deltaY: -1,
+      deltaMode: WheelEvent.DOM_DELTA_PAGE,
+    });
+    expect(page.getInterval()).toEqual({ start: 5_000, end: 95_000 });
+  });
+
+  it("applies independent zoom in and zoom out sensitivity", () => {
+    const zoomIn = setup(
+      ZoomMode.DEFAULT,
+      {},
+      undefined,
+      {},
+      undefined,
+      { in: 0.5, out: 2 },
+    );
+    dispatchWheel(zoomIn.canvas, { deltaY: -10 });
+    expect(zoomIn.getInterval()).toEqual({ start: 2_566, end: 97_434 });
+
+    const zoomOut = setup(
+      ZoomMode.DEFAULT,
+      {},
+      undefined,
+      {},
+      undefined,
+      { in: 0.5, out: 2 },
+    );
+    dispatchWheel(zoomOut.canvas, { deltaY: 10 });
+    expect(zoomOut.getInterval()).toEqual({ start: -16_125, end: 116_125 });
+  });
+
+  it("supports zero sensitivity and falls back for invalid values", () => {
+    const disabled = setup(
+      ZoomMode.DEFAULT,
+      {},
+      undefined,
+      {},
+      undefined,
+      { in: 0, out: 0 },
+    );
+    const disabledEvent = dispatchWheel(disabled.canvas, { deltaY: 10 });
+    expect(disabled.getInterval()).toEqual({ start: 0, end: 100_000 });
+    expect(disabledEvent.defaultPrevented).toBe(true);
+
+    const invalid = setup(
+      ZoomMode.DEFAULT,
+      {},
+      undefined,
+      {},
+      undefined,
+      { in: -1, out: Number.NaN },
+    );
+    dispatchWheel(invalid.canvas, { deltaY: 10 });
+    expect(invalid.getInterval()).toEqual({ start: -7_500, end: 107_500 });
   });
 
   it("keeps the HORIZONTAL preset behavior", () => {

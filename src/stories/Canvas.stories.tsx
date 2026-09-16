@@ -1,7 +1,11 @@
 import React, { useCallback, useEffect, useMemo, useState } from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { ZoomMode } from "../enums";
-import type { CameraInteractionAction, CameraInteractions } from "../types";
+import type {
+  CameraInteractionAction,
+  CameraInteractions,
+  ZoomSensitivity,
+} from "../types";
 import { TimelineCanvas } from "../react-components/TimelineCanvas";
 import { useTimeline } from "../react-components/hooks/useTimeline";
 import { useTimelineEvent } from "../react-components/hooks/useTimelineEvent";
@@ -50,13 +54,16 @@ const CanvasInteractionExample = () => {
   const [interactions, setInteractions] = useState<CameraInteractions>({
     verticalWheel: "pass-through",
   });
+  const [zoomSensitivity, setZoomSensitivity] = useState<
+    Required<ZoomSensitivity>
+  >({ in: 1, out: 1 });
   const [tabIndex, setTabIndex] = useState(0);
   const config = useMemo(
     () => ({
       ...baseTimelineConfig,
-      viewConfiguration: { camera: { zoom, interactions } },
+      viewConfiguration: { camera: { zoom, interactions, zoomSensitivity } },
     }),
-    [interactions, zoom],
+    [interactions, zoom, zoomSensitivity],
   );
 
   const setInteraction = (
@@ -117,6 +124,33 @@ const CanvasInteractionExample = () => {
           </label>
         ),
       )}
+      <div style={{ marginTop: 16 }}>
+        Zoom sensitivity (1 is default; lower is gentler):
+        {(["in", "out"] as const).map((direction) => (
+          <label key={direction} style={{ marginLeft: 16 }}>
+            Zoom {direction}:{" "}
+            <input
+              type="number"
+              min="0"
+              step="0.1"
+              value={zoomSensitivity[direction]}
+              onChange={(event) => {
+                const value = Number(event.target.value);
+                setZoomSensitivity((current) => ({
+                  ...current,
+                  [direction]: Number.isFinite(value) && value >= 0 ? value : 1,
+                }));
+              }}
+            />
+          </label>
+        ))}
+        <button
+          style={{ marginLeft: 16 }}
+          onClick={() => setZoomSensitivity({ in: 1, out: 1 })}
+        >
+          Use defaults
+        </button>
+      </div>
       <label style={{ marginLeft: 16 }}>
         <input
           type="checkbox"
@@ -153,7 +187,7 @@ export const InteractionAndFocus: Story = {
     docs: {
       description: {
         story:
-          "Configure each wheel gesture independently. The initial configuration demonstrates vertical scroll pass-through with horizontal pan and trackpad pinch zoom.",
+          "Configure each wheel gesture independently. Zoom sensitivity applies to every gesture configured as zoom: 1 keeps the default step, while lower values make wheel and Ctrl+wheel/trackpad pinch gentler. Use maxRange in the range limits example to bound zoom-out distance.",
       },
     },
   },

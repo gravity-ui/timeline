@@ -22,6 +22,28 @@ describe("Timeline lifecycle", () => {
     expect(timeline.viewConfiguration.camera).toEqual({
       zoom: ZoomMode.DEFAULT,
       interactions: { verticalWheel: "pass-through" },
+      zoomSensitivity: { in: 1, out: 1 },
+    });
+  });
+
+  it("merges partial zoom sensitivity configuration with defaults", () => {
+    const timeline = new Timeline({
+      settings: { start: 0, end: 100_000, axes: [], events: [] },
+      viewConfiguration: { camera: { zoomSensitivity: { in: 0.5 } } },
+    });
+
+    expect(timeline.viewConfiguration.camera.zoomSensitivity).toEqual({
+      in: 0.5,
+      out: 1,
+    });
+
+    timeline.updateViewConfiguration({
+      camera: { zoomSensitivity: { out: 2 } },
+    });
+
+    expect(timeline.viewConfiguration.camera.zoomSensitivity).toEqual({
+      in: 0.5,
+      out: 2,
     });
   });
 

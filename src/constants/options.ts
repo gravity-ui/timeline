@@ -64,5 +64,9 @@ export const defaultViewConfig: ViewConfigurationDefault = {
   camera: {
     zoom: ZoomMode.DEFAULT,
     interactions: {},
+    zoomSensitivity: {
+      in: 1,
+      out: 1,
+    },
   },
 };
