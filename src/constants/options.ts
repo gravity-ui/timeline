@@ -7,6 +7,7 @@ const DEFAULT_GROUP_COLOR = "rgb(254, 127, 45)";
 const DEFAULT_GROUP_COLOR_HOVER = "red";
 
 export const defaultViewConfig: ViewConfigurationDefault = {
+  font: DEFAULT_FONT,
   hideRuler: false,
   ruler: {
     spacing: 40,

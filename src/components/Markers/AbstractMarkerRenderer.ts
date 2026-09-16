@@ -1,5 +1,6 @@
 import {
   CanvasColorResolver,
+  CanvasFontResolver,
   LabelSize,
   TimelineMarker,
   ViewConfiguration,
@@ -19,5 +20,6 @@ export abstract class AbstractMarkerRenderer<
     timeToPosition: (n: number) => number;
     getLabelSize: (label: string) => LabelSize;
     resolveColor?: CanvasColorResolver;
+    resolveFont?: CanvasFontResolver;
   }): void;
 }

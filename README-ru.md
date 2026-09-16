@@ -397,6 +397,26 @@ const events = [
 Кастомный event renderer получает `resolveColor` последним необязательным
 аргументом, а marker и section renderers — в объекте параметров.
 
+### Шрифты canvas
+
+Укажите `viewConfiguration.font` один раз, чтобы задать шрифт по умолчанию для
+ruler, events и markers. Локальные `ruler.font`, `events.font` и `markers.font`
+имеют приоритет. Дефолт остаётся `10px sans-serif`.
+
+Canvas не умеет напрямую применять CSS-переменные или `inherit` в `ctx.font`,
+поэтому Timeline резолвит whole-value токены в CSS-контексте canvas:
+
+```ts
+viewConfiguration: {
+  font: 'var(--g-text-caption-2-font)',
+}
+```
+
+`font: 'inherit'` использует computed font самого canvas. Кастомные renderer’ы
+получают `resolveFont` рядом с `resolveColor`, либо могут вызвать
+`timeline.api.resolveFont(font)`. После динамической загрузки web-font вызовите
+`timeline.api.rerender()`, чтобы canvas перерисовал текст новым шрифтом.
+
 ### Прямое использование в TypeScript
 
 Класс Timeline можно использовать без React (например, с другими фреймворками или в vanilla JS):

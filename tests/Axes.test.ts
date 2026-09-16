@@ -3,6 +3,7 @@ import { CanvasApi } from "../src/CanvasApi";
 import { Axes } from "../src/components/Axes";
 import { defaultViewConfig } from "../src/constants/options";
 import { StrokeMode, ZoomMode } from "../src/enums";
+import { Timeline } from "../src/Timeline";
 import {
   AxesLinePosition,
   TimelineAxis,
@@ -11,11 +12,13 @@ import {
   TimelineSection,
 } from "../src/types";
 
-type AxesApi = CanvasApi<
-  TimelineEvent,
-  TimelineMarker,
-  TimelineSection
->;
+type AxesApi = CanvasApi<TimelineEvent, TimelineMarker, TimelineSection>;
+
+const createTimeline = (viewConfiguration = {}) =>
+  new Timeline<TimelineEvent, TimelineMarker, TimelineSection>({
+    settings: { start: 0, end: 100_000, axes: [], events: [] },
+    viewConfiguration,
+  });
 
 const createAxes = (
   linePosition: AxesLinePosition | string = "center",
@@ -142,7 +145,7 @@ describe("CanvasApi.setViewConfiguration", () => {
   it("updates the line position and re-renders", () => {
     const api = Object.create(CanvasApi.prototype) as AxesApi;
     const rerender = vi.fn();
-    const timeline = { viewConfiguration: defaultViewConfig };
+    const timeline = createTimeline();
 
     (api as unknown as { timeline: typeof timeline }).timeline = timeline;
     api.rerender = rerender;
@@ -156,7 +159,7 @@ describe("CanvasApi.setViewConfiguration", () => {
   it("deeply merges camera interaction overrides", () => {
     const api = Object.create(CanvasApi.prototype) as AxesApi;
     const rerender = vi.fn();
-    const timeline = { viewConfiguration: structuredClone(defaultViewConfig) };
+    const timeline = createTimeline();
 
     (api as unknown as { timeline: typeof timeline }).timeline = timeline;
     api.rerender = rerender;
@@ -171,5 +174,34 @@ describe("CanvasApi.setViewConfiguration", () => {
       interactions: { verticalWheel: "pass-through" },
     });
     expect(rerender).toHaveBeenCalledTimes(2);
+  });
+
+  it("updates inherited component fonts while preserving local overrides", () => {
+    const api = Object.create(CanvasApi.prototype) as AxesApi;
+    const rerender = vi.fn();
+    const timeline = createTimeline({
+      font: "10px sans-serif",
+      events: { font: "10px sans-serif" },
+    });
+
+    (api as unknown as { timeline: typeof timeline }).timeline = timeline;
+    api.rerender = rerender;
+
+    api.setViewConfiguration({ font: "11px serif" });
+
+    expect(timeline.viewConfiguration.ruler.font).toBe("11px serif");
+    expect(timeline.viewConfiguration.markers.font).toBe("11px serif");
+    expect(timeline.viewConfiguration.events.font).toBe("10px sans-serif");
+
+    api.setViewConfiguration({
+      font: "12px serif",
+      ruler: { font: "13px monospace" },
+    });
+    api.setViewConfiguration({ font: "14px serif" });
+
+    expect(timeline.viewConfiguration.ruler.font).toBe("13px monospace");
+    expect(timeline.viewConfiguration.markers.font).toBe("14px serif");
+    expect(timeline.viewConfiguration.events.font).toBe("10px sans-serif");
+    expect(rerender).toHaveBeenCalledTimes(3);
   });
 });

@@ -84,6 +84,9 @@ export class Markers<
    */
   public render() {
     this.api.useStaticTransform();
+    this.api.ctx.font = this.api.resolveFont(
+      this.api.getViewConfiguration().markers.font,
+    );
     // Reset label positions for a new render pass
     this.lastRenderedLabelPosition = { top: Infinity, bottom: Infinity };
 
@@ -128,6 +131,7 @@ export class Markers<
         timeToPosition: this.api.timeToPosition,
         getLabelSize: this.getLabelSize.bind(this),
         resolveColor: this.api.resolveColor,
+        resolveFont: this.api.resolveFont,
       });
     };
 
@@ -185,8 +189,9 @@ export class Markers<
   }
 
   protected getLabelSize(text: string): LabelSize {
-    if (this.textWidthCache.has(text)) {
-      return this.textWidthCache.get(text);
+    const cacheKey = `${this.api.ctx.font}\u0000${text}`;
+    if (this.textWidthCache.has(cacheKey)) {
+      return this.textWidthCache.get(cacheKey);
     }
 
     const measureResult = this.api.ctx.measureText(text);
@@ -197,7 +202,7 @@ export class Markers<
         measureResult.actualBoundingBoxDescent,
     };
 
-    this.textWidthCache.set(text, result);
+    this.textWidthCache.set(cacheKey, result);
     return result;
   }
 

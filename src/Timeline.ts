@@ -15,10 +15,15 @@ import {
   TimelineMarker,
   TimelineSection,
   TimelineSettings,
+  ViewConfiguration,
   ViewConfigurationDefault,
 } from "./types";
 import cloneDeep from "lodash/cloneDeep";
 import { Sections } from "./components/Sections";
+import { deepMerge } from "./lib/utils";
+
+const FONT_CONFIG_KEYS = ["ruler", "events", "markers"] as const;
+type FontConfigKey = (typeof FONT_CONFIG_KEYS)[number];
 
 /**
  * The main Timeline class that manages the timeline visualization and interactions
@@ -38,6 +43,7 @@ export class Timeline<
   public state = TimelineState.INIT;
 
   private controller: TimelineController;
+  private componentFontOverrides: Record<FontConfigKey, boolean>;
 
   /**
    * Creates a new Timeline instance
@@ -55,8 +61,37 @@ export class Timeline<
    */
   constructor(config: TimeLineConfig<TEvent, TMarker, TSection>) {
     const { settings, viewConfiguration } = cloneDeep(config);
+    this.componentFontOverrides = {
+      ruler: viewConfiguration?.ruler?.font !== undefined,
+      events: viewConfiguration?.events?.font !== undefined,
+      markers: viewConfiguration?.markers?.font !== undefined,
+    };
     this.viewConfiguration = this.getViewConfig(viewConfiguration);
     this.settings = settings;
+  }
+
+  /**
+   * Applies a partial view configuration update.
+   * @internal
+   */
+  public updateViewConfiguration(viewConfiguration: ViewConfiguration) {
+    const nextViewConfiguration = deepMerge(
+      this.viewConfiguration,
+      viewConfiguration,
+    ) as ViewConfigurationDefault;
+
+    for (const key of FONT_CONFIG_KEYS) {
+      if (viewConfiguration[key]?.font !== undefined) {
+        this.componentFontOverrides[key] = true;
+      } else if (
+        viewConfiguration.font !== undefined &&
+        !this.componentFontOverrides[key]
+      ) {
+        nextViewConfiguration[key].font = nextViewConfiguration.font;
+      }
+    }
+
+    this.viewConfiguration = nextViewConfiguration;
   }
 
   /**
@@ -194,13 +229,28 @@ export class Timeline<
   ): ViewConfigurationDefault {
     if (!config) return defaultViewConfig;
 
+    const font = config.font ?? defaultViewConfig.font;
+
     return {
-      ruler: { ...defaultViewConfig.ruler, ...config.ruler },
+      font,
+      ruler: {
+        ...defaultViewConfig.ruler,
+        ...config.ruler,
+        font: config.ruler?.font ?? font,
+      },
       grid: { ...defaultViewConfig.grid, ...config.grid },
       sections: { ...defaultViewConfig.sections, ...config.sections },
       axes: { ...defaultViewConfig.axes, ...config.axes },
-      markers: { ...defaultViewConfig.markers, ...config.markers },
-      events: { ...defaultViewConfig.events, ...config.events },
+      markers: {
+        ...defaultViewConfig.markers,
+        ...config.markers,
+        font: config.markers?.font ?? font,
+      },
+      events: {
+        ...defaultViewConfig.events,
+        ...config.events,
+        font: config.events?.font ?? font,
+      },
       camera: { ...defaultViewConfig.camera, ...config.camera },
       hideRuler:
         config.hideRuler === undefined

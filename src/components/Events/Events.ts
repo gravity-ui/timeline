@@ -211,7 +211,7 @@ export class Events<
 
     ctx.translate(0, this.api.getRulerHeight());
 
-    ctx.font = viewConfiguration.events.font;
+    ctx.font = this.api.resolveFont(viewConfiguration.events.font);
     ctx.lineWidth = 2;
 
     const camera = this.api.getCameraPosition();
@@ -251,6 +251,7 @@ export class Events<
           timeToPosition,
           this.isHoveredEvent(event),
           this.api.resolveColor,
+          this.api.resolveFont,
         );
       }
     }

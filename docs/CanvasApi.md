@@ -93,6 +93,19 @@ ctx.fillStyle = api.resolveColor(
 );
 ```
 
+#### `resolveFont(font: string, fallback?: string)`
+
+Resolves a whole-value CSS custom property or the `inherit` sentinel into a
+font accepted by `CanvasRenderingContext2D`. `inherit` uses the computed font
+of the canvas element. Plain CSS font shorthands are returned unchanged.
+
+```typescript
+ctx.font = api.resolveFont('var(--g-text-caption-2-font)');
+```
+
+Call `api.rerender()` after a web font loads dynamically so canvas text is
+drawn again with the loaded face.
+
 #### `clear()`
 
 Clears the entire canvas.
