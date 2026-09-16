@@ -212,8 +212,9 @@ export class TimelineController<
     sections: TSection[];
   } | null = null;
 
-  private emitCameraChange = debounce_((newStart: number, newEnd: number) => {
-    this.api.emit("on-camera-change", { from: newStart, to: newEnd });
+  private emitCameraChange = debounce_(() => {
+    const { start, end } = this.api.getInterval();
+    this.api.emit("on-camera-change", { from: start, to: end });
   }, 150);
 
   /**
@@ -345,7 +346,7 @@ export class TimelineController<
 
     if (newStart !== start || newEnd !== end) {
       this.api.setRange(newStart, newEnd);
-      this.emitCameraChange(newStart, newEnd);
+      this.emitCameraChange();
     }
   };
 

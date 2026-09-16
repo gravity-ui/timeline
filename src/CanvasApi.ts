@@ -122,9 +122,15 @@ export class CanvasApi<
   }
 
   public setRange(start: number, end: number) {
+    const { start: previousStart, end: previousEnd } = this.timeline.settings;
+
     this.timeline.settings.start = start;
     this.timeline.settings.end = end;
     this.rerender();
+
+    if (start !== previousStart || end !== previousEnd) {
+      this.emit("on-range-change", { from: start, to: end });
+    }
   }
 
   public setAxes<Axis extends TimelineAxis>(newAxes: Axis[]) {
