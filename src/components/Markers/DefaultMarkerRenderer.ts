@@ -1,6 +1,7 @@
 import { AbstractMarkerRenderer } from "./AbstractMarkerRenderer";
 import {
   CanvasColorResolver,
+  CanvasFontResolver,
   LabelSize,
   TimelineMarker,
   ViewConfiguration,
@@ -24,6 +25,7 @@ export class DefaultMarkerRenderer<
     lastRenderedLabelPosition,
     getLabelSize,
     resolveColor,
+    resolveFont,
   }: {
     ctx: CanvasRenderingContext2D;
     marker: TMarker;
@@ -34,6 +36,7 @@ export class DefaultMarkerRenderer<
     lastRenderedLabelPosition: { top: number; bottom: number };
     getLabelSize: (label: string) => LabelSize;
     resolveColor?: CanvasColorResolver;
+    resolveFont?: CanvasFontResolver;
   }) {
     const { markers } = viewConfiguration;
     const activeColor = marker.group ? markers.groupColor : marker.activeColor;
@@ -63,6 +66,7 @@ export class DefaultMarkerRenderer<
         viewConfiguration.markers,
         lastRenderedLabelPosition,
         resolveColor,
+        resolveFont,
       );
     }
 
@@ -86,6 +90,7 @@ export class DefaultMarkerRenderer<
     markerConfiguration: ViewConfiguration["markers"],
     lastRenderedLabelPosition: { top: number; bottom: number },
     resolveColor?: CanvasColorResolver,
+    resolveFont?: CanvasFontResolver,
   ) {
     const { width, height } = labelSize;
     const widthWithPadding = width + DEFAULT_LABEL_PADDING * 2;
@@ -112,6 +117,7 @@ export class DefaultMarkerRenderer<
         height,
         markerConfiguration,
         resolveColor,
+        resolveFont,
       );
     }
   }
@@ -138,8 +144,11 @@ export class DefaultMarkerRenderer<
     height: number,
     markerConfiguration: ViewConfiguration["markers"],
     resolveColor?: CanvasColorResolver,
+    resolveFont?: CanvasFontResolver,
   ): void {
-    ctx.font = markerConfiguration.font;
+    ctx.font = resolveFont
+      ? resolveFont(markerConfiguration.font)
+      : markerConfiguration.font;
     ctx.fillStyle = color;
     ctx.fillRect(labelPosition, 0, widthWithPadding, heightWithPadding);
     const labelColor = marker.labelColor || DEFAULT_TEXT_COLOR;

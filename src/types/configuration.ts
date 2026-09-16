@@ -94,6 +94,11 @@ export type CameraViewOptionsDefault = {
 };
 
 export type ViewConfiguration = {
+  /**
+   * Default font for ruler, events, and markers. Local component font settings
+   * take precedence. Supports CSS custom properties and the `inherit` sentinel.
+   */
+  font?: string;
   ruler?: RulerViewOptions;
   grid?: GridViewOptions;
   axes?: AxesViewOptions;

@@ -12,12 +12,11 @@ import {
   TimelineMarker,
   TimelineSection,
   ViewConfiguration,
-  ViewConfigurationDefault,
 } from "./types";
 import { Sections } from "./components/Sections";
-import { deepMerge } from "./lib/utils";
 import { resolveCanvasColor } from "./helpers/color";
-import { CanvasColorResolver } from "./types/colors";
+import { resolveCanvasFont } from "./helpers/font";
+import { CanvasColorResolver, CanvasFontResolver } from "./types/colors";
 
 export class CanvasApi<
   TEvent extends TimelineEvent,
@@ -30,6 +29,7 @@ export class CanvasApi<
   protected components: Map<string, BaseComponentInterface>;
   protected timeline: Timeline<TEvent, TMarker, TSection>;
   private colorCache = new Map<string, string>();
+  private fontCache = new Map<string, string>();
 
   constructor(timeline: Timeline<TEvent, TMarker, TSection>) {
     this.timeline = timeline;
@@ -56,6 +56,7 @@ export class CanvasApi<
 
   public rerender(clearBeforeRender = true) {
     this.colorCache.clear();
+    this.fontCache.clear();
 
     if (clearBeforeRender) {
       this.clear();
@@ -90,6 +91,23 @@ export class CanvasApi<
 
     const resolved = resolveCanvasColor(color, this.canvas, fallback);
     this.colorCache.set(cacheKey, resolved);
+    return resolved;
+  };
+
+  /**
+   * Converts a CSS custom property or `inherit` into a canvas font in the
+   * canvas CSS context. Plain CSS font shorthands are returned unchanged.
+   */
+  public resolveFont: CanvasFontResolver = (
+    font,
+    fallback = "10px sans-serif",
+  ) => {
+    const cacheKey = `${font}\u0000${fallback}`;
+    const cached = this.fontCache.get(cacheKey);
+    if (cached !== undefined) return cached;
+
+    const resolved = resolveCanvasFont(font, this.canvas, fallback);
+    this.fontCache.set(cacheKey, resolved);
     return resolved;
   };
 
@@ -150,10 +168,7 @@ export class CanvasApi<
   }
 
   public setViewConfiguration(viewConfiguration: ViewConfiguration) {
-    this.timeline.viewConfiguration = deepMerge(
-      this.timeline.viewConfiguration,
-      viewConfiguration,
-    ) as ViewConfigurationDefault;
+    this.timeline.updateViewConfiguration(viewConfiguration);
     this.rerender();
   }
 

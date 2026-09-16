@@ -1,5 +1,6 @@
 import {
   CanvasColorResolver,
+  CanvasFontResolver,
   TimelineSection,
   ViewConfiguration,
 } from "../../types";
@@ -19,6 +20,7 @@ export abstract class AbstractSectionRenderer<
     viewConfiguration: ViewConfiguration;
     timeToPosition?: (n: number) => number;
     resolveColor?: CanvasColorResolver;
+    resolveFont?: CanvasFontResolver;
   }): void;
 
   protected hitboxResult: Hitbox = {

@@ -1,5 +1,6 @@
 import {
   CanvasColorResolver,
+  CanvasFontResolver,
   TimelineEvent,
   ViewConfiguration,
 } from "../../types";
@@ -24,6 +25,7 @@ export abstract class AbstractEventRenderer {
     timeToPosition?: (n: number) => number,
     isHovered?: boolean,
     resolveColor?: CanvasColorResolver,
+    resolveFont?: CanvasFontResolver,
   ): void;
 
   protected hitboxResult: Hitbox = {

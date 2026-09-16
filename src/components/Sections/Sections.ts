@@ -106,6 +106,7 @@ export class Sections<
           viewConfiguration,
           timeToPosition: this.api.timeToPosition,
           resolveColor: this.api.resolveColor,
+          resolveFont: this.api.resolveFont,
         });
       }
     }

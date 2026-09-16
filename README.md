@@ -396,6 +396,26 @@ const events = [
 Custom event renderers receive `resolveColor` as their final optional argument;
 custom marker and section renderers receive it in their render data.
 
+### Canvas fonts
+
+Set `viewConfiguration.font` once to configure the default font for ruler,
+events, and markers. A component-specific `ruler.font`, `events.font`, or
+`markers.font` takes precedence. The default remains `10px sans-serif`.
+
+Canvas cannot use CSS variables or `inherit` directly in `ctx.font`, so
+Timeline resolves whole-value tokens in the canvas CSS context:
+
+```ts
+viewConfiguration: {
+  font: 'var(--g-text-caption-2-font)',
+}
+```
+
+Use `font: 'inherit'` to use the computed font of the canvas element. Custom
+renderers receive `resolveFont` alongside `resolveColor`, or can call
+`timeline.api.resolveFont(font)`. After a web font loads dynamically, call
+`timeline.api.rerender()` to redraw canvas text with it.
+
 ### Direct TypeScript Usage
 
 The Timeline class can be used directly in TypeScript without React. This is useful for integrating with other frameworks or vanilla JavaScript applications:

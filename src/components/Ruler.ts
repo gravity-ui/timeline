@@ -46,7 +46,7 @@ export class Ruler<
     ctx.fillRect(0, 0, width, ruler.height);
 
     // Set common text properties
-    ctx.font = ruler.font;
+    ctx.font = this.api.resolveFont(ruler.font);
     ctx.lineJoin = "miter";
     ctx.miterLimit = 2;
     ctx.lineWidth = 1;

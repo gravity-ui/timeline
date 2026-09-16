@@ -25,6 +25,20 @@ describe("Timeline lifecycle", () => {
     });
   });
 
+  it("uses the common font unless a component font overrides it", () => {
+    const timeline = new Timeline({
+      settings: { start: 0, end: 100_000, axes: [], events: [] },
+      viewConfiguration: {
+        font: "inherit",
+        events: { font: "12px serif" },
+      },
+    });
+
+    expect(timeline.viewConfiguration.ruler.font).toBe("inherit");
+    expect(timeline.viewConfiguration.events.font).toBe("12px serif");
+    expect(timeline.viewConfiguration.markers.font).toBe("inherit");
+  });
+
   it("leaves the ready state before emitting on-destroy", () => {
     const timeline = Object.create(
       Timeline.prototype,

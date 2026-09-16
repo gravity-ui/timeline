@@ -1,4 +1,33 @@
-const CSS_VARIABLE_COLOR = /^var\(\s*(--[\w-]+)\s*(?:,\s*(.+))?\s*\)$/;
+const CSS_VARIABLE = /^var\(\s*(--[\w-]+)\s*(?:,\s*(.+))?\s*\)$/;
+
+/** Resolves a whole-value CSS custom property against the canvas element. */
+export const resolveCanvasCssVariable = (
+  value: string,
+  canvas: HTMLCanvasElement,
+  fallback: string,
+): string => {
+  if (!CSS_VARIABLE.test(value)) return value;
+
+  const style = getComputedStyle(canvas);
+  const visited = new Set<string>();
+
+  const resolve = (currentValue: string, currentFallback: string): string => {
+    const match = currentValue.match(CSS_VARIABLE);
+    if (!match) return currentValue;
+
+    const [, variableName, variableFallback] = match;
+    if (visited.has(variableName)) return currentFallback;
+    visited.add(variableName);
+
+    const resolved = style.getPropertyValue(variableName).trim();
+    return resolve(
+      resolved || variableFallback || currentFallback,
+      currentFallback,
+    );
+  };
+
+  return resolve(value, fallback);
+};
 
 /**
  * Resolves a CSS custom property against the canvas element.
@@ -11,25 +40,5 @@ export const resolveCanvasColor = (
   canvas: HTMLCanvasElement,
   fallback = "transparent",
 ): string => {
-  if (!CSS_VARIABLE_COLOR.test(color)) return color;
-
-  const style = getComputedStyle(canvas);
-  const visited = new Set<string>();
-
-  const resolve = (value: string, valueFallback: string): string => {
-    const match = value.match(CSS_VARIABLE_COLOR);
-    if (!match) return value;
-
-    const [, variableName, variableFallback] = match;
-    if (visited.has(variableName)) return valueFallback;
-    visited.add(variableName);
-
-    const resolved = style.getPropertyValue(variableName).trim();
-    return resolve(
-      resolved || variableFallback || valueFallback,
-      valueFallback,
-    );
-  };
-
-  return resolve(color, fallback);
+  return resolveCanvasCssVariable(color, canvas, fallback);
 };

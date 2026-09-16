@@ -5,5 +5,6 @@ export * from "./components/Sections/AbstractSectionRenderer";
 export * from "./constants/options";
 export * from "./helpers/math";
 export * from "./helpers/color";
+export * from "./helpers/font";
 export * from "./types";
 export * from "./enums";

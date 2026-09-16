@@ -1,6 +1,6 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
-import { ThemeProvider } from "@gravity-ui/uikit";
+import { Button, ThemeProvider } from "@gravity-ui/uikit";
 import "@gravity-ui/uikit/styles/fonts.css";
 import "@gravity-ui/uikit/styles/styles.css";
 import { GravityTimelineCanvas } from "../react-uikit";
@@ -14,6 +14,12 @@ import {
 
 const START = 1739537126347;
 const SECOND = 1000;
+
+const FONT_OPTIONS = [
+  { label: "Caption 2", value: "var(--g-text-caption-2-font)" },
+  { label: "Body 1", value: "var(--g-text-body-1-font)" },
+  { label: "Subheader 2", value: "var(--g-text-subheader-2-font)" },
+] as const;
 
 const gravityColorsConfig: TimeLineConfig<
   TimelineEvent,
@@ -138,6 +144,66 @@ const GravityColorsExample = ({ theme }: GravityColorsStoryProps) => {
   );
 };
 
+const gravityFontsConfig: TimeLineConfig<
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection
+> = {
+  ...gravityColorsConfig,
+  viewConfiguration: {
+    ...gravityColorsConfig.viewConfiguration,
+    font: FONT_OPTIONS[0].value,
+  },
+};
+
+const GravityFontsExample = ({ theme }: GravityColorsStoryProps) => {
+  const { timeline } = useTimeline(gravityFontsConfig);
+  const [font, setFont] = React.useState<string>(FONT_OPTIONS[0].value);
+
+  const handleFontChange = (nextFont: string) => {
+    setFont(nextFont);
+    timeline.api.setViewConfiguration({ font: nextFont });
+  };
+
+  return (
+    <ThemeProvider scoped theme={theme}>
+      <div
+        style={{
+          boxSizing: "border-box",
+          display: "flex",
+          flexDirection: "column",
+          gap: "var(--g-spacing-4)",
+          width: "100%",
+          height: 360,
+          padding: "var(--g-spacing-4)",
+          background: "var(--g-color-base-background)",
+        }}
+      >
+        <div
+          style={{
+            display: "flex",
+            flexShrink: 0,
+            gap: "var(--g-spacing-2)",
+          }}
+        >
+          {FONT_OPTIONS.map((option) => (
+            <Button
+              key={option.value}
+              selected={font === option.value}
+              onClick={() => handleFontChange(option.value)}
+            >
+              {option.label}
+            </Button>
+          ))}
+        </div>
+        <div style={{ position: "relative", flex: 1, minHeight: 0 }}>
+          <GravityTimelineCanvas timeline={timeline} />
+        </div>
+      </div>
+    </ThemeProvider>
+  );
+};
+
 const meta = {
   title: "Components/GravityTimelineCanvas",
   component: GravityColorsExample,
@@ -166,3 +232,15 @@ export default meta;
 type Story = StoryObj<typeof meta>;
 
 export const SemanticColors: Story = {};
+
+export const SemanticFonts: Story = {
+  render: ({ theme }) => <GravityFontsExample theme={theme} />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Switches the shared canvas font at runtime with `timeline.api.setViewConfiguration({font})`. Ruler and marker labels inherit the selected Gravity UI typography token.",
+      },
+    },
+  },
+};
