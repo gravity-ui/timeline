@@ -170,6 +170,10 @@ const timelineWithPageScroll = new Timeline({
         horizontalWheel: 'pan',
         pinch: 'zoom',
       },
+      zoomSensitivity: {
+        in: 0.5,
+        out: 0.5,
+      },
     },
   },
 });
@@ -225,9 +229,16 @@ timeline.on('on-resize', (data) => {
 The zoom level is calculated based on the wheel delta and current domain:
 
 ```typescript
-const factor = event.deltaY > 0 ? 1.15 : 0.9;
-const newDomain = clamp(oldDomain * factor, ZOOM_MIN, ZOOM_MAX);
+const progress = event.deltaMode === WheelEvent.DOM_DELTA_PIXEL
+  ? Math.min(Math.abs(event.deltaY) / 10, 1)
+  : 1;
+const factor = event.deltaY > 0
+  ? 1.15 ** (progress * zoomSensitivity.out)
+  : 0.9 ** (progress * zoomSensitivity.in);
+const newDomain = oldDomain * factor;
 ```
+
+`zoomSensitivity.in` and `zoomSensitivity.out` default to `1`. Lower values make zoom gentler, while `0` disables zoom in that direction. Pixel-based trackpad deltas below `10` apply a proportional fraction of the normal step; line and page wheel events apply the full step.
 
 ### Pan Calculation
 

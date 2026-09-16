@@ -172,6 +172,7 @@ describe("CanvasApi.setViewConfiguration", () => {
     expect(timeline.viewConfiguration.camera).toEqual({
       zoom: ZoomMode.HORIZONTAL,
       interactions: { verticalWheel: "pass-through" },
+      zoomSensitivity: { in: 1, out: 1 },
     });
     expect(rerender).toHaveBeenCalledTimes(2);
   });
