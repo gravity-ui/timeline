@@ -52,6 +52,7 @@ const createController = (
     controller,
     getInterval: () => interval,
     setRange,
+    emit: api.emit as ReturnType<typeof vi.fn>,
     viewConfiguration,
   };
 };
@@ -106,6 +107,47 @@ describe("TimelineController wheel interactions", () => {
     const pinch = setup();
     dispatchWheel(pinch.canvas, { deltaY: 10, ctrlKey: true });
     expect(pinch.getInterval()).toEqual({ start: -7_500, end: 107_500 });
+  });
+
+  it("emits on-camera-change only after the gesture debounce", () => {
+    vi.useFakeTimers();
+
+    try {
+      const { canvas, emit } = setup();
+      dispatchWheel(canvas, { deltaY: 10 });
+
+      expect(emit).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(149);
+      expect(emit).not.toHaveBeenCalled();
+
+      vi.advanceTimersByTime(1);
+      expect(emit).toHaveBeenCalledWith("on-camera-change", {
+        from: -7_500,
+        to: 107_500,
+      });
+    } finally {
+      vi.useRealTimers();
+    }
+  });
+
+  it("emits the current range when it changes during the gesture debounce", () => {
+    vi.useFakeTimers();
+
+    try {
+      const { canvas, emit, setRange } = setup();
+      dispatchWheel(canvas, { deltaY: 10 });
+      setRange(20_000, 40_000);
+
+      vi.advanceTimersByTime(150);
+
+      expect(emit).toHaveBeenCalledWith("on-camera-change", {
+        from: 20_000,
+        to: 40_000,
+      });
+    } finally {
+      vi.useRealTimers();
+    }
   });
 
   it("applies a proportional zoom step to small pixel deltas", () => {

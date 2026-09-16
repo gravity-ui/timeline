@@ -4,6 +4,10 @@ import { ZoomMode } from "../enums";
 import type {
   CameraInteractionAction,
   CameraInteractions,
+  TimeLineConfig,
+  TimelineEvent,
+  TimelineMarker,
+  TimelineSection,
   ZoomSensitivity,
 } from "../types";
 import { TimelineCanvas } from "../react-components/TimelineCanvas";
@@ -47,6 +51,129 @@ const rangeLimitLabels: Record<RangeLimitMode, string> = {
   unlimited: "No maximum",
   twoMonths: "60 days",
   oneYear: "1 year",
+};
+
+const SYNCED_RULER_HEIGHT = 41;
+const syncedCamera = {
+  interactions: {
+    verticalWheel: "pass-through" as const,
+    horizontalWheel: "pan" as const,
+    pinch: "zoom" as const,
+  },
+};
+
+const SyncedTimelinesExample = () => {
+  const rulerConfig = useMemo<
+    TimeLineConfig<TimelineEvent, TimelineMarker, TimelineSection>
+  >(
+    () => ({
+      settings: {
+        start: baseTimelineConfig.settings.start,
+        end: baseTimelineConfig.settings.end,
+        axes: [],
+        events: [],
+        markers: [],
+        sections: [],
+      },
+      viewConfiguration: {
+        ruler: { height: SYNCED_RULER_HEIGHT },
+        camera: { ...syncedCamera },
+      },
+    }),
+    [],
+  );
+  const contentConfig = useMemo<
+    TimeLineConfig<TimelineEvent, TimelineMarker, TimelineSection>
+  >(
+    () => ({
+      settings: {
+        ...baseTimelineConfig.settings,
+        axes: baseTimelineConfig.settings.axes.map((axis) => ({ ...axis })),
+        events: baseTimelineConfig.settings.events.map((event) => ({
+          ...event,
+        })),
+        markers: [],
+        sections: [],
+      },
+      viewConfiguration: {
+        hideRuler: true,
+        camera: { ...syncedCamera },
+      },
+    }),
+    [],
+  );
+  const { timeline: rulerTimeline } = useTimeline(rulerConfig);
+  const { timeline: contentTimeline } = useTimeline(contentConfig);
+  const syncRuler = useCallback(
+    ({ from, to }: { from: number; to: number }) =>
+      rulerTimeline.api.setRange(from, to),
+    [rulerTimeline],
+  );
+  const syncContent = useCallback(
+    ({ from, to }: { from: number; to: number }) =>
+      contentTimeline.api.setRange(from, to),
+    [contentTimeline],
+  );
+
+  useTimelineEvent(contentTimeline, "on-range-change", syncRuler);
+  useTimelineEvent(rulerTimeline, "on-range-change", syncContent);
+
+  return (
+    <div style={{ padding: 16 }}>
+      <p style={{ marginTop: 0 }}>
+        The ruler is a separate sticky timeline. Horizontal wheel and Ctrl+wheel
+        synchronize both canvases immediately; vertical wheel scrolls this
+        container.
+      </p>
+      <button
+        onClick={() =>
+          contentTimeline.api.setRange(
+            contentConfig.settings.start,
+            contentConfig.settings.end,
+          )
+        }
+      >
+        Reset visible range
+      </button>
+      <div
+        style={{
+          width: 720,
+          height: 320,
+          marginTop: 16,
+          overflow: "auto",
+          border: "1px solid #999",
+        }}
+      >
+        <div
+          style={{
+            position: "sticky",
+            top: 0,
+            zIndex: 1,
+            height: SYNCED_RULER_HEIGHT,
+            background: "#fff",
+          }}
+        >
+          <TimelineCanvas timeline={rulerTimeline} />
+        </div>
+        <div style={{ height: 720 }}>
+          <TimelineCanvas timeline={contentTimeline} />
+        </div>
+      </div>
+    </div>
+  );
+};
+
+export const SyncedTimelines: Story = {
+  name: "Synced timelines",
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "A sticky ruler and event timeline synchronized through on-range-change. The reset button updates only the event timeline; the ruler follows through the event.",
+      },
+    },
+  },
+  render: () => <SyncedTimelinesExample />,
 };
 
 const CanvasInteractionExample = () => {

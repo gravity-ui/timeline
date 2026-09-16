@@ -147,6 +147,28 @@ api.setRange(
 - `start`: Start timestamp
 - `end`: End timestamp
 
+When the range changes, `setRange()` synchronously emits `on-range-change`
+after rendering with `{from, to}`. Repeating the current range still renders
+the timeline but does not emit another event.
+
+Use `on-range-change` to synchronize two timeline instances. It includes
+programmatic calls to `setRange()` as well as wheel gestures. In contrast,
+`on-camera-change` is debounced by 150 ms and is emitted only for camera
+gestures, which makes it suitable for updating URL state or filters.
+
+```typescript
+const syncRuler = ({ detail: { from, to } }: CustomEvent) =>
+  ruler.api.setRange(from, to);
+const syncContent = ({ detail: { from, to } }: CustomEvent) =>
+  content.api.setRange(from, to);
+
+content.on('on-range-change', syncRuler);
+ruler.on('on-range-change', syncContent);
+```
+
+The second `setRange()` call receives an unchanged interval and does not emit,
+so the two subscriptions do not create a loop.
+
 #### `setAxes<Axis extends TimelineAxis>(newAxes: Axis[])`
 
 Updates the timeline axes.

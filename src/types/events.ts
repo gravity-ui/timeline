@@ -60,6 +60,8 @@ export type LeaveEvent<
   sections: TSection[];
 };
 export type CameraEvent = { from: number; to: number };
+/** The visible time range after it has changed and been rendered. */
+export type RangeEvent = { from: number; to: number };
 export type TimelineLifecycleEvent = Record<string, never>;
 export type MarkerSelectEvent<TMarker extends TimelineMarker = TimelineMarker> =
   { markers: TMarker[] } & BaseEventData;
@@ -88,6 +90,11 @@ export type ApiEvent<
   "on-leave": (
     events: CustomEvent<LeaveEvent<TEvent, TMarker, TSection>>,
   ) => void;
+  /**
+   * Fired synchronously after `api.setRange()` changes the visible range.
+   * Use it to keep another timeline in sync.
+   */
+  "on-range-change": (event: CustomEvent<RangeEvent>) => void;
   "on-camera-change": (event: CustomEvent<CameraEvent>) => void;
   "on-marker-select-change": (
     markers: CustomEvent<MarkerSelectEvent<TMarker>>,
