@@ -325,6 +325,8 @@ import {EventPopup} from '@gravity-ui/timeline/react/uikit';
 </>
 ```
 
+The popup, hover highlight, and cursor use the same event: an exact hit takes priority over nearby events. Overlapping exact hits resolve to the last event in drawing order. Only when there is no exact hit, a tolerance of `3 px + events.hitboxPadding` is used. Group queries and `on-hover` still include all candidates.
+
 `EventPopup` opens after 150 ms and closes 200 ms after the pointer leaves the
 event. Set `openDelay`, `closeDelay`, `placement`, `offset`, `className`, or
 `aria-label` when needed. The popup remains open while its content has pointer

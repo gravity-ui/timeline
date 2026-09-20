@@ -1,6 +1,7 @@
 import React from "react";
 import type { Meta, StoryObj } from "@storybook/react-vite";
 import { RangeSelection } from "./integrations/RangeSelection";
+import { OverlappingEventsPopup as OverlappingEventsPopupDemo } from "./integrations/Popup/OverlappingEventsPopup";
 import { TimelineWithPopup } from "./integrations/Popup";
 import { ListIntegration } from "./integrations/List";
 import { NestedEvents } from "./integrations/NestedEvents";
@@ -43,6 +44,19 @@ export const Popup: Story = {
       description: {
         story:
           "Hover an event to open its interactive details popup. Links and buttons remain usable.",
+      },
+    },
+  },
+};
+
+export const OverlappingEventsPopup: Story = {
+  name: "Overlapping events popup",
+  render: () => <OverlappingEventsPopupDemo />,
+  parameters: {
+    docs: {
+      description: {
+        story:
+          "Move slowly across the overlapping and adjacent event edges. The popup, highlight, and cursor follow the top-most exact hit; tolerance is used only outside event bounds. Try zooming and scrolling as well.",
       },
     },
   },
