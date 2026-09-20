@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.1](https://github.com/gravity-ui/timeline/compare/v1.32.0...v1.32.1) (2026-09-20)
+
+
+### Bug Fixes
+
+* **Events:** align overlapping event hover and popup ([878ffc0](https://github.com/gravity-ui/timeline/commit/878ffc086c5d5410cd4423f9fe966299863da935))
+
 ## [1.32.0](https://github.com/gravity-ui/timeline/compare/v1.31.0...v1.32.0) (2026-09-16)
 
 
