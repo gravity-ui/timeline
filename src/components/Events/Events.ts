@@ -120,10 +120,20 @@ export class Events<
     return this.eventsById.get(id);
   }
 
-  /** Gets the top-most event at a canvas position. */
+  /** Prefers exact hits, then picks the top-most event within the hit tolerance. */
   public getTopEventAtPoint(x: number, y: number): Event | undefined {
+    const time = this.api.positionToTime(x);
+    const trackY = y - this.api.getRulerHeight() + this.api.canvasScrollTop;
+    const exactHits = this.index.search({
+      minX: time,
+      maxX: time,
+      minY: trackY,
+      maxY: trackY,
+    });
     const candidateIds = new Set(
-      this.getEventsAtPoint(x, y).map((event) => event.id),
+      exactHits.length > 0
+        ? exactHits.map(({ event }) => event.id)
+        : this.getEventsAtPoint(x, y).map((event) => event.id),
     );
 
     for (let index = this._events.length - 1; index >= 0; index -= 1) {
@@ -367,12 +377,11 @@ export class Events<
   private updateHoveredEvents(): boolean {
     if (!this.lastPointerPosition) return false;
 
-    const hoveredIds = new Set(
-      this.getEventsAtPoint(
-        this.lastPointerPosition.x,
-        this.lastPointerPosition.y,
-      ).map(({ id }) => id),
+    const hoveredEvent = this.getTopEventAtPoint(
+      this.lastPointerPosition.x,
+      this.lastPointerPosition.y,
     );
+    const hoveredIds = new Set(hoveredEvent ? [hoveredEvent.id] : []);
 
     if (
       hoveredIds.size === this._hoveredEvents.size &&

@@ -354,3 +354,16 @@ The Events component emits the following events:
      relativeY: number;     // Hover Y coordinate
    }
    ```
+
+### Overlapping event hover
+
+`getTopEventAtPoint(x, y)` first searches the exact rectangular event bounds,
+accounting for the ruler, vertical scrolling, and time scale. When several events
+contain the point, the last event in drawing order wins. If none contains the
+point, the existing `3 px + events.hitboxPadding` tolerance is used, again choosing
+the last event in drawing order.
+
+Only that event receives `isHovered`; the event cursor and built-in `EventPopup`
+use the same lookup. Custom renderer shapes do not change the rectangular bounds.
+`getEventsAtPoint`, `on-hover`, and multiple selection retain their collection
+semantics. See **Integrations/gravity-ui → Overlapping events popup** in Storybook.

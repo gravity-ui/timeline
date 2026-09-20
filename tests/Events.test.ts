@@ -41,15 +41,82 @@ const movePointer = (canvas: HTMLCanvasElement) => {
   canvas.dispatchEvent(event);
 };
 
-describe("Events.getTopEventAtPoint", () => {
-  it("uses data order rather than RBush result order", () => {
-    const events = Object.create(Events.prototype) as Events;
-    const first = { id: "first" };
-    const second = { id: "second" };
-    (events as unknown as { _events: unknown[] })._events = [first, second];
-    events.getEventsAtPoint = vi.fn(() => [second, first]) as never;
+const createIndexedEvents = () => {
+  const canvas = document.createElement("canvas");
+  const axis = { id: "axis", top: 0, height: 20, tracksCount: 2 };
+  const api = {
+    canvas,
+    rerender: vi.fn(),
+    getViewConfiguration: () => ({ events: { hitboxPadding: 2 } }),
+    getInterval: () => ({ start: 0, end: 100 }),
+    getComponent: () => ({
+      getAxesById: () => ({ axis }),
+      getAxisTrackPosition: (_axis: unknown, track: number) => track * 20 + 10,
+    }),
+    getRulerHeight: () => 30,
+    canvasScrollTop: 0,
+    positionToTime: (position: number) => position,
+  } as unknown as TestApi;
+  const component = new Events(api);
+  const first: TimelineEvent = {
+    id: "first", axisId: "axis", trackIndex: 0, from: 10, to: 50,
+    cursor: "pointer",
+  };
+  const second = { ...first, id: "second", from: 30, to: 70, cursor: "grab" };
+  component.setEvents([first, second]);
+  return { component, api, canvas, first, second };
+};
 
-    expect(events.getTopEventAtPoint(0, 0)).toBe(second);
+describe("Events.getTopEventAtPoint", () => {
+  it("prefers exact hits to a higher event inside the tolerance", () => {
+    const { component, first, second } = createIndexedEvents();
+    expect(component.getEventsAtPoint(28, 40)).toEqual(expect.arrayContaining([first, second]));
+    expect(component.getTopEventAtPoint(28, 40)).toBe(first);
+    expect(component.getTopEventAtPoint(30, 40)).toBe(second);
+  });
+
+  it("uses drawing order regardless of spatial index traversal order", () => {
+    const { component, first, second } = createIndexedEvents();
+    expect(component.getTopEventAtPoint(40, 40)).toBe(second);
+    component.setEvents([second, first]);
+    expect(component.getTopEventAtPoint(40, 40)).toBe(first);
+  });
+
+  it("retains tolerance only when no exact hits exist", () => {
+    const { component, second } = createIndexedEvents();
+    expect(component.getTopEventAtPoint(75, 40)).toBe(second);
+    expect(component.getTopEventAtPoint(76, 40)).toBeUndefined();
+  });
+
+  it("uses exact vertical bounds and accounts for scrolling and zoom", () => {
+    const { component, api, first, second } = createIndexedEvents();
+    component.setEvents([first, { ...second, trackIndex: 1 }]);
+    expect(component.getTopEventAtPoint(40, 49)).toBe(first);
+    api.canvasScrollTop = 10;
+    api.positionToTime = (x) => x / 2;
+    expect(component.getTopEventAtPoint(80, 39)).toBe(first);
+    expect(component.getTopEventAtPoint(80, 41)?.id).toBe(second.id);
+  });
+
+  it("shares the top event between hover and cursor and clears hover on leave", () => {
+    const { component, canvas, first, second } = createIndexedEvents();
+    const move = (x: number) => {
+      const event = new MouseEvent("mousemove");
+      Object.defineProperties(event, {
+        offsetX: { value: x }, offsetY: { value: 40 },
+      });
+      canvas.dispatchEvent(event);
+    };
+    move(28);
+    expect(component.isHoveredEvent(first)).toBe(true);
+    expect(component.isHoveredEvent(second)).toBe(false);
+    expect(canvas.style.cursor).toBe("pointer");
+    move(40);
+    expect(component.isHoveredEvent(first)).toBe(false);
+    expect(component.isHoveredEvent(second)).toBe(true);
+    expect(canvas.style.cursor).toBe("grab");
+    canvas.dispatchEvent(new MouseEvent("mouseleave"));
+    expect(component.isHoveredEvent(second)).toBe(false);
   });
 });
 
