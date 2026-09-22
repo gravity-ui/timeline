@@ -34,6 +34,10 @@ export type ClickEvent<
   events: TEvent[];
   markers: TMarker[];
   sections: TSection[];
+  /** Horizontal click coordinate within the canvas, in CSS pixels. */
+  canvasX: number;
+  /** Vertical click coordinate within the canvas, in CSS pixels. */
+  canvasY: number;
 } & BaseEventData;
 export type SelectEvent<TEvent extends TimelineEvent = TimelineEvent> = {
   events: TEvent[];

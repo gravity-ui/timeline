@@ -68,6 +68,17 @@ const createIndexedEvents = () => {
 };
 
 describe("Events.getTopEventAtPoint", () => {
+  it("returns neighboring track candidates near a shared boundary", () => {
+    const { component, first, second } = createIndexedEvents();
+    const lower = { ...second, trackIndex: 1 };
+    component.setEvents([first, lower]);
+
+    expect(component.getEventsAtPoint(40, 49)).toEqual(
+      expect.arrayContaining([first, lower]),
+    );
+    expect(component.getTopEventAtPoint(40, 49)).toBe(first);
+  });
+
   it("prefers exact hits to a higher event inside the tolerance", () => {
     const { component, first, second } = createIndexedEvents();
     expect(component.getEventsAtPoint(28, 40)).toEqual(expect.arrayContaining([first, second]));

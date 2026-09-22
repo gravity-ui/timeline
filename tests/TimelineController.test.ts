@@ -1,7 +1,7 @@
 import { afterEach, describe, expect, it, vi } from "vitest";
 import { CanvasApi } from "../src/CanvasApi";
 import { TimelineController } from "../src/TimelineController";
-import { ZoomMode } from "../src/enums";
+import { ComponentType, ZoomMode } from "../src/enums";
 import {
   CameraInteractions,
   CameraViewOptions,
@@ -73,6 +73,57 @@ const dispatchWheel = (
   canvas.dispatchEvent(event);
   return event;
 };
+
+describe("TimelineController click interactions", () => {
+  it("emits all hit candidates with the click position", () => {
+    const canvas = document.createElement("canvas");
+    const events = [
+      { id: "upper", from: 0, to: 10, axisId: "axis", trackIndex: 0 },
+      { id: "lower", from: 0, to: 10, axisId: "axis", trackIndex: 1 },
+    ];
+    const emit = vi.fn();
+    const api = {
+      canvas,
+      rerender: vi.fn(),
+      emit,
+      positionToTime: (position: number) => position * 500,
+      getTimelineSettings: () => ({}),
+      getComponent: (type: ComponentType) => {
+        if (type === ComponentType.Events) {
+          return { getEventsAtPoint: () => events };
+        }
+        if (type === ComponentType.Sections) {
+          return { getSectionsAtPoint: () => [] };
+        }
+        return undefined;
+      },
+    } as unknown as TestApi;
+    const controller = new TimelineController(api);
+    const event = new MouseEvent("mouseup", {
+      clientX: 140,
+      clientY: 247,
+    });
+    Object.defineProperties(event, {
+      offsetX: { value: 40 },
+      offsetY: { value: 47 },
+    });
+
+    canvas.dispatchEvent(event);
+
+    expect(emit).toHaveBeenCalledWith("on-click", {
+      events,
+      markers: [],
+      sections: [],
+      time: 20_000,
+      relativeX: 140,
+      relativeY: 247,
+      canvasX: 40,
+      canvasY: 47,
+    });
+
+    controller.destroy();
+  });
+});
 
 describe("TimelineController wheel interactions", () => {
   const controllers: TimelineController[] = [];
