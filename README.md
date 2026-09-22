@@ -265,7 +265,7 @@ The timeline is implemented as a React component that can be configured through 
 
 The timeline component supports several interactive events:
 
-- `on-click`: Triggered when clicking on the timeline
+- `on-click`: Triggered when clicking on the timeline; includes the hit elements, timestamp, viewport coordinates, and canvas coordinates
 - `on-context-click`: Triggered on right-click/context menu
 - `on-select-change`: Fired when the selection changes
 - `on-hover`: Triggered when hovering over timeline elements

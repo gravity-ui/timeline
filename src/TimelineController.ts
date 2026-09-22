@@ -389,6 +389,11 @@ export class TimelineController<
         ? clickMarkerCollectionFilter(markers)
         : markers,
       sections,
+      time: this.api.positionToTime(event.offsetX),
+      relativeX: event.clientX,
+      relativeY: event.clientY,
+      canvasX: event.offsetX,
+      canvasY: event.offsetY,
     });
   };
 

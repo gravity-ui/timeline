@@ -414,6 +414,12 @@ Triggered when clicking on the timeline.
 {
   events: TimelineEvent[];  // Events at click position (after filtering)
   markers: TimelineMarker[]; // Markers at click position (after filtering)
+  sections: TimelineSection[]; // Sections at click position
+  time: number; // Timestamp at click position
+  relativeX: number; // Viewport X coordinate
+  relativeY: number; // Viewport Y coordinate
+  canvasX: number; // Canvas X coordinate in CSS pixels
+  canvasY: number; // Canvas Y coordinate in CSS pixels
 }
 ```
 

@@ -66,7 +66,7 @@ The TimelineController handles general click events on the canvas and emits unif
 - **Mouse Up Events**: Captures mouse up events to detect clicks
 - **Multi-Component Click**: Returns both events and markers at the click position
 - **Filter Support**: Applies `clickEventsCollectionFilter` and `clickMarkerCollectionFilter` if configured
-- **Event Structure**: Emits `on-click` event with `{events: TimelineEvent[], markers: TimelineMarker[]}` structure
+- **Event Structure**: Emits `on-click` with hit collections, the corresponding timestamp, viewport coordinates (`relativeX`, `relativeY`), and canvas coordinates (`canvasX`, `canvasY`)
 
 ### Zoom
 
