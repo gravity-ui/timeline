@@ -1,5 +1,12 @@
 # Changelog
 
+## [1.32.2](https://github.com/gravity-ui/timeline/compare/v1.32.1...v1.32.2) (2026-09-22)
+
+
+### Bug Fixes
+
+* **Timeline:** include coordinates in click events ([3b9b538](https://github.com/gravity-ui/timeline/commit/3b9b538341c78d3597e55d7ae7addd92219b86b9))
+
 ## [1.32.1](https://github.com/gravity-ui/timeline/compare/v1.32.0...v1.32.1) (2026-09-20)
 
 
